@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HealthFit - Autentificare</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>HealthFit - Home</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h2>Autentificare HealthFit</h2>
-  <div id="auth-container">
-    <!-- Câmp opțional pentru numele utilizatorului -->
-    <input type="text" id="name" placeholder="Nume">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Parolă">
-    <button id="registerBtn">Înregistrare</button>
-    <button id="loginBtn">Autentificare</button>
-    <button id="logoutBtn">Deconectare</button>
-    <p id="status"></p>
-  </div>
+  <!-- Navbar -->
+  <header>
+    <nav>
+      <ul class="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li id="nav-login"><a href="login.html">Login</a></li>
+        <li id="nav-register"><a href="register.html">Register</a></li>
+        <li id="nav-profile"><a href="profile.html">Profile</a></li>
+        <li id="nav-logout"><button>Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Conținut principal (exemplu) -->
+  <main>
+    <h1>Bine ai venit la HealthFit!</h1>
+    <p>Aceasta este pagina principală a aplicației tale de fitness și nutriție.</p>
+    <p>Pentru a începe, creează-ți un cont sau autentifică-te dacă ai deja unul.</p>
+  </main>
 
   <script type="module">
-    // 1. Importăm din Firebase (CDN)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { 
       getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword, 
+      onAuthStateChanged, 
       signOut 
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 2. Configurația Firebase (completează cu datele tale reale)
+    // Configurația Firebase (înlocuiește cu datele tale)
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "CHEIA_TA_API",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -45,65 +45,46 @@
       appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
     };
 
-    // 3. Inițializăm Firebase (app, auth, db)
+    // Inițializare Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    // 4. Referințe la elemente din HTML
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const registerBtn = document.getElementById("registerBtn");
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const statusMsg = document.getElementById("status");
+    // Referințe la elementele din navbar
+    const navLogin = document.getElementById("nav-login");
+    const navRegister = document.getElementById("nav-register");
+    const navProfile = document.getElementById("nav-profile");
+    const navLogout = document.getElementById("nav-logout");
 
-    // 5. Înregistrare + Salvare în Firestore
-    registerBtn.onclick = function() {
-      const name = nameInput.value;
-      const email = emailInput.value;
-      const password = passwordInput.value;
+    // Ascundem toate butoanele la încărcare
+    navLogin.style.display = "none";
+    navRegister.style.display = "none";
+    navProfile.style.display = "none";
+    navLogout.style.display = "none";
 
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => {
-          const user = userCredential.user;
-          // Salvăm date suplimentare în Firestore (colecția "users")
-          await setDoc(doc(db, "users", user.uid), {
-            name: name,
-            email: email,
-            uid: user.uid,
-            createdAt: new Date()
-          });
+    // Detectăm schimbarea stării de autentificare
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Utilizator AUTENTIFICAT → arătăm Profile și Logout
+        navLogin.style.display = "none";
+        navRegister.style.display = "none";
+        navProfile.style.display = "block";
+        navLogout.style.display = "block";
+      } else {
+        // Utilizator NEAUTENTIFICAT → arătăm Login și Register
+        navLogin.style.display = "block";
+        navRegister.style.display = "block";
+        navProfile.style.display = "none";
+        navLogout.style.display = "none";
+      }
+    });
 
-          statusMsg.innerText = "✅ Utilizator creat și salvat!";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare: " + error.message;
-        });
-    };
-
-    // 6. Autentificare (Login)
-    loginBtn.onclick = function() {
-      const email = emailInput.value;
-      const password = passwordInput.value;
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          statusMsg.innerText = "✅ Autentificat!";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare: " + error.message;
-        });
-    };
-
-    // 7. Deconectare (Logout)
-    logoutBtn.onclick = function() {
+    // Deconectare
+    navLogout.onclick = function() {
       signOut(auth).then(() => {
-        statusMsg.innerText = "✅ Deconectat!";
+        // Opțional: Reîncărcăm pagina după logout
+        window.location.reload();
       });
     };
   </script>
-
 </body>
 </html>
