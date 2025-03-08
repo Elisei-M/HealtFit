@@ -1,36 +1,169 @@
+/* GLOBAL RESETS & STILURI DE BAZĂ */
+html {
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f4f4;
-    padding: 20px;
+  margin: 0;
+  padding: 0;
+  background: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80")
+              no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
 }
 
-#auth-container {
-    background: white;
-    padding: 20px;
-    max-width: 300px;
-    margin: auto;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+/* NAVBAR */
+header {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 10px;
 }
 
-input {
-    display: block;
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
+.navbar {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
 
-button {
-    background: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    margin: 5px;
-    width: 100%;
+.navbar li {
+  margin: 0;
 }
 
-button:hover {
-    background: #0056b3;
+.navbar a,
+.navbar button {
+  text-decoration: none;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px;
+  transition: color 0.2s ease;
+}
+
+.navbar a:hover,
+.navbar button:hover {
+  color: #fbd75b; /* Alege altă culoare pentru hover */
+}
+
+/* CONTAINER PENTRU FORMULAR (LOGIN/REGISTER) */
+.container {
+  width: 330px;
+  margin: auto;
+  margin-top: 10%;
+  padding: 5px;
+  backdrop-filter: blur(17px) saturate(200%);
+  -webkit-backdrop-filter: blur(17px) saturate(200%);
+  background-color: rgba(190, 190, 190, 0.44);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.title {
+  text-align: center;
+  color: #b82800;
+  font-weight: 400;
+  margin: 0; /* Elimină spațiul suplimentar */
+  padding: 15px 0;
+}
+
+.form {
+  padding: 15px;
+}
+
+.form-group {
+  position: relative;
+  padding: 20px 0;
+  margin: auto;
+  max-width: 100%;
+}
+
+.form-group input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1.4px solid #d8d7d7;
+  font-size: 18px;
+  padding: 10px 0;
+  display: block;
+  width: 100%;
+  color: #fff; /* Ca textul să fie vizibil */
+}
+
+.form-group label {
+  color: #f0eaea;
+  font-size: 16px;
+  font-weight: 100;
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  transform: translateY(30px);
+  transition: all 0.2s ease-in-out;
+  left: 0;
+}
+
+.form-group input:valid,
+.form-group input:focus {
+  border-bottom-color: #dddddd;
+  outline: none;
+}
+
+.form-group input:valid + label,
+.form-group input:focus + label {
+  color: #f7f7f7;
+  font-size: 14px;
+  transform: translateY(0);
+}
+
+/* BUTON DE SUBMIT */
+.submit {
+  background: rgb(218, 51, 3);
+  padding: 7px 0;
+  outline: none;
+  font-size: 18px;
+  width: 100%;
+  margin: 17px 0;
+  cursor: pointer;
+  color: rgb(226, 224, 224);
+  border-radius: 5px;
+  transition: 0.1s;
+  border: 1px solid rgb(218, 51, 3);
+}
+.submit:hover {
+  background: rgba(216, 214, 214, 0.301);
+  color: rgb(218, 51, 3);
+}
+
+/* LINK-URI GLOBALE */
+a {
+  text-decoration: none;
+  color: inherit; /* preia culoarea din context */
+}
+a:hover {
+  color: white;
+}
+
+/* EXEMPLE DE LINK-URI ÎN FORM */
+.row {
+  margin-top: 10px;
+  text-align: center;
+}
+.row a {
+  color: rgb(218, 51, 3);
+}
+
+/* FOOTER SAU LINK-URI SUPLIMENTARE */
+.last {
+  text-align: center;
+  padding: 5px;
+}
+.last a {
+  margin: 0 10px;
+  font-size: 14px;
+  color: #66C1E5;
 }
