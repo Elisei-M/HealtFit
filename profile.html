@@ -1,98 +1,11 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <title>HealthFit - Workouts</title>
+  <meta charset="UTF-8">
+  <title>Profil Utilizator | HealthFit</title>
   <link rel="stylesheet" href="style.css">
-  <!-- jQuery & Snap.svg (dacă folosești hoverIntent și Snap) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
-
-  <style>
-    body {
-      background: url("https://images.unsplash.com/photo-1594737625785-c1d97f1a404f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")
-                  no-repeat center center fixed;
-      background-size: cover;
-      margin: 0; padding: 0;
-      font-family: sans-serif;
-    }
-    .navbar {
-      background: rgba(0, 0, 0, 0.7);
-    }
-    .navbar a, .navbar button {
-      color: #fff !important;
-    }
-
-    .workouts-container {
-      display: flex;
-      gap: 20px;
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 20px;
-      backdrop-filter: blur(10px) saturate(180%);
-      background-color: rgba(17, 25, 40, 0.62);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.125);
-    }
-
-    /* Stânga: program antrenamente */
-    .program-list {
-      flex: 1;
-      min-width: 350px;
-      color: #fff;
-    }
-    .program-day {
-      background: rgba(0,0,0,0.2);
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .program-day h4 {
-      margin: 0;
-      cursor: pointer;
-    }
-    .exercises {
-      margin-left: 20px;
-      display: none;
-    }
-    .exercises.active {
-      display: block;
-    }
-    .exercises li {
-      list-style: none;
-      margin-bottom: 5px;
-    }
-    .submit {
-      background-color: #ff6b00;
-      border: none;
-      color: #fff;
-      padding: 8px 16px;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-    .submit:hover {
-      background-color: #e65f00;
-    }
-
-    /* Dreapta: containerul SVG */
-    .svg-container-workouts {
-      flex: 1;
-      min-width: 400px;
-      position: relative;
-      text-align: center;
-    }
-    #frontSvg, #backSvg {
-      width: 100%;
-      height: 600px; /* ajustabil */
-    }
-    .labelBox {
-      /* la fel ca înainte, dacă ai un labelBox */
-    }
-  </style>
 </head>
 <body>
-
   <!-- NAVBAR -->
   <header>
     <nav>
@@ -106,25 +19,37 @@
     </nav>
   </header>
 
-  <div class="workouts-container">
-    <!-- Stânga: Program antrenamente -->
-    <div class="program-list">
-      <h3>Program de Antrenamente (4 zile)</h3>
-      <div id="daysContainer"></div>
-      <button id="resetBtn" class="submit">Reset Program</button>
+  <!-- FORMULAR PROFIL (sex, age, weight, height, activity, goal) -->
+  <div class="container">
+    <h2>Profilul Tău</h2>
+    <div>
+      <select id="sex">
+        <option value="">Sex</option>
+        <option value="barbat">Masculin</option>
+        <option value="femeie">Feminin</option>
+      </select>
+      <input type="number" id="age" placeholder="Vârstă" />
+      <input type="number" id="weight" placeholder="Greutate (kg)" />
+      <input type="number" id="height" placeholder="Înălțime (cm)" />
+      <select id="activityLevel">
+        <option value="">Nivel de activitate</option>
+        <option value="sedentar">Sedentar</option>
+        <option value="moderat">Moderat</option>
+        <option value="activ">Activ</option>
+        <option value="foarteActiv">Foarte activ</option>
+      </select>
+      <select id="goal">
+        <option value="">Obiectiv</option>
+        <option value="slabire">Slăbire</option>
+        <option value="ingrasare">Îngrășare</option>
+        <option value="crestere_masa">Creștere masă</option>
+        <option value="definire">Definire</option>
+      </select>
     </div>
 
-    <!-- Dreapta: SVG mare cu grupele musculare -->
-    <div class="svg-container-workouts">
-      <div class="card">
-        <figure class="front"><svg id="frontSvg"></svg></figure>
-        <figure class="back"><svg id="backSvg"></svg></figure>
-      </div>
-      <div class="labelBox">
-        <!-- la fel ca exemplul anterior -->
-      </div>
-      <a href="#" class="btn rotateBtn">View Back</a>
-    </div>
+    <button id="saveProfileBtn">Salvează & Calculează</button>
+    <button id="generateProgramBtn">Generează Program</button>
+    <p id="statusProfile"></p>
   </div>
 
   <script type="module">
@@ -137,13 +62,14 @@
     import {
       getFirestore,
       doc,
-      getDoc,
-      updateDoc
+      setDoc,
+      updateDoc,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Configurație Firebase
+    // Firebase Config
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "API_KEY_AICI",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -154,179 +80,246 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Elemente
-    const daysContainer = document.getElementById("daysContainer");
-    const resetBtn = document.getElementById("resetBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+    // Element refs
+    const sexInput = document.getElementById("sex");
+    const ageInput = document.getElementById("age");
+    const weightInput = document.getElementById("weight");
+    const heightInput = document.getElementById("height");
+    const activitySelect = document.getElementById("activityLevel");
+    const goalSelect = document.getElementById("goal");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const generateProgramBtn = document.getElementById("generateProgramBtn");
+    const statusProfile = document.getElementById("statusProfile");
 
     let currentUser = null;
-    let programDocRef = null; // docRef la /users/{uid}/program/activeProgram
-    let programData = null;   // conține days: [...]
+    let userDocRef = null;
 
-    // 2. onAuthStateChanged
+    // onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-        await loadProgram();
-        await loadMusclesSVG();
+        userDocRef = doc(db, "users", currentUser.uid);
+        // (Opțional) poți încărca datele existente
+        const snap = await getDoc(userDocRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.sex) sexInput.value = data.sex;
+          if (data.age) ageInput.value = data.age;
+          if (data.weight) weightInput.value = data.weight;
+          if (data.height) heightInput.value = data.height;
+          if (data.activityLevel) activitySelect.value = data.activityLevel;
+          if (data.goal) goalSelect.value = data.goal;
+        }
       }
     });
 
-    // 3. loadProgram() - citește doc-ul "activeProgram"
-    async function loadProgram() {
-      const docSnap = await getDoc(programDocRef);
-      if (docSnap.exists()) {
-        programData = docSnap.data(); // { days: [...] }
-        renderDays(programData.days);
-      } else {
-        // Poate userul nu are program generat încă
-        daysContainer.innerHTML = "<p>Nu ai un program încă. Mergi la Profile și generează unul!</p>";
-      }
-    }
+    // Funcție de salvare date profil (simplu)
+    saveProfileBtn.onclick = async () => {
+      if (!currentUser) return;
+      const sexVal = sexInput.value;
+      const ageVal = Number(ageInput.value);
+      const weightVal = Number(weightInput.value);
+      const heightVal = Number(heightInput.value);
+      const activityVal = activitySelect.value;
+      const goalVal = goalSelect.value;
 
-    // 4. Afișăm zilele + exercițiile
-    function renderDays(daysArray) {
-      daysContainer.innerHTML = "";
-      daysArray.forEach((dayObj, dayIndex) => {
-        // Creăm un container pentru fiecare zi
-        const dayDiv = document.createElement("div");
-        dayDiv.classList.add("program-day");
-
-        // Titlul zilei
-        const h4 = document.createElement("h4");
-        h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
-        dayDiv.appendChild(h4);
-
-        // Container exerciții
-        const exercisesUL = document.createElement("ul");
-        exercisesUL.classList.add("exercises");
-        // La click pe h4, toggle .active
-        h4.onclick = () => {
-          exercisesUL.classList.toggle("active");
-        };
-
-        dayObj.exercises.forEach((exObj, exIndex) => {
-          const li = document.createElement("li");
-          // Checkbox
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.checked = exObj.done;
-          cb.onchange = () => toggleExercise(dayIndex, exIndex, cb.checked);
-          li.appendChild(cb);
-
-          // Nume exercițiu
-          const span = document.createElement("span");
-          span.textContent = " " + exObj.name;
-          li.appendChild(span);
-
-          // (Opțional) buton "Detalii" => alert(exObj.description + " alternative: ...")
-
-          exercisesUL.appendChild(li);
+      try {
+        await updateDoc(userDocRef, {
+          sex: sexVal,
+          age: ageVal,
+          weight: weightVal,
+          height: heightVal,
+          activityLevel: activityVal,
+          goal: goalVal
         });
+        statusProfile.textContent = "Profil salvat!";
+      } catch (err) {
+        // Dacă doc nu există, folosește setDoc
+        await setDoc(userDocRef, {
+          sex: sexVal,
+          age: ageVal,
+          weight: weightVal,
+          height: heightVal,
+          activityLevel: activityVal,
+          goal: goalVal
+        });
+        statusProfile.textContent = "Profil creat!";
+      }
+    };
 
-        dayDiv.appendChild(exercisesUL);
-
-        daysContainer.appendChild(dayDiv);
-      });
-    }
-
-    // 5. toggleExercise(dayIndex, exIndex, checked)
-    async function toggleExercise(dayIndex, exIndex, isDone) {
-      // Actualizăm local
-      programData.days[dayIndex].exercises[exIndex].done = isDone;
-
-      // Verificăm dacă toate exercițiile din ziua respectivă sunt done
-      const allDone = programData.days[dayIndex].exercises.every(ex => ex.done === true);
-      programData.days[dayIndex].done = allDone;
-      if (allDone) {
-        // Salvăm data finalizării pentru recuperare
-        programData.days[dayIndex].doneDate = new Date().toISOString();
-        // Să actualizăm grupele musculare => stocăm datele ultimului antrenament
-        // ex: chest, triceps => salvăm "lastWorkoutDate_chest = new Date()"
-        // Sau te folosești direct de doneDate la calculare
+    // Funcție care generează programul (exerciții) în funcție de goal
+    function generateProgram(goal) {
+      // Hardcoded exemplu:
+      if (goal === "slabire") {
+        return [
+          {
+            title: "Antrenament 1 (Piept & Triceps)",
+            muscleGroups: ["chest", "triceps"],
+            done: false,
+            doneDate: null,
+            exercises: [
+              {
+                name: "Bench Press",
+                description: "Exercițiu compus pentru piept...",
+                alternatives: ["Smith Machine Bench Press", "Push-ups"],
+                done: false
+              },
+              {
+                name: "Dumbbell Chest Fly",
+                description: "...",
+                alternatives: ["Cable Fly", "Machine Fly"],
+                done: false
+              },
+              {
+                name: "Incline Dumbbell Chest Press",
+                description: "...",
+                alternatives: ["Incline Barbell Press"],
+                done: false
+              },
+              {
+                name: "Parallel Bar Dips (Triceps focus)",
+                description: "...",
+                alternatives: ["Bench Dips"],
+                done: false
+              },
+              {
+                name: "Tracțiuni cu gantera (Triceps)",
+                description: "...",
+                alternatives: [],
+                done: false
+              }
+            ]
+          },
+          {
+            title: "Antrenament 2 (Spate & Biceps)",
+            muscleGroups: ["back", "biceps"],
+            done: false,
+            doneDate: null,
+            exercises: [
+              {
+                name: "Lat Pulldown",
+                description: "Pentru dorsal...",
+                alternatives: ["Pull-ups"],
+                done: false
+              },
+              {
+                name: "Seated Cable Row",
+                description: "...",
+                alternatives: [],
+                done: false
+              },
+              {
+                name: "Barbell Biceps Curl",
+                description: "...",
+                alternatives: ["Dumbbell Curl"],
+                done: false
+              },
+              {
+                name: "Hammer Curl",
+                description: "...",
+                alternatives: [],
+                done: false
+              }
+            ]
+          },
+          {
+            title: "Antrenament 3 (Picioare & Umeri)",
+            muscleGroups: ["legs", "shoulders"],
+            done: false,
+            doneDate: null,
+            exercises: [
+              {
+                name: "Squat",
+                description: "Exercițiu compus pentru picioare",
+                alternatives: ["Leg Press"],
+                done: false
+              },
+              {
+                name: "Lunges",
+                description: "...",
+                alternatives: [],
+                done: false
+              },
+              {
+                name: "Shoulder Press",
+                description: "...",
+                alternatives: ["Arnold Press"],
+                done: false
+              },
+              {
+                name: "Lateral Raises",
+                description: "...",
+                alternatives: [],
+                done: false
+              }
+            ]
+          },
+          {
+            title: "Antrenament 4 (Full Body / Cardio)",
+            muscleGroups: ["chest", "back", "legs"],
+            done: false,
+            doneDate: null,
+            exercises: [
+              {
+                name: "Burpees",
+                description: "...",
+                alternatives: [],
+                done: false
+              },
+              {
+                name: "Plank",
+                description: "...",
+                alternatives: [],
+                done: false
+              }
+            ]
+          }
+        ];
+      } else if (goal === "crestere_masa") {
+        // alt program
+        return [
+          // ...
+        ];
       } else {
-        programData.days[dayIndex].doneDate = null;
+        // fallback
+        return [
+          {
+            title: "Antrenament 1 (Default)",
+            muscleGroups: ["chest", "triceps"],
+            done: false,
+            doneDate: null,
+            exercises: []
+          }
+        ];
       }
-
-      // Updatăm doc
-      await updateDoc(programDocRef, { days: programData.days });
-      // Re-redăm UI
-      renderDays(programData.days);
-      // Recalculează starea mușchilor
-      updateMusclesRecovery();
     }
 
-    // 6. resetBtn => reset tot
-    resetBtn.onclick = async () => {
-      if (!programData || !programData.days) return;
-      programData.days.forEach(day => {
-        day.done = false;
-        day.doneDate = null;
-        day.exercises.forEach(ex => ex.done = false);
+    // La click pe "Generează Program"
+    generateProgramBtn.onclick = async () => {
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) {
+        statusProfile.textContent = "Completează întâi profilul, apoi generează programul.";
+        return;
+      }
+      const data = snap.data();
+      const goalVal = data.goal;
+      if (!goalVal) {
+        statusProfile.textContent = "Trebuie să ai un obiectiv (slabire, crestere_masa etc.).";
+        return;
+      }
+
+      // Generăm program
+      const program = generateProgram(goalVal);
+      // Salvăm la /users/{uid}/program/activeProgram
+      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+      await setDoc(programDocRef, {
+        days: program
       });
-      await updateDoc(programDocRef, { days: programData.days });
-      renderDays(programData.days);
-      updateMusclesRecovery();
+
+      statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
     };
-
-    // 7. Logout
-    logoutBtn.onclick = () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
-    };
-
-    // 8. SVG muscle logic
-    async function loadMusclesSVG() {
-      // Snap.load(frontSvg), Snap.load(backSvg) etc.
-      // Apoi colorăm mușchii. 
-      // Apelăm updateMusclesRecovery() după ce încărcăm
-      // ...
-      updateMusclesRecovery();
-    }
-
-    // 9. updateMusclesRecovery() - colorează roșu / verde
-    function updateMusclesRecovery() {
-      if (!programData || !programData.days) return;
-      // Pentru fiecare zi finalizată => day.doneDate => calculăm ore trecute
-      // Grupele: day.muscleGroups
-      // < 48h => roșu, > 48h => verde
-      const now = new Date();
-      programData.days.forEach(day => {
-        if (day.done && day.doneDate) {
-          const d = new Date(day.doneDate);
-          const diffH = (now - d) / 36e5;
-          day.muscleGroups.forEach(mg => {
-            colorMuscleGroup(mg, diffH < 48 ? "red" : "green");
-          });
-        } else {
-          // Nefinalizat => considerăm mușchii "neantrenați" => verde?
-          day.muscleGroups.forEach(mg => {
-            colorMuscleGroup(mg, "green");
-          });
-        }
-      });
-    }
-
-    function colorMuscleGroup(mg, color) {
-      // mg e ceva de gen "chest", "triceps"
-      // Ai un ID în SVG: #muscleChest, #muscleArmsFront, etc.
-      // Poți face:
-      //   let $elem = $("#muscleChest");
-      //   if (mg === "chest") $elem.find(".muscle").css("fill", color);
-      // Adaptezi la structura ta
-      if (mg === "chest") {
-        $("#muscleChest .muscle").css("fill", color);
-      }
-      if (mg === "triceps") {
-        $("#muscleArmsBack .muscle").css("fill", color);
-      }
-      // etc.
-    }
-
   </script>
 </body>
 </html>
