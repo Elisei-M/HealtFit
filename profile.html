@@ -4,6 +4,130 @@
   <meta charset="UTF-8">
   <title>Profil Utilizator | HealthFit</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Stiluri extra (ideal ar fi să le muți în style.css) -->
+  <style>
+    /* Reset de bază */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+    }
+    /* Navbar */
+    .navbar {
+      display: flex;
+      list-style: none;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+    }
+    .navbar li {
+      margin-right: 15px;
+    }
+    .navbar a, .navbar button {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .navbar a:hover, .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: url("https://images.unsplash.com/photo-1585314062710-8c4d5f1756db?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80") no-repeat center center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      padding: 20px;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+    }
+
+    /* Container principal pentru profil */
+    .profile-container {
+      max-width: 1000px;
+      margin: -50px auto 40px; /* ridicăm puțin, să se suprapună peste hero */
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 3;
+    }
+    .profile-form, .profile-recommendation {
+      margin-bottom: 20px;
+    }
+    .profile-form h2 {
+      margin-bottom: 10px;
+    }
+    .profile-form select,
+    .profile-form input {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .buttons button {
+      background-color: #ff6b00;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .buttons button:hover {
+      background-color: #e65f00;
+    }
+    #statusProfile {
+      color: #333;
+      margin-top: 10px;
+    }
+
+    /* Fade-in pentru mesaje */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -19,10 +143,21 @@
     </nav>
   </header>
 
-  <!-- FORMULAR PROFIL (sex, age, weight, height, activity, goal) -->
-  <div class="container">
-    <h2>Profilul Tău</h2>
-    <div>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Bine ai venit la HealthFit!</h1>
+      <p>Completează-ți profilul pentru a primi recomandări personalizate și un program de antrenament.</p>
+    </div>
+  </section>
+
+  <!-- Container principal Profil -->
+  <div class="profile-container">
+
+    <!-- FORMULAR PROFIL -->
+    <div class="profile-form">
+      <h2>Profilul Tău</h2>
       <select id="sex">
         <option value="">Sex</option>
         <option value="barbat">Masculin</option>
@@ -45,11 +180,20 @@
         <option value="crestere_masa">Creștere masă</option>
         <option value="definire">Definire</option>
       </select>
+
+      <div class="buttons">
+        <button id="saveProfileBtn">Salvează & Calculează</button>
+        <button id="generateProgramBtn">Generează Program</button>
+      </div>
+      <p id="statusProfile"></p>
     </div>
 
-    <button id="saveProfileBtn">Salvează & Calculează</button>
-    <button id="generateProgramBtn">Generează Program</button>
-    <p id="statusProfile"></p>
+    <!-- (Opțional) Aici poți adăuga o secțiune cu RECOMANDĂRI (calorii, macros) dacă vrei să le afișezi direct -->
+    <div class="profile-recommendation fade-in" id="recommendationSection">
+      <!-- de ex: datele BMR, TDEE, etc. -->
+      <!-- umple cu JavaScript dacă vrei să afișezi ceva suplimentar -->
+    </div>
+
   </div>
 
   <script type="module">
@@ -67,9 +211,9 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // Firebase Config
+    // 1. Firebase init
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "API_KEY_AICI",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -81,6 +225,7 @@
     const db = getFirestore(app);
 
     // Element refs
+    const logoutBtn = document.getElementById("logoutBtn");
     const sexInput = document.getElementById("sex");
     const ageInput = document.getElementById("age");
     const weightInput = document.getElementById("weight");
@@ -90,18 +235,19 @@
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const generateProgramBtn = document.getElementById("generateProgramBtn");
     const statusProfile = document.getElementById("statusProfile");
+    const recommendationSection = document.getElementById("recommendationSection");
 
     let currentUser = null;
     let userDocRef = null;
 
-    // onAuthStateChanged
+    // 2. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
         userDocRef = doc(db, "users", currentUser.uid);
-        // (Opțional) poți încărca datele existente
+        // (Opțional) încărcăm datele existente
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
           const data = snap.data();
@@ -115,7 +261,7 @@
       }
     });
 
-    // Funcție de salvare date profil (simplu)
+    // 3. Salvare profil
     saveProfileBtn.onclick = async () => {
       if (!currentUser) return;
       const sexVal = sexInput.value;
@@ -147,11 +293,13 @@
         });
         statusProfile.textContent = "Profil creat!";
       }
+
+      // (Opțional) poți afișa aici un calcul BMR/TDEE
+      // ex: showRecommendations(...) => face fade-in la recommendationSection
     };
 
-    // Funcție care generează programul (exerciții) în funcție de goal
+    // 4. Generăm programul (exerciții) în funcție de goal
     function generateProgram(goal) {
-      // Hardcoded exemplu:
       if (goal === "slabire") {
         return [
           {
@@ -171,117 +319,15 @@
                 description: "...",
                 alternatives: ["Cable Fly", "Machine Fly"],
                 done: false
-              },
-              {
-                name: "Incline Dumbbell Chest Press",
-                description: "...",
-                alternatives: ["Incline Barbell Press"],
-                done: false
-              },
-              {
-                name: "Parallel Bar Dips (Triceps focus)",
-                description: "...",
-                alternatives: ["Bench Dips"],
-                done: false
-              },
-              {
-                name: "Tracțiuni cu gantera (Triceps)",
-                description: "...",
-                alternatives: [],
-                done: false
               }
+              // etc.
             ]
           },
-          {
-            title: "Antrenament 2 (Spate & Biceps)",
-            muscleGroups: ["back", "biceps"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Lat Pulldown",
-                description: "Pentru dorsal...",
-                alternatives: ["Pull-ups"],
-                done: false
-              },
-              {
-                name: "Seated Cable Row",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Barbell Biceps Curl",
-                description: "...",
-                alternatives: ["Dumbbell Curl"],
-                done: false
-              },
-              {
-                name: "Hammer Curl",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          },
-          {
-            title: "Antrenament 3 (Picioare & Umeri)",
-            muscleGroups: ["legs", "shoulders"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Squat",
-                description: "Exercițiu compus pentru picioare",
-                alternatives: ["Leg Press"],
-                done: false
-              },
-              {
-                name: "Lunges",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Shoulder Press",
-                description: "...",
-                alternatives: ["Arnold Press"],
-                done: false
-              },
-              {
-                name: "Lateral Raises",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          },
-          {
-            title: "Antrenament 4 (Full Body / Cardio)",
-            muscleGroups: ["chest", "back", "legs"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Burpees",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Plank",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          }
+          // ... Antrenament 2, 3, 4 ...
         ];
       } else if (goal === "crestere_masa") {
         // alt program
-        return [
-          // ...
-        ];
+        return [...];
       } else {
         // fallback
         return [
@@ -296,7 +342,7 @@
       }
     }
 
-    // La click pe "Generează Program"
+    // 5. La click pe "Generează Program"
     generateProgramBtn.onclick = async () => {
       const snap = await getDoc(userDocRef);
       if (!snap.exists()) {
@@ -310,16 +356,26 @@
         return;
       }
 
-      // Generăm program
       const program = generateProgram(goalVal);
-      // Salvăm la /users/{uid}/program/activeProgram
       const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-      await setDoc(programDocRef, {
-        days: program
-      });
+      await setDoc(programDocRef, { days: program });
 
       statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
     };
+
+    // 6. Logout
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+
+    // (Opțional) funcție de a afișa recomandări BMR/TDEE
+    // function showRecommendations(...) {
+    //   recommendationSection.innerHTML = "...";
+    //   recommendationSection.classList.add("visible"); // fade-in
+    // }
+
   </script>
 </body>
 </html>
