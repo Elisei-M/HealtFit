@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <title>Profil Utilizator | HealthFit</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- STIL SUPLIMENTAR (ideal ar fi să fie în style.css) -->
   <style>
-    /* STILURI SUPLIMENTARE PENTRU DESIGN & ANIMAȚII */
     body {
       background: url("https://images.unsplash.com/photo-1555617117-08f6f11b2370?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80")
                   no-repeat center center fixed;
       background-size: cover;
+      margin: 0; 
+      padding: 0;
+      font-family: sans-serif;
     }
     .navbar {
       background: rgba(0, 0, 0, 0.7);
@@ -17,18 +21,58 @@
     .navbar a, .navbar button {
       color: #fff !important;
     }
-    .container {
+
+    /* Container principal cu două coloane: form & recomandări */
+    .profile-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 20px;
       backdrop-filter: blur(10px) saturate(180%);
       background-color: rgba(17, 25, 40, 0.62);
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.125);
     }
+
+    .profile-form, .recommendation-block {
+      flex: 1;
+      min-width: 300px;
+    }
+
     .title {
       color: #f5f5f5;
+      text-align: center;
+      margin-bottom: 15px;
     }
+
     .form-group label {
       color: #eee;
     }
+
+    #statusProfile {
+      color: #fff;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .submit {
+      background-color: #ff6b00;
+      border-color: #ff6b00;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+    }
+    .submit:hover {
+      background-color: #e65f00;
+    }
+
+    /* Fade-in pentru recomandări */
     #calcResults {
       opacity: 0;
       transform: translateY(10px);
@@ -38,27 +82,29 @@
       opacity: 1;
       transform: translateY(0);
     }
-    .recommendation-text {
-      margin-top: 15px;
+
+    .recommendation-block {
       color: #f0f0f0;
-      line-height: 1.4;
-      text-align: left;
     }
-    .recommendation-text strong {
+    .recommendation-block .sub-title {
+      font-size: 1.1em;
+      margin-bottom: 10px;
       color: #ff6b00;
+    }
+    .recommendation-text {
+      line-height: 1.5;
+      margin-bottom: 10px;
     }
     .action-buttons {
       margin-top: 15px;
       text-align: center;
     }
     .action-buttons .submit {
-      width: auto;
-      background-color: #ff6b00;
-      border-color: #ff6b00;
       margin: 0 10px;
     }
   </style>
 </head>
+
 <body>
 
   <!-- NAVBAR -->
@@ -74,68 +120,72 @@
     </nav>
   </header>
 
-  <!-- FORMULAR PROFIL -->
-  <div class="container" style="max-width: 500px; margin: 40px auto; padding: 20px;">
-    <div class="form">
+  <div class="profile-container">
+    <!-- Coloana 1: FORMULAR PROFIL -->
+    <div class="profile-form">
       <h3 class="title">Profilul Tău</h3>
-      <form>
-        <!-- Sex -->
-        <div class="form-group">
-          <select id="sex" required>
-            <option value="">Selectează Sexul</option>
-            <option value="barbat">Masculin</option>
-            <option value="femeie">Feminin</option>
-          </select>
-        </div>
-        <!-- Vârstă -->
-        <div class="form-group">
-          <input type="number" id="age" required/>
-          <label>Vârstă</label>
-        </div>
-        <!-- Greutate -->
-        <div class="form-group">
-          <input type="number" id="weight" required/>
-          <label>Greutate (kg)</label>
-        </div>
-        <!-- Înălțime -->
-        <div class="form-group">
-          <input type="number" id="height" required/>
-          <label>Înălțime (cm)</label>
-        </div>
-        <!-- Nivel de activitate -->
-        <div class="form-group">
-          <select id="activityLevel" required>
-            <option value="">Nivel de activitate</option>
-            <option value="sedentar">Sedentar</option>
-            <option value="moderat">Moderat</option>
-            <option value="activ">Activ</option>
-            <option value="foarteActiv">Foarte activ</option>
-          </select>
-        </div>
-        <!-- Obiectiv -->
-        <div class="form-group">
-          <select id="goal" required>
-            <option value="">Obiectiv</option>
-            <option value="slabire">Slăbire</option>
-            <option value="ingrasare">Îngrășare</option>
-            <option value="crestere_masa">Creștere masă</option>
-            <option value="definire">Definire</option>
-          </select>
-        </div>
+      <div class="form" style="max-width: 400px; margin:auto;">
+        <form>
+          <!-- Sex -->
+          <div class="form-group">
+            <select id="sex" required>
+              <option value="">Selectează Sexul</option>
+              <option value="barbat">Masculin</option>
+              <option value="femeie">Feminin</option>
+            </select>
+          </div>
+          <!-- Vârstă -->
+          <div class="form-group">
+            <input type="number" id="age" required/>
+            <label>Vârstă</label>
+          </div>
+          <!-- Greutate -->
+          <div class="form-group">
+            <input type="number" id="weight" required/>
+            <label>Greutate (kg)</label>
+          </div>
+          <!-- Înălțime -->
+          <div class="form-group">
+            <input type="number" id="height" required/>
+            <label>Înălțime (cm)</label>
+          </div>
+          <!-- Nivel de activitate -->
+          <div class="form-group">
+            <select id="activityLevel" required>
+              <option value="">Nivel de activitate</option>
+              <option value="sedentar">Sedentar</option>
+              <option value="moderat">Moderat</option>
+              <option value="activ">Activ</option>
+              <option value="foarteActiv">Foarte activ</option>
+            </select>
+          </div>
+          <!-- Obiectiv -->
+          <div class="form-group">
+            <select id="goal" required>
+              <option value="">Obiectiv</option>
+              <option value="slabire">Slăbire</option>
+              <option value="ingrasare">Îngrășare</option>
+              <option value="crestere_masa">Creștere masă</option>
+              <option value="definire">Definire</option>
+            </select>
+          </div>
 
-        <input type="button" value="Salvează & Calculează" class="submit" id="saveProfileBtn">
-        <p id="statusProfile" style="text-align:center; color:#fff;"></p>
-      </form>
+          <button type="button" class="submit" id="saveProfileBtn">Salvează & Calculează</button>
+          <p id="statusProfile"></p>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- REZULTATE CALCUL & RECOMANDĂRI -->
-  <div class="container" style="max-width: 600px; margin: 20px auto; padding: 20px;">
-    <div class="form">
+    <!-- Coloana 2: RECOMANDĂRI -->
+    <div class="recommendation-block">
       <h3 class="title">Recomandări</h3>
       <div id="calcResults">
+        <div class="sub-title">Calorii și Macronutrienți</div>
         <div id="numbersRec" class="recommendation-text"></div>
+
+        <div class="sub-title">Obiectiv</div>
         <div id="goalRec" class="recommendation-text"></div>
+
         <div class="action-buttons">
           <button id="goWorkoutsBtn" class="submit">Workouts</button>
           <button id="goNutritionBtn" class="submit">Nutriție</button>
@@ -159,7 +209,7 @@
       updateDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Configurația Firebase
+    // 1. Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -181,9 +231,11 @@
     const goalSelect = document.getElementById("goal");
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const statusProfile = document.getElementById("statusProfile");
+
     const calcResults = document.getElementById("calcResults");
     const numbersRec = document.getElementById("numbersRec");
     const goalRec = document.getElementById("goalRec");
+
     const logoutBtn = document.getElementById("logoutBtn");
     const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
     const goNutritionBtn = document.getElementById("goNutritionBtn");
@@ -196,22 +248,28 @@
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Încărcăm datele existente
+        // Încărcăm datele existente + recomandările anterioare
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           const data = userDocSnap.data();
+          // Populăm formularul
           if (data.sex) sexInput.value = data.sex;
           if (data.age) ageInput.value = data.age;
           if (data.weight) weightInput.value = data.weight;
           if (data.height) heightInput.value = data.height;
           if (data.activityLevel) activitySelect.value = data.activityLevel;
           if (data.goal) goalSelect.value = data.goal;
+
+          // Dacă există rezultate de calcul salvate, le afișăm
+          if (data.calcResults) {
+            displayResults(data.calcResults);
+          }
         }
       }
     });
 
-    // 4. Funcție de calcul recomandări
+    // 4. Funcție de calcul
     function calculateRecommendations(sex, age, weight, height, activity, goal) {
       // BMR (Mifflin-St Jeor)
       let BMR;
@@ -229,24 +287,30 @@
 
       const TDEE = BMR * activityFactor;
 
-      // Ajustare calorii în funcție de obiectiv
+      // Obiectiv
       let targetCalories = TDEE;
       let objectiveText = "";
+      let deficitOrSurplus = 0;
+
       if (goal === "slabire") {
-        targetCalories = TDEE - 300;
-        objectiveText = "trebuie să intri în deficit caloric moderat";
+        deficitOrSurplus = 300;
+        targetCalories = TDEE - deficitOrSurplus;
+        objectiveText = `trebuie să intri în deficit caloric de ~${deficitOrSurplus} kcal`;
       } else if (goal === "ingrasare") {
-        targetCalories = TDEE + 300;
-        objectiveText = "trebuie să intri în surplus caloric moderat";
+        deficitOrSurplus = 300;
+        targetCalories = TDEE + deficitOrSurplus;
+        objectiveText = `trebuie să intri în surplus caloric de ~${deficitOrSurplus} kcal`;
       } else if (goal === "crestere_masa") {
-        targetCalories = TDEE + 200;
-        objectiveText = "trebuie să intri în surplus caloric pentru creștere de masă";
+        deficitOrSurplus = 200;
+        targetCalories = TDEE + deficitOrSurplus;
+        objectiveText = `trebuie să intri în surplus caloric pentru creștere masă (~${deficitOrSurplus} kcal)`;
       } else if (goal === "definire") {
-        targetCalories = TDEE - 200;
-        objectiveText = "trebuie să menții un deficit caloric mic pentru definire";
+        deficitOrSurplus = 200;
+        targetCalories = TDEE - deficitOrSurplus;
+        objectiveText = `trebuie să menții un deficit caloric mic (~${deficitOrSurplus} kcal)`;
       }
 
-      // Macros (30% proteine, 40% carb, 30% grăsimi)
+      // Macros
       const proteinCals = 0.3 * targetCalories;
       const carbCals = 0.4 * targetCalories;
       const fatCals = 0.3 * targetCalories;
@@ -255,7 +319,7 @@
       const carbGrams = carbCals / 4;
       const fatGrams = fatCals / 9;
 
-      // Apă (35 ml / kg)
+      // Apă
       const waterLiters = (weight * 35) / 1000;
 
       return {
@@ -289,8 +353,9 @@
         return;
       }
 
-      // Salvăm datele în Firestore
+      // Salvăm datele de bază
       const userDocRef = doc(db, "users", currentUser.uid);
+
       try {
         await updateDoc(userDocRef, {
           sex: sexVal,
@@ -302,6 +367,7 @@
         });
       } catch (error) {
         if (error.code === "not-found") {
+          // setDoc dacă nu există
           await setDoc(userDocRef, {
             sex: sexVal,
             age: ageVal,
@@ -319,35 +385,45 @@
       // Calculăm recomandările
       const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
 
-      // Afișăm rezultatele
+      // Salvăm rezultatele în Firestore (ca să rămână afișate după refresh)
+      await updateDoc(userDocRef, {
+        calcResults: rec
+      });
+
+      // Afișăm rezultate
+      displayResults(rec);
       statusProfile.innerText = "Profil salvat & calcule finalizate!";
+    };
+
+    // 6. Afișare rezultate
+    function displayResults(rec) {
       numbersRec.innerHTML = `
-        <p><strong>Calorii recomandate:</strong> ${rec.targetCalories} kcal/zi</p>
+        <p><strong>Calorii de menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
+        <p><strong>Calorii recomandate pt. obiectiv:</strong> ${rec.targetCalories} kcal/zi</p>
         <p><strong>Proteine:</strong> ${rec.protein} g/zi</p>
         <p><strong>Carbohidrați:</strong> ${rec.carbs} g/zi</p>
         <p><strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
         <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
       `;
       goalRec.innerHTML = `
-        <p>Pentru opțiunea aleasă, <strong>${rec.objectiveText}</strong>, 
-        să consumi ~<strong>${rec.targetCalories} kcal/zi</strong>, 
-        să te antrenezi de <strong>3-4 ori pe săptămână</strong> (în funcție de nivelul tău actual) 
-        și să menții o hidratare optimă de <strong>${rec.water} L/zi</strong>.
-        </p>
+        <p>Dacă vrei să îți menții greutatea, ai nevoie de ~<strong>${rec.TDEE} kcal/zi</strong>.
+        <br>Dar pentru obiectivul ales, <strong>${rec.objectiveText}</strong>, 
+        îți recomandăm ~<strong>${rec.targetCalories} kcal/zi</strong>.
+        <br>Un program de 3-4 antrenamente pe săptămână te poate ajuta să atingi obiectivul mai rapid.</p>
       `;
 
-      // Afișăm div-ul cu animație
+      // Fade-in
       calcResults.classList.add("visible");
-    };
+    }
 
-    // 6. Logout
+    // 7. Logout
     logoutBtn.onclick = () => {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     };
 
-    // 7. Butoane navigare
+    // 8. Navigare
     goWorkoutsBtn.onclick = () => {
       window.location.href = "workouts.html";
     };
