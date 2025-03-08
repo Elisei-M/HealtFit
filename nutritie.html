@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>HealthFit - Nutriție</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar simplu -->
+  <header>
+    <nav>
+      <ul class="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="profile.html">Profil</a></li>
+        <li><a href="workouts.html">Workouts</a></li>
+        <li><button id="logoutBtn">Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Adaugă Masă</h3>
+      <form>
+        <!-- Nume masă (Mic dejun, Prânz, Cină, Gustare) -->
+        <div class="form-group">
+          <input type="text" id="mealName" required/>
+          <label>Nume Masă</label>
+        </div>
+        <!-- Calorii -->
+        <div class="form-group">
+          <input type="number" id="calories" required/>
+          <label>Calorii</label>
+        </div>
+        <!-- Proteine -->
+        <div class="form-group">
+          <input type="number" id="proteins" required/>
+          <label>Proteine (g)</label>
+        </div>
+        <!-- Carbohidrați -->
+        <div class="form-group">
+          <input type="number" id="carbs" required/>
+          <label>Carbohidrați (g)</label>
+        </div>
+        <!-- Grăsimi -->
+        <div class="form-group">
+          <input type="number" id="fats" required/>
+          <label>Grăsimi (g)</label>
+        </div>
+
+        <input type="button" value="Adaugă Masă" class="submit" id="addMealBtn">
+        <p id="statusMeal" style="text-align:center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Afișare mese + total zilnic -->
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Mesele Zilnice</h3>
+      <ul id="mealsList" style="color:#fff; list-style:none; padding:0;"></ul>
+      <p id="totals" style="color:#fff; margin-top:10px;"></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // 1. Configurație Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 2. Elemente HTML
+    const mealNameInput = document.getElementById("mealName");
+    const caloriesInput = document.getElementById("calories");
+    const proteinsInput = document.getElementById("proteins");
+    const carbsInput = document.getElementById("carbs");
+    const fatsInput = document.getElementById("fats");
+    const addMealBtn = document.getElementById("addMealBtn");
+    const statusMeal = document.getElementById("statusMeal");
+    const mealsList = document.getElementById("mealsList");
+    const totalsEl = document.getElementById("totals");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    let currentUser = null;
+
+    // 3. Verificăm user-ul
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        // Afișăm mesele existente
+        await loadMeals();
+        // (Opțional) afișăm macros recomandate din /users/{uid} dacă vrei
+        // ex: showRecommendedMacros();
+      }
+    });
+
+    // 4. Funcție de încărcare a meselor din subcolecția "meals"
+    async function loadMeals() {
+      if (!currentUser) return;
+
+      // Preluăm toate mesele
+      const mealsRef = collection(db, "users", currentUser.uid, "meals");
+      const querySnapshot = await getDocs(mealsRef);
+
+      // Curățăm lista
+      mealsList.innerHTML = "";
+
+      let totalCalories = 0;
+      let totalProteins = 0;
+      let totalCarbs = 0;
+      let totalFats = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const mealData = docSnap.data();
+        const li = document.createElement("li");
+        li.style.marginBottom = "10px";
+
+        // Adunăm la totaluri
+        totalCalories += mealData.calories || 0;
+        totalProteins += mealData.proteins || 0;
+        totalCarbs += mealData.carbs || 0;
+        totalFats += mealData.fats || 0;
+
+        li.innerHTML = `
+          <strong>${mealData.mealName || "Masă"}</strong>:
+          ${mealData.calories} kcal, 
+          P: ${mealData.proteins} g, 
+          C: ${mealData.carbs} g, 
+          F: ${mealData.fats} g
+        `;
+        mealsList.appendChild(li);
+      });
+
+      // Afișăm totalul zilnic
+      totalsEl.innerHTML = `
+        <strong>Total zilnic:</strong> 
+        ${totalCalories} kcal, 
+        P: ${totalProteins} g, 
+        C: ${totalCarbs} g, 
+        F: ${totalFats} g
+      `;
+    }
+
+    // 5. Adăugare masă
+    addMealBtn.onclick = async () => {
+      if (!currentUser) {
+        statusMeal.innerText = "Trebuie să fii logat!";
+        return;
+      }
+
+      const mealNameVal = mealNameInput.value;
+      const caloriesVal = Number(caloriesInput.value);
+      const proteinsVal = Number(proteinsInput.value);
+      const carbsVal = Number(carbsInput.value);
+      const fatsVal = Number(fatsInput.value);
+
+      if (!mealNameVal || !caloriesVal || !proteinsVal || !carbsVal || !fatsVal) {
+        statusMeal.innerText = "Completează toate câmpurile!";
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "users", currentUser.uid, "meals"), {
+          mealName: mealNameVal,
+          calories: caloriesVal,
+          proteins: proteinsVal,
+          carbs: carbsVal,
+          fats: fatsVal,
+          createdAt: new Date()
+        });
+        statusMeal.innerText = "Masă adăugată cu succes!";
+        // Resetăm formularul
+        mealNameInput.value = "";
+        caloriesInput.value = "";
+        proteinsInput.value = "";
+        carbsInput.value = "";
+        fatsInput.value = "";
+        // Re-încărcăm lista
+        await loadMeals();
+      } catch (error) {
+        statusMeal.innerText = "Eroare la adăugare: " + error.message;
+      }
+    };
+
+    // 6. Logout
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+
+    // (Opțional) funcție să afișezi macros recomandate din /users/{uid} 
+    // dacă vrei să le compari cu ce a consumat userul
+    async function showRecommendedMacros() {
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        // dacă ai salvat "targetCalories", "protein", "carbs", "fat" în doc, le poți afișa
+      }
+    }
+  </script>
+</body>
+</html>
