@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Fitness Champ</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Login to Fitness Champ</h3>
+      <form>
+        <div class="form-group">
+          <input type="email" id="email" required/>
+          <label>Email</label>
+        </div>
+        <div class="form-group">
+          <input type="password" id="password" required/>
+          <label>Password</label>
+        </div>
+        <input type="button" value="Sign In" class="submit" id="loginBtn"> 
+        <!-- Butonul pentru Google Sign In -->
+        <input type="button" value="Sign in with Google" class="submit" id="googleBtn" style="background-color: #dd4b39; border-color: #dd4b39; margin-top: 10px;">
+        
+        <div class="row">
+          <p>Not Yet Registered? <a href="register.html">Sign Up</a></p>
+        </div>
+        <!-- Afișăm erorile sau mesajele de status -->
+        <p id="status" style="text-align:center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      GoogleAuthProvider, 
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
+    // CONFIGURARE FIREBASE
+    const firebaseConfig = {
+      apiKey: "CHEIA_TA_API",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // REFERINȚE ELEMENTE HTML
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const googleBtn = document.getElementById("googleBtn");
+    const statusMsg = document.getElementById("status");
+
+    // LOGIN TRADIȚIONAL (EMAIL + PAROLĂ)
+    loginBtn.onclick = function() {
+      const emailVal = emailInput.value;
+      const passVal = passwordInput.value;
+      signInWithEmailAndPassword(auth, emailVal, passVal)
+        .then((userCredential) => {
+          statusMsg.innerText = "✅ Logged in successfully!";
+          // Redirecționează unde vrei, ex:
+          // window.location.href = "index.html";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare la autentificare: " + error.message;
+        });
+    };
+
+    // LOGIN CU GOOGLE
+    googleBtn.onclick = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // Google SignIn OK
+          statusMsg.innerText = "✅ Google sign-in reușit!";
+          // Poți redirecționa, ex.:
+          // window.location.href = "index.html";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare Google sign-in: " + error.message;
+        });
+    };
+  </script>
+</body>
+</html>
