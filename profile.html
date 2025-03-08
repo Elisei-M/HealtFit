@@ -4,20 +4,78 @@
   <meta charset="UTF-8">
   <title>Profil Utilizator | HealthFit</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* STILURI SUPLIMENTARE PENTRU DESIGN & ANIMAȚII */
+    body {
+      background: url("https://images.unsplash.com/photo-1555617117-08f6f11b2370?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80")
+                  no-repeat center center fixed;
+      background-size: cover;
+    }
+    .navbar {
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .navbar a, .navbar button {
+      color: #fff !important;
+    }
+    .container {
+      backdrop-filter: blur(10px) saturate(180%);
+      background-color: rgba(17, 25, 40, 0.62);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+    .title {
+      color: #f5f5f5;
+    }
+    .form-group label {
+      color: #eee;
+    }
+    #calcResults {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    #calcResults.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .recommendation-text {
+      margin-top: 15px;
+      color: #f0f0f0;
+      line-height: 1.4;
+      text-align: left;
+    }
+    .recommendation-text strong {
+      color: #ff6b00;
+    }
+    .action-buttons {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .action-buttons .submit {
+      width: auto;
+      background-color: #ff6b00;
+      border-color: #ff6b00;
+      margin: 0 10px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Navbar simplu -->
+  <!-- NAVBAR -->
   <header>
     <nav>
       <ul class="navbar">
         <li><a href="index.html">Home</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="nutritie.html">Nutriție</a></li>
+        <li><a href="workouts.html">Workouts</a></li>
         <li><button id="logoutBtn">Logout</button></li>
       </ul>
     </nav>
   </header>
 
-  <div class="container">
+  <!-- FORMULAR PROFIL -->
+  <div class="container" style="max-width: 500px; margin: 40px auto; padding: 20px;">
     <div class="form">
       <h3 class="title">Profilul Tău</h3>
       <form>
@@ -66,19 +124,22 @@
         </div>
 
         <input type="button" value="Salvează & Calculează" class="submit" id="saveProfileBtn">
-        <p id="statusProfile" style="text-align:center;"></p>
+        <p id="statusProfile" style="text-align:center; color:#fff;"></p>
       </form>
     </div>
   </div>
 
-  <!-- Rezultatele calculelor (TDEE, macros, apă) -->
-  <div class="container">
+  <!-- REZULTATE CALCUL & RECOMANDĂRI -->
+  <div class="container" style="max-width: 600px; margin: 20px auto; padding: 20px;">
     <div class="form">
       <h3 class="title">Recomandări</h3>
-      <div id="calcResults" style="color: #fff; text-align: center;"></div>
-      <div style="margin-top: 15px; text-align: center;">
-        <button id="goWorkoutsBtn" class="submit" style="width:auto;">Mergi la Workouts</button>
-        <button id="goNutritionBtn" class="submit" style="width:auto;">Mergi la Nutriție</button>
+      <div id="calcResults">
+        <div id="numbersRec" class="recommendation-text"></div>
+        <div id="goalRec" class="recommendation-text"></div>
+        <div class="action-buttons">
+          <button id="goWorkoutsBtn" class="submit">Workouts</button>
+          <button id="goNutritionBtn" class="submit">Nutriție</button>
+        </div>
       </div>
     </div>
   </div>
@@ -100,7 +161,7 @@
 
     // 1. Configurația Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "API_KEY_AICI",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -111,7 +172,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 2. Referințe HTML
+    // 2. Elemente HTML
     const sexInput = document.getElementById("sex");
     const ageInput = document.getElementById("age");
     const weightInput = document.getElementById("weight");
@@ -121,25 +182,25 @@
     const saveProfileBtn = document.getElementById("saveProfileBtn");
     const statusProfile = document.getElementById("statusProfile");
     const calcResults = document.getElementById("calcResults");
+    const numbersRec = document.getElementById("numbersRec");
+    const goalRec = document.getElementById("goalRec");
     const logoutBtn = document.getElementById("logoutBtn");
     const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
     const goNutritionBtn = document.getElementById("goNutritionBtn");
 
     let currentUser = null;
 
-    // 3. Verificăm dacă user e logat
+    // 3. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // Redirecționăm la login dacă nu e logat
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Încărcăm datele din Firestore
+        // Încărcăm datele existente
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           const data = userDocSnap.data();
-          // Populăm formularul cu datele existente
           if (data.sex) sexInput.value = data.sex;
           if (data.age) ageInput.value = data.age;
           if (data.weight) weightInput.value = data.weight;
@@ -152,7 +213,7 @@
 
     // 4. Funcție de calcul recomandări
     function calculateRecommendations(sex, age, weight, height, activity, goal) {
-      // 4.1 Calculează BMR (Mifflin-St Jeor)
+      // BMR (Mifflin-St Jeor)
       let BMR;
       if (sex === "barbat") {
         BMR = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -160,27 +221,32 @@
         BMR = 10 * weight + 6.25 * height - 5 * age - 161;
       }
 
-      // 4.2 Factor de activitate
-      let activityFactor = 1.2; // sedentar default
+      // Factor de activitate
+      let activityFactor = 1.2;
       if (activity === "moderat") activityFactor = 1.375;
       if (activity === "activ") activityFactor = 1.55;
       if (activity === "foarteActiv") activityFactor = 1.725;
 
       const TDEE = BMR * activityFactor;
 
-      // 4.3 Ajustare calorii în funcție de obiectiv
+      // Ajustare calorii în funcție de obiectiv
       let targetCalories = TDEE;
+      let objectiveText = "";
       if (goal === "slabire") {
         targetCalories = TDEE - 300;
+        objectiveText = "trebuie să intri în deficit caloric moderat";
       } else if (goal === "ingrasare") {
         targetCalories = TDEE + 300;
+        objectiveText = "trebuie să intri în surplus caloric moderat";
       } else if (goal === "crestere_masa") {
         targetCalories = TDEE + 200;
+        objectiveText = "trebuie să intri în surplus caloric pentru creștere de masă";
       } else if (goal === "definire") {
         targetCalories = TDEE - 200;
+        objectiveText = "trebuie să menții un deficit caloric mic pentru definire";
       }
 
-      // 4.4 Macros (30% proteine, 40% carb, 30% grăsimi - exemplu)
+      // Macros (30% proteine, 40% carb, 30% grăsimi)
       const proteinCals = 0.3 * targetCalories;
       const carbCals = 0.4 * targetCalories;
       const fatCals = 0.3 * targetCalories;
@@ -189,7 +255,7 @@
       const carbGrams = carbCals / 4;
       const fatGrams = fatCals / 9;
 
-      // 4.5 Apă (ex. 35 ml / kg corp)
+      // Apă (35 ml / kg)
       const waterLiters = (weight * 35) / 1000;
 
       return {
@@ -199,7 +265,8 @@
         protein: Math.round(proteinGrams),
         carbs: Math.round(carbGrams),
         fat: Math.round(fatGrams),
-        water: waterLiters.toFixed(2)
+        water: waterLiters.toFixed(2),
+        objectiveText
       };
     }
 
@@ -218,7 +285,7 @@
       const goalVal = goalSelect.value;
 
       if (!sexVal || !ageVal || !weightVal || !heightVal || !activityVal || !goalVal) {
-        statusProfile.innerText = "Te rog să completezi toate câmpurile!";
+        statusProfile.innerText = "Completează toate câmpurile!";
         return;
       }
 
@@ -234,7 +301,6 @@
           goal: goalVal
         });
       } catch (error) {
-        // Dacă documentul nu există, facem setDoc
         if (error.code === "not-found") {
           await setDoc(userDocRef, {
             sex: sexVal,
@@ -250,19 +316,28 @@
         }
       }
 
-      // 5.2 Calculăm recomandările
+      // Calculăm recomandările
       const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
 
-      // 5.3 Afișăm rezultatele
-      calcResults.innerHTML = `
+      // Afișăm rezultatele
+      statusProfile.innerText = "Profil salvat & calcule finalizate!";
+      numbersRec.innerHTML = `
         <p><strong>Calorii recomandate:</strong> ${rec.targetCalories} kcal/zi</p>
         <p><strong>Proteine:</strong> ${rec.protein} g/zi</p>
         <p><strong>Carbohidrați:</strong> ${rec.carbs} g/zi</p>
         <p><strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
         <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
       `;
+      goalRec.innerHTML = `
+        <p>Pentru opțiunea aleasă, <strong>${rec.objectiveText}</strong>, 
+        să consumi ~<strong>${rec.targetCalories} kcal/zi</strong>, 
+        să te antrenezi de <strong>3-4 ori pe săptămână</strong> (în funcție de nivelul tău actual) 
+        și să menții o hidratare optimă de <strong>${rec.water} L/zi</strong>.
+        </p>
+      `;
 
-      statusProfile.innerText = "Profil salvat & calcule finalizate!";
+      // Afișăm div-ul cu animație
+      calcResults.classList.add("visible");
     };
 
     // 6. Logout
@@ -277,7 +352,7 @@
       window.location.href = "workouts.html";
     };
     goNutritionBtn.onclick = () => {
-      window.location.href = "nutritie.html"; // Creează nutriție ulterior
+      window.location.href = "nutritie.html";
     };
   </script>
 </body>
