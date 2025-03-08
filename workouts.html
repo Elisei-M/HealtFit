@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>HealthFit - Antrenamente</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <!-- Navbar simplu -->
+  <header>
+    <nav>
+      <ul class="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="profile.html">Profil</a></li>
+        <li><button id="logoutBtn">Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Adaugă Antrenament</h3>
+      <form>
+        <!-- Data antrenamentului -->
+        <div class="form-group">
+          <input type="date" id="workoutDate" required/>
+          <label>Data Antrenament</label>
+        </div>
+        <!-- Grupă musculară -->
+        <div class="form-group">
+          <input type="text" id="muscleGroup" required/>
+          <label>Grupă Musculară</label>
+        </div>
+        <!-- Exercițiu -->
+        <div class="form-group">
+          <input type="text" id="exerciseName" required/>
+          <label>Exercițiu</label>
+        </div>
+        <!-- Seturi și repetări -->
+        <div class="form-group">
+          <input type="number" id="sets" required/>
+          <label>Seturi</label>
+        </div>
+        <div class="form-group">
+          <input type="number" id="reps" required/>
+          <label>Repetări</label>
+        </div>
+        <!-- Greutate (opțional) -->
+        <div class="form-group">
+          <input type="number" id="weight"/>
+          <label>Greutate (kg)</label>
+        </div>
+
+        <input type="button" value="Adaugă" class="submit" id="addWorkoutBtn">
+        <p id="statusWorkout" style="text-align:center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista antrenamentelor -->
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Lista Antrenamentelor</h3>
+      <ul id="workoutsList" style="color:#fff; list-style:none; padding:0;">
+        <!-- Vom popula din Firestore -->
+      </ul>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // 1. Configurația Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 2. Referințe la elemente HTML
+    const workoutDateInput = document.getElementById("workoutDate");
+    const muscleGroupInput = document.getElementById("muscleGroup");
+    const exerciseNameInput = document.getElementById("exerciseName");
+    const setsInput = document.getElementById("sets");
+    const repsInput = document.getElementById("reps");
+    const weightInput = document.getElementById("weight");
+    const addWorkoutBtn = document.getElementById("addWorkoutBtn");
+    const statusWorkout = document.getElementById("statusWorkout");
+    const workoutsList = document.getElementById("workoutsList");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    let currentUser = null;
+
+    // 3. Verificăm dacă user e logat
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Redirect la login dacă nu e logat
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        // După ce știm că user e logat, încărcăm antrenamentele existente
+        await loadWorkouts();
+      }
+    });
+
+    // 4. Funcția de încărcare a antrenamentelor din Firestore
+    async function loadWorkouts() {
+      if (!currentUser) return;
+      // Citim colecția /users/{uid}/workouts
+      const workoutsRef = collection(db, "users", currentUser.uid, "workouts");
+      const querySnapshot = await getDocs(workoutsRef);
+
+      // Ștergem conținutul vechi
+      workoutsList.innerHTML = "";
+
+      querySnapshot.forEach((docSnap) => {
+        const wData = docSnap.data();
+        // Creăm un element <li> pentru fiecare antrenament
+        const li = document.createElement("li");
+        li.style.marginBottom = "10px";
+
+        // Formatare minimală
+        li.innerHTML = `
+          <strong>${wData.date || "Fără dată"}</strong> - 
+          <em>${wData.muscleGroup}</em>: 
+          ${wData.exerciseName} ( ${wData.sets} x ${wData.reps} ) 
+          ${wData.weight ? wData.weight + " kg" : ""}
+        `;
+        workoutsList.appendChild(li);
+      });
+    }
+
+    // 5. Adăugare antrenament
+    addWorkoutBtn.onclick = async () => {
+      if (!currentUser) {
+        statusWorkout.innerText = "Trebuie să fii logat!";
+        return;
+      }
+      const dateVal = workoutDateInput.value;
+      const muscleVal = muscleGroupInput.value;
+      const exerciseVal = exerciseNameInput.value;
+      const setsVal = Number(setsInput.value);
+      const repsVal = Number(repsInput.value);
+      const weightVal = Number(weightInput.value) || 0;
+
+      try {
+        // Adăugăm un document nou în subcolecția workouts
+        await addDoc(collection(db, "users", currentUser.uid, "workouts"), {
+          date: dateVal,
+          muscleGroup: muscleVal,
+          exerciseName: exerciseVal,
+          sets: setsVal,
+          reps: repsVal,
+          weight: weightVal
+        });
+        statusWorkout.innerText = "Antrenament adăugat!";
+        // Resetăm câmpurile
+        workoutDateInput.value = "";
+        muscleGroupInput.value = "";
+        exerciseNameInput.value = "";
+        setsInput.value = "";
+        repsInput.value = "";
+        weightInput.value = "";
+        // Reîncărcăm lista
+        await loadWorkouts();
+      } catch (error) {
+        statusWorkout.innerText = "Eroare la adăugare: " + error.message;
+      }
+    };
+
+    // 6. Logout
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+  </script>
+</body>
+</html>
