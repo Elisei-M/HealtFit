@@ -23,6 +23,10 @@
           <label>Password</label>
         </div>
         <input type="button" value="Sign Up" class="submit" id="registerBtn"> 
+        <!-- Buton de "Register" cu Google (de fapt e tot signInWithPopup) -->
+        <input type="button" value="Sign Up with Google" class="submit" id="googleRegisterBtn" 
+               style="background-color: #dd4b39; border-color: #dd4b39; margin-top: 10px;">
+        
         <div class="row">
           <p>Already have an account? <a href="login.html">Sign In</a></p>
         </div>
@@ -35,7 +39,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { 
       getAuth, 
-      createUserWithEmailAndPassword 
+      createUserWithEmailAndPassword, 
+      GoogleAuthProvider, 
+      signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
     import { 
       getFirestore, 
@@ -45,7 +51,7 @@
 
     // CONFIGURARE FIREBASE
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "CHEIA_TA_API",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -56,14 +62,15 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // REFERINȚE ELEMENTE HTML
+    // REFERINȚE
     const nameInput = document.getElementById("name");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const registerBtn = document.getElementById("registerBtn");
+    const googleRegisterBtn = document.getElementById("googleRegisterBtn");
     const statusMsg = document.getElementById("status");
 
-    // ÎNREGISTRARE + SALVARE ÎN FIRESTORE
+    // ÎNREGISTRARE + SALVARE Firestore
     registerBtn.onclick = function() {
       const nameVal = nameInput.value;
       const emailVal = emailInput.value;
@@ -72,8 +79,7 @@
       createUserWithEmailAndPassword(auth, emailVal, passVal)
         .then(async (userCredential) => {
           const user = userCredential.user;
-
-          // Salvăm date suplimentare în colecția "users"
+          // Salvăm date suplimentare în Firestore
           await setDoc(doc(db, "users", user.uid), {
             name: nameVal,
             email: emailVal,
@@ -82,11 +88,34 @@
           });
 
           statusMsg.innerText = "✅ Cont creat cu succes!";
-          // Poți redirecționa către login, ex.:
-          // window.location.href = "login.html";
+          // Redirecționează către index.html
+          window.location.href = "index.html";
         })
         .catch((error) => {
           statusMsg.innerText = "Eroare la înregistrare: " + error.message;
+        });
+    };
+
+    // "REGISTER" CU GOOGLE (de fapt e signInWithPopup)
+    googleRegisterBtn.onclick = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then(async (result) => {
+          // Aici user e deja logat cu Google
+          const user = result.user;
+          // Poți salva date minime în Firestore (dacă nu există deja)
+          await setDoc(doc(db, "users", user.uid), {
+            name: user.displayName || "Google User",
+            email: user.email,
+            uid: user.uid,
+            createdAt: new Date()
+          }, { merge: true }); // merge: true nu rescrie datele vechi
+
+          statusMsg.innerText = "✅ Google sign-in reușit!";
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare Google sign-in: " + error.message;
         });
     };
   </script>
