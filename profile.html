@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profil Utilizator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar, dacă vrei -->
+  <header>
+    <nav>
+      <ul class="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li><button id="logoutBtn">Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Profilul Tău</h3>
+      <form>
+        <div class="form-group">
+          <input type="number" id="weight" required/>
+          <label>Greutate (kg)</label>
+        </div>
+        <div class="form-group">
+          <input type="number" id="height" required/>
+          <label>Înălțime (cm)</label>
+        </div>
+        <div class="form-group">
+          <input type="number" id="age" required/>
+          <label>Vârstă</label>
+        </div>
+        <div class="form-group">
+          <select id="activityLevel">
+            <option value="sedentar">Sedentar</option>
+            <option value="moderat">Moderat</option>
+            <option value="activ">Activ</option>
+            <option value="foarteActiv">Foarte Activ</option>
+          </select>
+        </div>
+        <input type="button" value="Salvează Profil" class="submit" id="saveProfileBtn">
+        <p id="statusProfile" style="text-align:center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Configurație Firebase
+    const firebaseConfig = {
+      apiKey: "API_KEY_AICI",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Elemente HTML
+    const weightInput = document.getElementById("weight");
+    const heightInput = document.getElementById("height");
+    const ageInput = document.getElementById("age");
+    const activitySelect = document.getElementById("activityLevel");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const statusProfile = document.getElementById("statusProfile");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Verificăm dacă user e logat
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Redirecționăm la login dacă nu e logat
+        window.location.href = "login.html";
+      } else {
+        // Dacă user există, încărcăm datele din Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+          if (data.weight) weightInput.value = data.weight;
+          if (data.height) heightInput.value = data.height;
+          if (data.age) ageInput.value = data.age;
+          if (data.activityLevel) activitySelect.value = data.activityLevel;
+        }
+      }
+    });
+
+    // Salvare profil
+    saveProfileBtn.onclick = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        statusProfile.innerText = "Trebuie să fii logat.";
+        return;
+      }
+      const weightVal = Number(weightInput.value);
+      const heightVal = Number(heightInput.value);
+      const ageVal = Number(ageInput.value);
+      const activityVal = activitySelect.value;
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+          weight: weightVal,
+          height: heightVal,
+          age: ageVal,
+          activityLevel: activityVal
+        });
+        statusProfile.innerText = "Profil actualizat cu succes!";
+      } catch (error) {
+        // Dacă documentul nu există, facem setDoc
+        if (error.code === "not-found") {
+          await setDoc(doc(db, "users", user.uid), {
+            weight: weightVal,
+            height: heightVal,
+            age: ageVal,
+            activityLevel: activityVal
+          });
+          statusProfile.innerText = "Profil creat cu succes!";
+        } else {
+          statusProfile.innerText = "Eroare: " + error.message;
+        }
+      }
+    };
+
+    // Logout
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+  </script>
+</body>
+</html>
