@@ -293,19 +293,19 @@
       let deficitOrSurplus = 0;
 
       if (goal === "slabire") {
-        deficitOrSurplus = 300;
+        deficitOrSurplus = 400;
         targetCalories = TDEE - deficitOrSurplus;
         objectiveText = `trebuie să intri în deficit caloric de ~${deficitOrSurplus} kcal`;
       } else if (goal === "ingrasare") {
-        deficitOrSurplus = 300;
+        deficitOrSurplus = 400;
         targetCalories = TDEE + deficitOrSurplus;
         objectiveText = `trebuie să intri în surplus caloric de ~${deficitOrSurplus} kcal`;
       } else if (goal === "crestere_masa") {
-        deficitOrSurplus = 200;
+        deficitOrSurplus = 400;
         targetCalories = TDEE + deficitOrSurplus;
         objectiveText = `trebuie să intri în surplus caloric pentru creștere masă (~${deficitOrSurplus} kcal)`;
       } else if (goal === "definire") {
-        deficitOrSurplus = 200;
+        deficitOrSurplus = 400;
         targetCalories = TDEE - deficitOrSurplus;
         objectiveText = `trebuie să menții un deficit caloric mic (~${deficitOrSurplus} kcal)`;
       }
