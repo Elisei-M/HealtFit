@@ -2,17 +2,24 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>HealthFit - Antrenamente</title>
+  <title>HealthFit - Workouts</title>
   <link rel="stylesheet" href="style.css">
+  <!-- jQuery (pentru hoverIntent) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- hoverIntent (dacă vrei) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.10.1/jquery.hoverIntent.min.js"></script>
+  <!-- Snap.svg pentru încărcarea SVG -->
+  <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
 </head>
 <body>
 
-  <!-- Navbar simplu -->
+  <!-- Navbar -->
   <header>
     <nav>
       <ul class="navbar">
         <li><a href="index.html">Home</a></li>
         <li><a href="profile.html">Profil</a></li>
+        <li><a href="nutritie.html">Nutriție</a></li>
         <li><button id="logoutBtn">Logout</button></li>
       </ul>
     </nav>
@@ -20,51 +27,35 @@
 
   <div class="container">
     <div class="form">
-      <h3 class="title">Adaugă Antrenament</h3>
-      <form>
-        <!-- Data antrenamentului -->
-        <div class="form-group">
-          <input type="date" id="workoutDate" required/>
-          <label>Data Antrenament</label>
-        </div>
-        <!-- Grupă musculară -->
-        <div class="form-group">
-          <input type="text" id="muscleGroup" required/>
-          <label>Grupă Musculară</label>
-        </div>
-        <!-- Exercițiu -->
-        <div class="form-group">
-          <input type="text" id="exerciseName" required/>
-          <label>Exercițiu</label>
-        </div>
-        <!-- Seturi și repetări -->
-        <div class="form-group">
-          <input type="number" id="sets" required/>
-          <label>Seturi</label>
-        </div>
-        <div class="form-group">
-          <input type="number" id="reps" required/>
-          <label>Repetări</label>
-        </div>
-        <!-- Greutate (opțional) -->
-        <div class="form-group">
-          <input type="number" id="weight"/>
-          <label>Greutate (kg)</label>
-        </div>
-
-        <input type="button" value="Adaugă" class="submit" id="addWorkoutBtn">
-        <p id="statusWorkout" style="text-align:center;"></p>
-      </form>
+      <h3 class="title">Program de Antrenamente Recomandat</h3>
+      <p id="programText" style="color:#fff;"></p>
     </div>
   </div>
 
-  <!-- Lista antrenamentelor -->
+  <!-- SVG cu grupele musculare -->
+  <div class="content">
+    <div class="svg-container">
+      <div class="card">
+        <figure class="front">
+          <svg id="frontSvg"></svg>
+        </figure>
+        <figure class="back">
+          <svg id="backSvg"></svg>
+        </figure>
+      </div>
+      <div class="labelBox">
+        <span class="name"></span>
+        <span class="description"></span>
+      </div>
+    </div>
+    <a href="#" class="btn btn-primary btn-lg rotateBtn">View Back</a>
+  </div>
+
+  <!-- Afișare status recuperare mușchi -->
   <div class="container">
     <div class="form">
-      <h3 class="title">Lista Antrenamentelor</h3>
-      <ul id="workoutsList" style="color:#fff; list-style:none; padding:0;">
-        <!-- Vom popula din Firestore -->
-      </ul>
+      <h3 class="title">Status Recuperare Grupe Musculare</h3>
+      <ul id="muscleRecoveryList" style="color:#fff; list-style:none; padding:0;"></ul>
     </div>
   </div>
 
@@ -77,12 +68,13 @@
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
     import {
       getFirestore,
+      doc,
+      getDoc,
       collection,
-      addDoc,
       getDocs
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Configurația Firebase
+    // 1. Configurație Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -95,96 +87,141 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 2. Referințe la elemente HTML
-    const workoutDateInput = document.getElementById("workoutDate");
-    const muscleGroupInput = document.getElementById("muscleGroup");
-    const exerciseNameInput = document.getElementById("exerciseName");
-    const setsInput = document.getElementById("sets");
-    const repsInput = document.getElementById("reps");
-    const weightInput = document.getElementById("weight");
-    const addWorkoutBtn = document.getElementById("addWorkoutBtn");
-    const statusWorkout = document.getElementById("statusWorkout");
-    const workoutsList = document.getElementById("workoutsList");
+    // Elemente HTML
+    const programText = document.getElementById("programText");
+    const muscleRecoveryList = document.getElementById("muscleRecoveryList");
     const logoutBtn = document.getElementById("logoutBtn");
 
     let currentUser = null;
+    let userGoal = null;
 
-    // 3. Verificăm dacă user e logat
+    // 2. Verificare user
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // Redirect la login dacă nu e logat
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // După ce știm că user e logat, încărcăm antrenamentele existente
-        await loadWorkouts();
+        // Afișăm programul recomandat
+        await loadUserGoal();
+        displayRecommendedProgram();
+        // Afișăm status recuperare
+        await displayMuscleRecovery();
       }
     });
 
-    // 4. Funcția de încărcare a antrenamentelor din Firestore
-    async function loadWorkouts() {
-      if (!currentUser) return;
-      // Citim colecția /users/{uid}/workouts
+    // 3. Citim obiectivul userului
+    async function loadUserGoal() {
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const data = userDocSnap.data();
+        userGoal = data.goal || "slabire"; // default
+      } else {
+        userGoal = "slabire";
+      }
+    }
+
+    // 4. Afișăm un program minimal în funcție de userGoal
+    function displayRecommendedProgram() {
+      let text = "";
+      switch (userGoal) {
+        case "slabire":
+          text = `
+            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
+            Antrenament 2 (Spate & Biceps)<br/>
+            Antrenament 3 (Picioare & Umeri)<br/>
+            <br/>
+            3-4 sesiuni/săptămână, intensitate moderată, pauze scurte.
+          `;
+          break;
+        case "ingrasare":
+          text = `
+            <strong>Antrenament 1 (Full Body)</strong><br/>
+            Antrenament 2 (Full Body 2)<br/>
+            <br/>
+            2-3 sesiuni/săptămână, intensitate scăzută, alimentație hipercalorică.
+          `;
+          break;
+        case "crestere_masa":
+          text = `
+            <strong>Antrenament 1 (Piept & Biceps)</strong><br/>
+            Antrenament 2 (Spate & Triceps)<br/>
+            Antrenament 3 (Picioare & Umeri)<br/>
+            <br/>
+            4-5 sesiuni/săptămână, intensitate moderat-ridicată, pauze 1-2 min.
+          `;
+          break;
+        case "definire":
+          text = `
+            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
+            Antrenament 2 (Spate & Biceps)<br/>
+            Antrenament 3 (Picioare & Umeri)<br/>
+            <br/>
+            3-4 sesiuni/săptămână, intensitate moderată, deficit caloric ușor.
+          `;
+          break;
+        default:
+          text = `
+            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
+            Antrenament 2 (Spate & Biceps)<br/>
+            Antrenament 3 (Picioare & Umeri)<br/>
+          `;
+      }
+      programText.innerHTML = text;
+    }
+
+    // 5. Status recuperare musculară (simplificat)
+    async function displayMuscleRecovery() {
+      muscleRecoveryList.innerHTML = "";
+
+      // Citim toate antrenamentele userului
       const workoutsRef = collection(db, "users", currentUser.uid, "workouts");
       const querySnapshot = await getDocs(workoutsRef);
 
-      // Ștergem conținutul vechi
-      workoutsList.innerHTML = "";
+      // Reținem ultima dată de antrenament pentru fiecare grupă
+      const muscleLastWorkout = {
+        chest: null,
+        back: null,
+        arms: null,
+        legs: null,
+        shoulders: null
+        // etc.
+      };
 
       querySnapshot.forEach((docSnap) => {
         const wData = docSnap.data();
-        // Creăm un element <li> pentru fiecare antrenament
-        const li = document.createElement("li");
-        li.style.marginBottom = "10px";
-
-        // Formatare minimală
-        li.innerHTML = `
-          <strong>${wData.date || "Fără dată"}</strong> - 
-          <em>${wData.muscleGroup}</em>: 
-          ${wData.exerciseName} ( ${wData.sets} x ${wData.reps} ) 
-          ${wData.weight ? wData.weight + " kg" : ""}
-        `;
-        workoutsList.appendChild(li);
+        // Presupunem că wData conține "muscleGroup" (ex. "chest", "back", "armsFront" etc.)
+        // + "date" (string "2023-05-10") sau un timestamp
+        if (wData.muscleGroup) {
+          const mg = wData.muscleGroup.toLowerCase();
+          // Convertim data ultimului antrenament la un Date
+          let workoutDate = new Date();
+          if (wData.date) {
+            workoutDate = new Date(wData.date);
+          }
+          // Dacă muscleLastWorkout[mg] e null sau e mai vechi, actualizăm
+          if (!muscleLastWorkout[mg] || workoutDate > muscleLastWorkout[mg]) {
+            muscleLastWorkout[mg] = workoutDate;
+          }
+        }
       });
+
+      // Calculăm dacă au trecut mai mult de 48h
+      const now = new Date();
+      const recoveryTime = 48; // ore
+      for (let mgKey in muscleLastWorkout) {
+        if (muscleLastWorkout[mgKey]) {
+          const diffHours = (now - muscleLastWorkout[mgKey]) / 36e5; // milisec -> ore
+          const li = document.createElement("li");
+          if (diffHours >= recoveryTime) {
+            li.innerHTML = `<strong>${mgKey}</strong>: Recuperat (ultima dată acum ~${Math.floor(diffHours)}h)`;
+          } else {
+            li.innerHTML = `<strong>${mgKey}</strong>: În recuperare (antrenat acum ~${Math.floor(diffHours)}h)`;
+          }
+          muscleRecoveryList.appendChild(li);
+        }
+      }
     }
-
-    // 5. Adăugare antrenament
-    addWorkoutBtn.onclick = async () => {
-      if (!currentUser) {
-        statusWorkout.innerText = "Trebuie să fii logat!";
-        return;
-      }
-      const dateVal = workoutDateInput.value;
-      const muscleVal = muscleGroupInput.value;
-      const exerciseVal = exerciseNameInput.value;
-      const setsVal = Number(setsInput.value);
-      const repsVal = Number(repsInput.value);
-      const weightVal = Number(weightInput.value) || 0;
-
-      try {
-        // Adăugăm un document nou în subcolecția workouts
-        await addDoc(collection(db, "users", currentUser.uid, "workouts"), {
-          date: dateVal,
-          muscleGroup: muscleVal,
-          exerciseName: exerciseVal,
-          sets: setsVal,
-          reps: repsVal,
-          weight: weightVal
-        });
-        statusWorkout.innerText = "Antrenament adăugat!";
-        // Resetăm câmpurile
-        workoutDateInput.value = "";
-        muscleGroupInput.value = "";
-        exerciseNameInput.value = "";
-        setsInput.value = "";
-        repsInput.value = "";
-        weightInput.value = "";
-        // Reîncărcăm lista
-        await loadWorkouts();
-      } catch (error) {
-        statusWorkout.innerText = "Eroare la adăugare: " + error.message;
-      }
-    };
 
     // 6. Logout
     logoutBtn.onclick = () => {
@@ -192,6 +229,95 @@
         window.location.href = "index.html";
       });
     };
+
+    // 7. Integrare cu Snap.svg + codul tău de manipulare a corpului
+    //    (Exact codul pe care l-ai dat, adaptat într-o singură pagină)
+    //    Ai nevoie să pui tot jQuery code, Snap.load, etc.
+
+    $(document).ready(function(){
+      var frontSVG = Snap("#frontSvg");
+      var backSVG = Snap("#backSvg");
+
+      var $labelBox = $('.labelBox');
+      var $labelBoxName = $('.labelBox .name');
+      var $labelBoxDescription = $('.labelBox .description');
+      var $rotateBtn = $('.rotateBtn');
+
+      var muscles;
+      var muscleGroup;
+
+      // 7.1 Încărcăm SVG FRONT
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", function (muscleManFront) {
+        frontSVG.append(muscleManFront);
+
+        var $muscleGroups = $('#muscleChest, #muscleArmsFront, #muscleLegsFront');
+        var hoverIntentConfig = {
+          sensitivity: 3,
+          interval: 100,
+          timeout: 200,
+          over: activateMuscles,
+          out: deactivateMuscles
+        };
+        $muscleGroups.hoverIntent(hoverIntentConfig);
+      });
+
+      // 7.2 Încărcăm SVG BACK
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", function (muscleManBack) {
+        backSVG.append(muscleManBack);
+
+        var $muscleGroups = $('#muscleBack, #muscleArmsBack, #muscleLegsBack');
+        var hoverIntentConfig = {
+          sensitivity: 3,
+          interval: 100,
+          timeout: 200,
+          over: activateMuscles,
+          out: deactivateMuscles
+        };
+        $muscleGroups.hoverIntent(hoverIntentConfig);
+      });
+
+      function activateMuscles(e) {
+        var $this = $(this);
+        // child muscle paths
+        muscles = $this.children('.muscle');
+        muscles.css({ fill: '#8dc63f' });
+
+        // Simplu: setăm label
+        $labelBoxName.text($this.attr('id'));
+        $labelBoxDescription.text("Exerciții pentru " + $this.attr('id'));
+
+        // Arătăm labelBox
+        setTimeout(function(){
+          $labelBox.addClass('visible').css({
+            marginTop: '-300px',
+            marginLeft: '-450px'
+          });
+        }, 250);
+      }
+
+      function deactivateMuscles(e) {
+        var $this = $(this);
+        muscles = $this.children('.muscle');
+        muscles.css({ fill: '#515761' });
+        $labelBox.removeClass('visible');
+      }
+
+      function rotateSVG(e) {
+        e.preventDefault();
+        var $card = $('.card');
+        if ($card.hasClass('flipped')) {
+          $card.removeClass('flipped');
+          $rotateBtn.text('View Back');
+        } else {
+          $card.addClass('flipped');
+          $rotateBtn.text('View Front');
+        }
+      }
+
+      $rotateBtn.on('click', function(e){
+        rotateSVG(e);
+      });
+    });
   </script>
 </body>
 </html>
