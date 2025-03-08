@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Profil Utilizator | HealthFit</title>
+  <meta charset="UTF-8" />
+  <title>HealthFit - Workouts</title>
   <link rel="stylesheet" href="style.css">
+  <!-- jQuery & Snap.svg (dacă folosești hoverIntent și Snap) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
 
-  <!-- STIL SUPLIMENTAR (ideal ar fi să fie în style.css) -->
   <style>
     body {
-      background: url("https://images.unsplash.com/photo-1555617117-08f6f11b2370?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80")
+      background: url("https://images.unsplash.com/photo-1594737625785-c1d97f1a404f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")
                   no-repeat center center fixed;
       background-size: cover;
-      margin: 0; 
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: sans-serif;
     }
     .navbar {
@@ -22,12 +23,10 @@
       color: #fff !important;
     }
 
-    /* Container principal cu două coloane: form & recomandări */
-    .profile-container {
+    .workouts-container {
       display: flex;
-      flex-wrap: wrap;
       gap: 20px;
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 40px auto;
       padding: 20px;
       backdrop-filter: blur(10px) saturate(180%);
@@ -36,75 +35,62 @@
       border: 1px solid rgba(255, 255, 255, 0.125);
     }
 
-    .profile-form, .recommendation-block {
+    /* Stânga: program antrenamente */
+    .program-list {
       flex: 1;
-      min-width: 300px;
-    }
-
-    .title {
-      color: #f5f5f5;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      color: #eee;
-    }
-
-    #statusProfile {
+      min-width: 350px;
       color: #fff;
-      text-align: center;
-      margin-top: 10px;
     }
-
+    .program-day {
+      background: rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .program-day h4 {
+      margin: 0;
+      cursor: pointer;
+    }
+    .exercises {
+      margin-left: 20px;
+      display: none;
+    }
+    .exercises.active {
+      display: block;
+    }
+    .exercises li {
+      list-style: none;
+      margin-bottom: 5px;
+    }
     .submit {
       background-color: #ff6b00;
-      border-color: #ff6b00;
-      color: #fff;
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-      cursor: pointer;
-      border-radius: 5px;
       border: none;
+      color: #fff;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 10px;
     }
     .submit:hover {
       background-color: #e65f00;
     }
 
-    /* Fade-in pentru recomandări */
-    #calcResults {
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    #calcResults.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .recommendation-block {
-      color: #f0f0f0;
-    }
-    .recommendation-block .sub-title {
-      font-size: 1.1em;
-      margin-bottom: 10px;
-      color: #ff6b00;
-    }
-    .recommendation-text {
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-    .action-buttons {
-      margin-top: 15px;
+    /* Dreapta: containerul SVG */
+    .svg-container-workouts {
+      flex: 1;
+      min-width: 400px;
+      position: relative;
       text-align: center;
     }
-    .action-buttons .submit {
-      margin: 0 10px;
+    #frontSvg, #backSvg {
+      width: 100%;
+      height: 600px; /* ajustabil */
+    }
+    .labelBox {
+      /* la fel ca înainte, dacă ai un labelBox */
     }
   </style>
 </head>
-
 <body>
 
   <!-- NAVBAR -->
@@ -120,77 +106,24 @@
     </nav>
   </header>
 
-  <div class="profile-container">
-    <!-- Coloana 1: FORMULAR PROFIL -->
-    <div class="profile-form">
-      <h3 class="title">Profilul Tău</h3>
-      <div class="form" style="max-width: 400px; margin:auto;">
-        <form>
-          <!-- Sex -->
-          <div class="form-group">
-            <select id="sex" required>
-              <option value="">Selectează Sexul</option>
-              <option value="barbat">Masculin</option>
-              <option value="femeie">Feminin</option>
-            </select>
-          </div>
-          <!-- Vârstă -->
-          <div class="form-group">
-            <input type="number" id="age" required/>
-            <label>Vârstă</label>
-          </div>
-          <!-- Greutate -->
-          <div class="form-group">
-            <input type="number" id="weight" required/>
-            <label>Greutate (kg)</label>
-          </div>
-          <!-- Înălțime -->
-          <div class="form-group">
-            <input type="number" id="height" required/>
-            <label>Înălțime (cm)</label>
-          </div>
-          <!-- Nivel de activitate -->
-          <div class="form-group">
-            <select id="activityLevel" required>
-              <option value="">Nivel de activitate</option>
-              <option value="sedentar">Sedentar</option>
-              <option value="moderat">Moderat</option>
-              <option value="activ">Activ</option>
-              <option value="foarteActiv">Foarte activ</option>
-            </select>
-          </div>
-          <!-- Obiectiv -->
-          <div class="form-group">
-            <select id="goal" required>
-              <option value="">Obiectiv</option>
-              <option value="slabire">Slăbire</option>
-              <option value="ingrasare">Îngrășare</option>
-              <option value="crestere_masa">Creștere masă</option>
-              <option value="definire">Definire</option>
-            </select>
-          </div>
-
-          <button type="button" class="submit" id="saveProfileBtn">Salvează & Calculează</button>
-          <p id="statusProfile"></p>
-        </form>
-      </div>
+  <div class="workouts-container">
+    <!-- Stânga: Program antrenamente -->
+    <div class="program-list">
+      <h3>Program de Antrenamente (4 zile)</h3>
+      <div id="daysContainer"></div>
+      <button id="resetBtn" class="submit">Reset Program</button>
     </div>
 
-    <!-- Coloana 2: RECOMANDĂRI -->
-    <div class="recommendation-block">
-      <h3 class="title">Recomandări</h3>
-      <div id="calcResults">
-        <div class="sub-title">Calorii și Macronutrienți</div>
-        <div id="numbersRec" class="recommendation-text"></div>
-
-        <div class="sub-title">Obiectiv</div>
-        <div id="goalRec" class="recommendation-text"></div>
-
-        <div class="action-buttons">
-          <button id="goWorkoutsBtn" class="submit">Workouts</button>
-          <button id="goNutritionBtn" class="submit">Nutriție</button>
-        </div>
+    <!-- Dreapta: SVG mare cu grupele musculare -->
+    <div class="svg-container-workouts">
+      <div class="card">
+        <figure class="front"><svg id="frontSvg"></svg></figure>
+        <figure class="back"><svg id="backSvg"></svg></figure>
       </div>
+      <div class="labelBox">
+        <!-- la fel ca exemplul anterior -->
+      </div>
+      <a href="#" class="btn rotateBtn">View Back</a>
     </div>
   </div>
 
@@ -205,11 +138,10 @@
       getFirestore,
       doc,
       getDoc,
-      setDoc,
       updateDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Config Firebase
+    // 1. Configurație Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -222,199 +154,123 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 2. Elemente HTML
-    const sexInput = document.getElementById("sex");
-    const ageInput = document.getElementById("age");
-    const weightInput = document.getElementById("weight");
-    const heightInput = document.getElementById("height");
-    const activitySelect = document.getElementById("activityLevel");
-    const goalSelect = document.getElementById("goal");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const statusProfile = document.getElementById("statusProfile");
-
-    const calcResults = document.getElementById("calcResults");
-    const numbersRec = document.getElementById("numbersRec");
-    const goalRec = document.getElementById("goalRec");
-
+    // Elemente
+    const daysContainer = document.getElementById("daysContainer");
+    const resetBtn = document.getElementById("resetBtn");
     const logoutBtn = document.getElementById("logoutBtn");
-    const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
-    const goNutritionBtn = document.getElementById("goNutritionBtn");
 
     let currentUser = null;
+    let programDocRef = null; // docRef la /users/{uid}/program/activeProgram
+    let programData = null;   // conține days: [...]
 
-    // 3. onAuthStateChanged
+    // 2. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Încărcăm datele existente + recomandările anterioare
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const data = userDocSnap.data();
-          // Populăm formularul
-          if (data.sex) sexInput.value = data.sex;
-          if (data.age) ageInput.value = data.age;
-          if (data.weight) weightInput.value = data.weight;
-          if (data.height) heightInput.value = data.height;
-          if (data.activityLevel) activitySelect.value = data.activityLevel;
-          if (data.goal) goalSelect.value = data.goal;
-
-          // Dacă există rezultate de calcul salvate, le afișăm
-          if (data.calcResults) {
-            displayResults(data.calcResults);
-          }
-        }
+        programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+        await loadProgram();
+        await loadMusclesSVG();
       }
     });
 
-    // 4. Funcție de calcul
-    function calculateRecommendations(sex, age, weight, height, activity, goal) {
-      // BMR (Mifflin-St Jeor)
-      let BMR;
-      if (sex === "barbat") {
-        BMR = 10 * weight + 6.25 * height - 5 * age + 5;
+    // 3. loadProgram() - citește doc-ul "activeProgram"
+    async function loadProgram() {
+      const docSnap = await getDoc(programDocRef);
+      if (docSnap.exists()) {
+        programData = docSnap.data(); // { days: [...] }
+        renderDays(programData.days);
       } else {
-        BMR = 10 * weight + 6.25 * height - 5 * age - 161;
+        // Poate userul nu are program generat încă
+        daysContainer.innerHTML = "<p>Nu ai un program încă. Mergi la Profile și generează unul!</p>";
       }
-
-      // Factor de activitate
-      let activityFactor = 1.2;
-      if (activity === "moderat") activityFactor = 1.375;
-      if (activity === "activ") activityFactor = 1.55;
-      if (activity === "foarteActiv") activityFactor = 1.725;
-
-      const TDEE = BMR * activityFactor;
-
-      // Obiectiv
-      let targetCalories = TDEE;
-      let objectiveText = "";
-      let deficitOrSurplus = 0;
-
-      if (goal === "slabire") {
-        deficitOrSurplus = 400;
-        targetCalories = TDEE - deficitOrSurplus;
-        objectiveText = `trebuie să intri în deficit caloric de ~${deficitOrSurplus} kcal`;
-      } else if (goal === "ingrasare") {
-        deficitOrSurplus = 400;
-        targetCalories = TDEE + deficitOrSurplus;
-        objectiveText = `trebuie să intri în surplus caloric de ~${deficitOrSurplus} kcal`;
-      } else if (goal === "crestere_masa") {
-        deficitOrSurplus = 400;
-        targetCalories = TDEE + deficitOrSurplus;
-        objectiveText = `trebuie să intri în surplus caloric pentru creștere masă (~${deficitOrSurplus} kcal)`;
-      } else if (goal === "definire") {
-        deficitOrSurplus = 400;
-        targetCalories = TDEE - deficitOrSurplus;
-        objectiveText = `trebuie să menții un deficit caloric mic (~${deficitOrSurplus} kcal)`;
-      }
-
-      // Macros
-      const proteinCals = 0.3 * targetCalories;
-      const carbCals = 0.4 * targetCalories;
-      const fatCals = 0.3 * targetCalories;
-
-      const proteinGrams = proteinCals / 4;
-      const carbGrams = carbCals / 4;
-      const fatGrams = fatCals / 9;
-
-      // Apă
-      const waterLiters = (weight * 35) / 1000;
-
-      return {
-        BMR: Math.round(BMR),
-        TDEE: Math.round(TDEE),
-        targetCalories: Math.round(targetCalories),
-        protein: Math.round(proteinGrams),
-        carbs: Math.round(carbGrams),
-        fat: Math.round(fatGrams),
-        water: waterLiters.toFixed(2),
-        objectiveText
-      };
     }
 
-    // 5. Salvare + calcul
-    saveProfileBtn.onclick = async () => {
-      if (!currentUser) {
-        statusProfile.innerText = "Trebuie să fii logat.";
-        return;
-      }
+    // 4. Afișăm zilele + exercițiile
+    function renderDays(daysArray) {
+      daysContainer.innerHTML = "";
+      daysArray.forEach((dayObj, dayIndex) => {
+        // Creăm un container pentru fiecare zi
+        const dayDiv = document.createElement("div");
+        dayDiv.classList.add("program-day");
 
-      const sexVal = sexInput.value;
-      const ageVal = Number(ageInput.value);
-      const weightVal = Number(weightInput.value);
-      const heightVal = Number(heightInput.value);
-      const activityVal = activitySelect.value;
-      const goalVal = goalSelect.value;
+        // Titlul zilei
+        const h4 = document.createElement("h4");
+        h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
+        dayDiv.appendChild(h4);
 
-      if (!sexVal || !ageVal || !weightVal || !heightVal || !activityVal || !goalVal) {
-        statusProfile.innerText = "Completează toate câmpurile!";
-        return;
-      }
+        // Container exerciții
+        const exercisesUL = document.createElement("ul");
+        exercisesUL.classList.add("exercises");
+        // La click pe h4, toggle .active
+        h4.onclick = () => {
+          exercisesUL.classList.toggle("active");
+        };
 
-      // Salvăm datele de bază
-      const userDocRef = doc(db, "users", currentUser.uid);
+        dayObj.exercises.forEach((exObj, exIndex) => {
+          const li = document.createElement("li");
+          // Checkbox
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = exObj.done;
+          cb.onchange = () => toggleExercise(dayIndex, exIndex, cb.checked);
+          li.appendChild(cb);
 
-      try {
-        await updateDoc(userDocRef, {
-          sex: sexVal,
-          age: ageVal,
-          weight: weightVal,
-          height: heightVal,
-          activityLevel: activityVal,
-          goal: goalVal
+          // Nume exercițiu
+          const span = document.createElement("span");
+          span.textContent = " " + exObj.name;
+          li.appendChild(span);
+
+          // (Opțional) buton "Detalii" => alert(exObj.description + " alternative: ...")
+
+          exercisesUL.appendChild(li);
         });
-      } catch (error) {
-        if (error.code === "not-found") {
-          // setDoc dacă nu există
-          await setDoc(userDocRef, {
-            sex: sexVal,
-            age: ageVal,
-            weight: weightVal,
-            height: heightVal,
-            activityLevel: activityVal,
-            goal: goalVal
-          });
-        } else {
-          statusProfile.innerText = "Eroare salvare profil: " + error.message;
-          return;
-        }
+
+        dayDiv.appendChild(exercisesUL);
+
+        daysContainer.appendChild(dayDiv);
+      });
+    }
+
+    // 5. toggleExercise(dayIndex, exIndex, checked)
+    async function toggleExercise(dayIndex, exIndex, isDone) {
+      // Actualizăm local
+      programData.days[dayIndex].exercises[exIndex].done = isDone;
+
+      // Verificăm dacă toate exercițiile din ziua respectivă sunt done
+      const allDone = programData.days[dayIndex].exercises.every(ex => ex.done === true);
+      programData.days[dayIndex].done = allDone;
+      if (allDone) {
+        // Salvăm data finalizării pentru recuperare
+        programData.days[dayIndex].doneDate = new Date().toISOString();
+        // Să actualizăm grupele musculare => stocăm datele ultimului antrenament
+        // ex: chest, triceps => salvăm "lastWorkoutDate_chest = new Date()"
+        // Sau te folosești direct de doneDate la calculare
+      } else {
+        programData.days[dayIndex].doneDate = null;
       }
 
-      // Calculăm recomandările
-      const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
-
-      // Salvăm rezultatele în Firestore (ca să rămână afișate după refresh)
-      await updateDoc(userDocRef, {
-        calcResults: rec
-      });
-
-      // Afișăm rezultate
-      displayResults(rec);
-      statusProfile.innerText = "Profil salvat & calcule finalizate!";
-    };
-
-    // 6. Afișare rezultate
-    function displayResults(rec) {
-      numbersRec.innerHTML = `
-        <p><strong>Calorii de menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
-        <p><strong>Calorii recomandate pt. obiectiv:</strong> ${rec.targetCalories} kcal/zi</p>
-        <p><strong>Proteine:</strong> ${rec.protein} g/zi</p>
-        <p><strong>Carbohidrați:</strong> ${rec.carbs} g/zi</p>
-        <p><strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
-        <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
-      `;
-      goalRec.innerHTML = `
-        <p>Dacă vrei să îți menții greutatea, ai nevoie de ~<strong>${rec.TDEE} kcal/zi</strong>.
-        <br>Dar pentru obiectivul ales, <strong>${rec.objectiveText}</strong>, 
-        îți recomandăm ~<strong>${rec.targetCalories} kcal/zi</strong>.
-        <br>Un program de 3-4 antrenamente pe săptămână te poate ajuta să atingi obiectivul mai rapid.</p>
-      `;
-
-      // Fade-in
-      calcResults.classList.add("visible");
+      // Updatăm doc
+      await updateDoc(programDocRef, { days: programData.days });
+      // Re-redăm UI
+      renderDays(programData.days);
+      // Recalculează starea mușchilor
+      updateMusclesRecovery();
     }
+
+    // 6. resetBtn => reset tot
+    resetBtn.onclick = async () => {
+      if (!programData || !programData.days) return;
+      programData.days.forEach(day => {
+        day.done = false;
+        day.doneDate = null;
+        day.exercises.forEach(ex => ex.done = false);
+      });
+      await updateDoc(programDocRef, { days: programData.days });
+      renderDays(programData.days);
+      updateMusclesRecovery();
+    };
 
     // 7. Logout
     logoutBtn.onclick = () => {
@@ -423,13 +279,54 @@
       });
     };
 
-    // 8. Navigare
-    goWorkoutsBtn.onclick = () => {
-      window.location.href = "workouts.html";
-    };
-    goNutritionBtn.onclick = () => {
-      window.location.href = "nutritie.html";
-    };
+    // 8. SVG muscle logic
+    async function loadMusclesSVG() {
+      // Snap.load(frontSvg), Snap.load(backSvg) etc.
+      // Apoi colorăm mușchii. 
+      // Apelăm updateMusclesRecovery() după ce încărcăm
+      // ...
+      updateMusclesRecovery();
+    }
+
+    // 9. updateMusclesRecovery() - colorează roșu / verde
+    function updateMusclesRecovery() {
+      if (!programData || !programData.days) return;
+      // Pentru fiecare zi finalizată => day.doneDate => calculăm ore trecute
+      // Grupele: day.muscleGroups
+      // < 48h => roșu, > 48h => verde
+      const now = new Date();
+      programData.days.forEach(day => {
+        if (day.done && day.doneDate) {
+          const d = new Date(day.doneDate);
+          const diffH = (now - d) / 36e5;
+          day.muscleGroups.forEach(mg => {
+            colorMuscleGroup(mg, diffH < 48 ? "red" : "green");
+          });
+        } else {
+          // Nefinalizat => considerăm mușchii "neantrenați" => verde?
+          day.muscleGroups.forEach(mg => {
+            colorMuscleGroup(mg, "green");
+          });
+        }
+      });
+    }
+
+    function colorMuscleGroup(mg, color) {
+      // mg e ceva de gen "chest", "triceps"
+      // Ai un ID în SVG: #muscleChest, #muscleArmsFront, etc.
+      // Poți face:
+      //   let $elem = $("#muscleChest");
+      //   if (mg === "chest") $elem.find(".muscle").css("fill", color);
+      // Adaptezi la structura ta
+      if (mg === "chest") {
+        $("#muscleChest .muscle").css("fill", color);
+      }
+      if (mg === "triceps") {
+        $("#muscleArmsBack .muscle").css("fill", color);
+      }
+      // etc.
+    }
+
   </script>
 </body>
 </html>
