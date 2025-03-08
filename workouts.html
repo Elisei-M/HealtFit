@@ -4,59 +4,214 @@
   <meta charset="UTF-8" />
   <title>HealthFit - Workouts</title>
   <link rel="stylesheet" href="style.css">
-  <!-- jQuery (pentru hoverIntent) -->
+
+  <!-- jQuery (pentru evenimente, hoverIntent) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- hoverIntent (dacă vrei) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.10.1/jquery.hoverIntent.min.js"></script>
   <!-- Snap.svg pentru încărcarea SVG -->
   <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
+
+  <style>
+    body {
+      background: url("https://images.unsplash.com/photo-1594737625785-c1d97f1a404f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")
+                  no-repeat center center fixed;
+      background-size: cover;
+      margin: 0; padding: 0;
+      font-family: sans-serif;
+    }
+    .navbar {
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      list-style: none;
+      padding: 10px;
+      margin: 0;
+    }
+    .navbar li {
+      margin-right: 15px;
+    }
+    .navbar a, .navbar button {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .navbar a:hover, .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .workouts-container {
+      display: flex;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      backdrop-filter: blur(10px) saturate(180%);
+      background-color: rgba(17, 25, 40, 0.62);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+
+    /* Stânga: Program antrenamente */
+    .program-list {
+      flex: 1;
+      min-width: 350px;
+      color: #fff;
+    }
+    h2.title {
+      margin-top: 0;
+    }
+    .program-day {
+      background: rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .program-day h4 {
+      margin: 0;
+      cursor: pointer;
+    }
+    .exercises {
+      margin-left: 20px;
+      display: none;
+    }
+    .exercises.active {
+      display: block;
+    }
+    .exercises li {
+      list-style: none;
+      margin-bottom: 5px;
+    }
+    .submit {
+      background-color: #ff6b00;
+      border: none;
+      color: #fff;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .submit:hover {
+      background-color: #e65f00;
+    }
+
+    /* Dreapta: containerul SVG */
+    .svg-container-workouts {
+      flex: 1;
+      min-width: 400px;
+      position: relative;
+      text-align: center;
+      color: #fff;
+    }
+    .card {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      perspective: 1000px;
+    }
+    .card figure {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+    .card .back {
+      transform: rotateY(180deg);
+    }
+    .card.flipped {
+      transform: rotateY(180deg);
+      transition: transform 1s;
+    }
+    .card:not(.flipped) {
+      transition: transform 1s;
+    }
+    #frontSvg, #backSvg {
+      width: 100%;
+      height: 100%;
+    }
+    .labelBox {
+      display: none; /* sau .visible cu fade-in */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .rotateBtn {
+      display: inline-block;
+      background: #ff6b00;
+      color: #fff;
+      padding: 10px 15px;
+      text-decoration: none;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+    .rotateBtn:hover {
+      background: #e65f00;
+    }
+
+    /* Container status recuperare */
+    .recovery-container {
+      backdrop-filter: blur(10px) saturate(180%);
+      background-color: rgba(17, 25, 40, 0.62);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- NAVBAR -->
   <header>
     <nav>
       <ul class="navbar">
         <li><a href="index.html">Home</a></li>
-        <li><a href="profile.html">Profil</a></li>
+        <li><a href="profile.html">Profile</a></li>
         <li><a href="nutritie.html">Nutriție</a></li>
+        <li><a href="workouts.html">Workouts</a></li>
         <li><button id="logoutBtn">Logout</button></li>
       </ul>
     </nav>
   </header>
 
-  <div class="container">
-    <div class="form">
-      <h3 class="title">Program de Antrenamente Recomandat</h3>
-      <p id="programText" style="color:#fff;"></p>
+  <!-- Container principal -->
+  <div class="workouts-container">
+    <!-- Stânga: Program antrenamente (4 zile) -->
+    <div class="program-list">
+      <h2 class="title">Programul Tău de Antrenamente</h2>
+      <div id="daysContainer"></div>
+      <button id="resetBtn" class="submit">Reset Program</button>
+      <p id="statusMsg"></p>
     </div>
-  </div>
 
-  <!-- SVG cu grupele musculare -->
-  <div class="content">
-    <div class="svg-container">
+    <!-- Dreapta: SVG + mușchi -->
+    <div class="svg-container-workouts">
       <div class="card">
-        <figure class="front">
-          <svg id="frontSvg"></svg>
-        </figure>
-        <figure class="back">
-          <svg id="backSvg"></svg>
-        </figure>
+        <figure class="front"><svg id="frontSvg"></svg></figure>
+        <figure class="back"><svg id="backSvg"></svg></figure>
       </div>
       <div class="labelBox">
-        <span class="name"></span>
+        <span class="name"></span><br/>
         <span class="description"></span>
       </div>
+      <a href="#" class="rotateBtn">View Back</a>
     </div>
-    <a href="#" class="btn btn-primary btn-lg rotateBtn">View Back</a>
   </div>
 
-  <!-- Afișare status recuperare mușchi -->
-  <div class="container">
-    <div class="form">
-      <h3 class="title">Status Recuperare Grupe Musculare</h3>
-      <ul id="muscleRecoveryList" style="color:#fff; list-style:none; padding:0;"></ul>
-    </div>
+  <!-- Status Recuperare Grupe Musculare -->
+  <div class="recovery-container">
+    <h3 class="title">Status Recuperare Grupe Musculare</h3>
+    <ul id="muscleRecoveryList" style="list-style:none; padding:0;"></ul>
   </div>
 
   <script type="module">
@@ -70,11 +225,10 @@
       getFirestore,
       doc,
       getDoc,
-      collection,
-      getDocs
+      updateDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Configurație Firebase
+    // Firebase init
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -87,237 +241,232 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Elemente HTML
-    const programText = document.getElementById("programText");
+    // Element refs
+    const daysContainer = document.getElementById("daysContainer");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusMsg = document.getElementById("statusMsg");
     const muscleRecoveryList = document.getElementById("muscleRecoveryList");
     const logoutBtn = document.getElementById("logoutBtn");
 
     let currentUser = null;
-    let userGoal = null;
+    let programDocRef = null;
+    let programData = null; // { days: [...] }
 
-    // 2. Verificare user
+    // onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Afișăm programul recomandat
-        await loadUserGoal();
-        displayRecommendedProgram();
-        // Afișăm status recuperare
-        await displayMuscleRecovery();
+        programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+        await loadProgram();
+        await loadMusclesSVG();
       }
     });
 
-    // 3. Citim obiectivul userului
-    async function loadUserGoal() {
-      const userDocRef = doc(db, "users", currentUser.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (userDocSnap.exists()) {
-        const data = userDocSnap.data();
-        userGoal = data.goal || "slabire"; // default
-      } else {
-        userGoal = "slabire";
+    // 1. loadProgram - citește /program/activeProgram
+    async function loadProgram() {
+      const snap = await getDoc(programDocRef);
+      if (!snap.exists()) {
+        daysContainer.innerHTML = "<p>Nu ai un program. Mergi la Profile și generează unul!</p>";
+        return;
       }
+      programData = snap.data(); // { days: [...] }
+      if (!programData.days) {
+        daysContainer.innerHTML = "<p>Program invalid.</p>";
+        return;
+      }
+      renderDays(programData.days);
+      updateMusclesRecovery(); // colorăm grupele
     }
 
-    // 4. Afișăm un program minimal în funcție de userGoal
-    function displayRecommendedProgram() {
-      let text = "";
-      switch (userGoal) {
-        case "slabire":
-          text = `
-            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
-            Antrenament 2 (Spate & Biceps)<br/>
-            Antrenament 3 (Picioare & Umeri)<br/>
-            <br/>
-            3-4 sesiuni/săptămână, intensitate moderată, pauze scurte.
-          `;
-          break;
-        case "ingrasare":
-          text = `
-            <strong>Antrenament 1 (Full Body)</strong><br/>
-            Antrenament 2 (Full Body 2)<br/>
-            <br/>
-            2-3 sesiuni/săptămână, intensitate scăzută, alimentație hipercalorică.
-          `;
-          break;
-        case "crestere_masa":
-          text = `
-            <strong>Antrenament 1 (Piept & Biceps)</strong><br/>
-            Antrenament 2 (Spate & Triceps)<br/>
-            Antrenament 3 (Picioare & Umeri)<br/>
-            <br/>
-            4-5 sesiuni/săptămână, intensitate moderat-ridicată, pauze 1-2 min.
-          `;
-          break;
-        case "definire":
-          text = `
-            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
-            Antrenament 2 (Spate & Biceps)<br/>
-            Antrenament 3 (Picioare & Umeri)<br/>
-            <br/>
-            3-4 sesiuni/săptămână, intensitate moderată, deficit caloric ușor.
-          `;
-          break;
-        default:
-          text = `
-            <strong>Antrenament 1 (Piept & Triceps)</strong><br/>
-            Antrenament 2 (Spate & Biceps)<br/>
-            Antrenament 3 (Picioare & Umeri)<br/>
-          `;
-      }
-      programText.innerHTML = text;
-    }
+    // 2. Afișăm zilele + exercițiile
+    function renderDays(daysArray) {
+      daysContainer.innerHTML = "";
+      daysArray.forEach((dayObj, dayIndex) => {
+        const dayDiv = document.createElement("div");
+        dayDiv.classList.add("program-day");
 
-    // 5. Status recuperare musculară (simplificat)
-    async function displayMuscleRecovery() {
-      muscleRecoveryList.innerHTML = "";
+        const h4 = document.createElement("h4");
+        h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
+        dayDiv.appendChild(h4);
 
-      // Citim toate antrenamentele userului
-      const workoutsRef = collection(db, "users", currentUser.uid, "workouts");
-      const querySnapshot = await getDocs(workoutsRef);
+        // listă exerciții
+        const exercisesUL = document.createElement("ul");
+        exercisesUL.classList.add("exercises");
 
-      // Reținem ultima dată de antrenament pentru fiecare grupă
-      const muscleLastWorkout = {
-        chest: null,
-        back: null,
-        arms: null,
-        legs: null,
-        shoulders: null
-        // etc.
-      };
+        h4.onclick = () => {
+          exercisesUL.classList.toggle("active");
+        };
 
-      querySnapshot.forEach((docSnap) => {
-        const wData = docSnap.data();
-        // Presupunem că wData conține "muscleGroup" (ex. "chest", "back", "armsFront" etc.)
-        // + "date" (string "2023-05-10") sau un timestamp
-        if (wData.muscleGroup) {
-          const mg = wData.muscleGroup.toLowerCase();
-          // Convertim data ultimului antrenament la un Date
-          let workoutDate = new Date();
-          if (wData.date) {
-            workoutDate = new Date(wData.date);
-          }
-          // Dacă muscleLastWorkout[mg] e null sau e mai vechi, actualizăm
-          if (!muscleLastWorkout[mg] || workoutDate > muscleLastWorkout[mg]) {
-            muscleLastWorkout[mg] = workoutDate;
-          }
-        }
-      });
-
-      // Calculăm dacă au trecut mai mult de 48h
-      const now = new Date();
-      const recoveryTime = 48; // ore
-      for (let mgKey in muscleLastWorkout) {
-        if (muscleLastWorkout[mgKey]) {
-          const diffHours = (now - muscleLastWorkout[mgKey]) / 36e5; // milisec -> ore
+        dayObj.exercises.forEach((exObj, exIndex) => {
           const li = document.createElement("li");
-          if (diffHours >= recoveryTime) {
-            li.innerHTML = `<strong>${mgKey}</strong>: Recuperat (ultima dată acum ~${Math.floor(diffHours)}h)`;
-          } else {
-            li.innerHTML = `<strong>${mgKey}</strong>: În recuperare (antrenat acum ~${Math.floor(diffHours)}h)`;
-          }
-          muscleRecoveryList.appendChild(li);
-        }
-      }
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = exObj.done;
+          cb.onchange = () => toggleExercise(dayIndex, exIndex, cb.checked);
+
+          li.appendChild(cb);
+          const span = document.createElement("span");
+          span.textContent = " " + exObj.name;
+          li.appendChild(span);
+
+          exercisesUL.appendChild(li);
+        });
+
+        dayDiv.appendChild(exercisesUL);
+        daysContainer.appendChild(dayDiv);
+      });
     }
 
-    // 6. Logout
+    // 3. toggleExercise
+    async function toggleExercise(dayIndex, exIndex, isDone) {
+      programData.days[dayIndex].exercises[exIndex].done = isDone;
+      // Verificăm dacă toate exercițiile din ziua respectivă sunt done
+      const allDone = programData.days[dayIndex].exercises.every(ex => ex.done);
+      programData.days[dayIndex].done = allDone;
+      if (allDone) {
+        programData.days[dayIndex].doneDate = new Date().toISOString();
+      } else {
+        programData.days[dayIndex].doneDate = null;
+      }
+
+      await updateDoc(programDocRef, { days: programData.days });
+      renderDays(programData.days);
+      updateMusclesRecovery();
+    }
+
+    // 4. resetBtn => reset tot
+    resetBtn.onclick = async () => {
+      if (!programData || !programData.days) return;
+      programData.days.forEach(day => {
+        day.done = false;
+        day.doneDate = null;
+        day.exercises.forEach(ex => ex.done = false);
+      });
+      await updateDoc(programDocRef, { days: programData.days });
+      renderDays(programData.days);
+      updateMusclesRecovery();
+      statusMsg.textContent = "Program resetat!";
+    };
+
+    // 5. Logout
     logoutBtn.onclick = () => {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     };
 
-    // 7. Integrare cu Snap.svg + codul tău de manipulare a corpului
-    //    (Exact codul pe care l-ai dat, adaptat într-o singură pagină)
-    //    Ai nevoie să pui tot jQuery code, Snap.load, etc.
-
-    $(document).ready(function(){
-      var frontSVG = Snap("#frontSvg");
-      var backSVG = Snap("#backSvg");
-
-      var $labelBox = $('.labelBox');
-      var $labelBoxName = $('.labelBox .name');
-      var $labelBoxDescription = $('.labelBox .description');
-      var $rotateBtn = $('.rotateBtn');
-
-      var muscles;
-      var muscleGroup;
-
-      // 7.1 Încărcăm SVG FRONT
-      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", function (muscleManFront) {
-        frontSVG.append(muscleManFront);
-
-        var $muscleGroups = $('#muscleChest, #muscleArmsFront, #muscleLegsFront');
-        var hoverIntentConfig = {
-          sensitivity: 3,
-          interval: 100,
-          timeout: 200,
-          over: activateMuscles,
-          out: deactivateMuscles
-        };
-        $muscleGroups.hoverIntent(hoverIntentConfig);
+    // 6. SVG logic
+    async function loadMusclesSVG() {
+      // Snap.load front/back
+      // Ex. front
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", (front) => {
+        Snap("#frontSvg").append(front);
+      });
+      // Ex. back
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", (back) => {
+        Snap("#backSvg").append(back);
       });
 
-      // 7.2 Încărcăm SVG BACK
-      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", function (muscleManBack) {
-        backSVG.append(muscleManBack);
+      // setTimeout or callback after loading to color
+      setTimeout(() => {
+        updateMusclesRecovery();
+      }, 2000);
+    }
 
-        var $muscleGroups = $('#muscleBack, #muscleArmsBack, #muscleLegsBack');
-        var hoverIntentConfig = {
-          sensitivity: 3,
-          interval: 100,
-          timeout: 200,
-          over: activateMuscles,
-          out: deactivateMuscles
-        };
-        $muscleGroups.hoverIntent(hoverIntentConfig);
-      });
+    // 7. updateMusclesRecovery - colorează grupele
+    function updateMusclesRecovery() {
+      if (!programData || !programData.days) return;
 
-      function activateMuscles(e) {
-        var $this = $(this);
-        // child muscle paths
-        muscles = $this.children('.muscle');
-        muscles.css({ fill: '#8dc63f' });
+      // Default color "green" (neantrenat/recuperat)
+      colorAllMuscles("green");
 
-        // Simplu: setăm label
-        $labelBoxName.text($this.attr('id'));
-        $labelBoxDescription.text("Exerciții pentru " + $this.attr('id'));
-
-        // Arătăm labelBox
-        setTimeout(function(){
-          $labelBox.addClass('visible').css({
-            marginTop: '-300px',
-            marginLeft: '-450px'
+      const now = new Date();
+      programData.days.forEach(day => {
+        if (day.done && day.doneDate) {
+          const d = new Date(day.doneDate);
+          const diffH = (now - d) / 36e5;
+          const isRecovering = diffH < 48; // sub 48h => roșu
+          day.muscleGroups.forEach(mg => {
+            colorMuscleGroup(mg, isRecovering ? "red" : "green");
           });
-        }, 250);
-      }
-
-      function deactivateMuscles(e) {
-        var $this = $(this);
-        muscles = $this.children('.muscle');
-        muscles.css({ fill: '#515761' });
-        $labelBox.removeClass('visible');
-      }
-
-      function rotateSVG(e) {
-        e.preventDefault();
-        var $card = $('.card');
-        if ($card.hasClass('flipped')) {
-          $card.removeClass('flipped');
-          $rotateBtn.text('View Back');
-        } else {
-          $card.addClass('flipped');
-          $rotateBtn.text('View Front');
         }
-      }
-
-      $rotateBtn.on('click', function(e){
-        rotateSVG(e);
       });
+
+      // Afișăm status text
+      muscleRecoveryList.innerHTML = "";
+      programData.days.forEach(day => {
+        day.muscleGroups.forEach(mg => {
+          const li = document.createElement("li");
+          const groupName = mg; 
+          if (day.done && day.doneDate) {
+            const d = new Date(day.doneDate);
+            const diffH = (now - d) / 36e5;
+            if (diffH < 48) {
+              li.innerHTML = `<strong>${groupName}</strong>: În recuperare (antrenat acum ~${Math.floor(diffH)}h)`;
+            } else {
+              li.innerHTML = `<strong>${groupName}</strong>: Recuperat (antrenat acum ~${Math.floor(diffH)}h)`;
+            }
+          } else {
+            // Ziua nu e finalizată => considerăm încă neantrenat => "verde"
+            li.innerHTML = `<strong>${groupName}</strong>: Neantrenat sau neterminat`;
+          }
+          muscleRecoveryList.appendChild(li);
+        });
+      });
+    }
+
+    function colorAllMuscles(color) {
+      // Pune tot #muscleChest, #muscleArmsFront, #muscleArmsBack, #muscleLegsFront, #muscleLegsBack, #muscleBack etc. in "green"
+      $("#muscleChest .muscle").css("fill", color);
+      $("#muscleArmsFront .muscle").css("fill", color);
+      $("#muscleLegsFront .muscle").css("fill", color);
+      $("#muscleBack .muscle").css("fill", color);
+      $("#muscleArmsBack .muscle").css("fill", color);
+      $("#muscleLegsBack .muscle").css("fill", color);
+    }
+
+    function colorMuscleGroup(mg, color) {
+      // Adaptează ID-urile la structura ta SVG
+      mg = mg.toLowerCase();
+      if (mg === "chest") {
+        $("#muscleChest .muscle").css("fill", color);
+      }
+      if (mg === "triceps") {
+        // Poate e #muscleArmsBack
+        $("#muscleArmsBack .muscle").css("fill", color);
+      }
+      if (mg === "biceps") {
+        // Poate e #muscleArmsFront
+        $("#muscleArmsFront .muscle").css("fill", color);
+      }
+      if (mg === "back") {
+        $("#muscleBack .muscle").css("fill", color);
+      }
+      if (mg === "legs") {
+        // #muscleLegsFront, #muscleLegsBack
+        $("#muscleLegsFront .muscle").css("fill", color);
+        $("#muscleLegsBack .muscle").css("fill", color);
+      }
+      if (mg === "shoulders") {
+        // Poate ai ceva #muscleShoulders
+      }
+    }
+
+    // Rotate SVG (front/back)
+    $(document).on("click", ".rotateBtn", function(e){
+      e.preventDefault();
+      let $card = $(".card");
+      if ($card.hasClass("flipped")) {
+        $card.removeClass("flipped");
+        $(this).text("View Back");
+      } else {
+        $card.addClass("flipped");
+        $(this).text("View Front");
+      }
     });
+
   </script>
 </body>
 </html>
