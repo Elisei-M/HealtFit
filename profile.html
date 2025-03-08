@@ -262,8 +262,12 @@
     });
 
     // 3. Salvare profil
-    saveProfileBtn.onclick = async () => {
-      if (!currentUser) return;
+saveProfileBtn.onclick = async () => {
+  console.log("saveProfileBtn clicked!");
+  if (!currentUser) {
+    console.log("Nu există user logat");
+    return;
+  }
       const sexVal = sexInput.value;
       const ageVal = Number(ageInput.value);
       const weightVal = Number(weightInput.value);
