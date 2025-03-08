@@ -10,6 +10,7 @@
 
   <h2>Autentificare HealthFit</h2>
   <div id="auth-container">
+    <!-- Câmp opțional pentru numele utilizatorului -->
     <input type="text" id="name" placeholder="Nume">
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Parolă">
@@ -19,7 +20,90 @@
     <p id="status"></p>
   </div>
 
-  <!-- Import script principal (script.js) -->
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    // 1. Importăm din Firebase (CDN)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // 2. Configurația Firebase (completează cu datele tale reale)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+
+    // 3. Inițializăm Firebase (app, auth, db)
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 4. Referințe la elemente din HTML
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const registerBtn = document.getElementById("registerBtn");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const statusMsg = document.getElementById("status");
+
+    // 5. Înregistrare + Salvare în Firestore
+    registerBtn.onclick = function() {
+      const name = nameInput.value;
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+          // Salvăm date suplimentare în Firestore (colecția "users")
+          await setDoc(doc(db, "users", user.uid), {
+            name: name,
+            email: email,
+            uid: user.uid,
+            createdAt: new Date()
+          });
+
+          statusMsg.innerText = "✅ Utilizator creat și salvat!";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare: " + error.message;
+        });
+    };
+
+    // 6. Autentificare (Login)
+    loginBtn.onclick = function() {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          statusMsg.innerText = "✅ Autentificat!";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare: " + error.message;
+        });
+    };
+
+    // 7. Deconectare (Logout)
+    logoutBtn.onclick = function() {
+      signOut(auth).then(() => {
+        statusMsg.innerText = "✅ Deconectat!";
+      });
+    };
+  </script>
+
 </body>
 </html>
