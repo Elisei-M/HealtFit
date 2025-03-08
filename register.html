@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Fitness Champ</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form">
+      <h3 class="title">Create an Account</h3>
+      <form>
+        <div class="form-group">
+          <input type="text" id="name" required/>
+          <label>Name</label>
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" required/>
+          <label>Email</label>
+        </div>
+        <div class="form-group">
+          <input type="password" id="password" required/>
+          <label>Password</label>
+        </div>
+        <input type="button" value="Sign Up" class="submit" id="registerBtn"> 
+        <div class="row">
+          <p>Already have an account? <a href="login.html">Sign In</a></p>
+        </div>
+        <p id="status" style="text-align:center;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // CONFIGURARE FIREBASE
+    const firebaseConfig = {
+      apiKey: "CHEIA_TA_API",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // REFERINȚE ELEMENTE HTML
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const registerBtn = document.getElementById("registerBtn");
+    const statusMsg = document.getElementById("status");
+
+    // ÎNREGISTRARE + SALVARE ÎN FIRESTORE
+    registerBtn.onclick = function() {
+      const nameVal = nameInput.value;
+      const emailVal = emailInput.value;
+      const passVal = passwordInput.value;
+
+      createUserWithEmailAndPassword(auth, emailVal, passVal)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+
+          // Salvăm date suplimentare în colecția "users"
+          await setDoc(doc(db, "users", user.uid), {
+            name: nameVal,
+            email: emailVal,
+            uid: user.uid,
+            createdAt: new Date()
+          });
+
+          statusMsg.innerText = "✅ Cont creat cu succes!";
+          // Poți redirecționa către login, ex.:
+          // window.location.href = "login.html";
+        })
+        .catch((error) => {
+          statusMsg.innerText = "Eroare la înregistrare: " + error.message;
+        });
+    };
+  </script>
+</body>
+</html>
