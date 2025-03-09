@@ -1,11 +1,11 @@
-<!-- Conținutul exact al barei de navigație -->
+<!-- navbar.html -->
 <nav class="Navbar">
   <div class="container">
-    <div class="Logo">HealthFit.</div>
+    <div class="Logo">HealtFit.</div>
 
     <div id="menu" class="menu">
       <header class="inline">
-        <div class="Logo">HealthFit.</div>
+        <div class="Logo">HealtFit.</div>
         <button
           id="closeMenuBtn"
           title="Close Menu"
@@ -16,16 +16,20 @@
         </button>
       </header>
 
+      <!-- Linkuri principale -->
       <a href="index.html" class="NavLink">Home</a>
       <a href="profile.html" class="NavLink">Profil</a>
       <a href="nutritie.html" class="NavLink">Nutriție</a>
       <a href="workouts.html" class="NavLink">Antrenamente</a>
 
-      <!-- Link de Login/Logout (dinamic) -->
-      <a id="loginLink" href="login.html" class="NavLink">Login</a>
-      <a id="logoutLink" class="NavLink" style="display:none;">Logout</a>
+      <!-- Linkul de login (vizibil doar când user NEconectat) -->
+      <a href="login.html" id="loginLink" class="NavLink">Login</a>
+
+      <!-- Linkul de logout (vizibil doar când user e conectat) -->
+      <a href="#" id="logoutLink" class="NavLink" style="display: none;">Logout</a>
     </div>
 
+    <!-- Butonul hamburger (apare pe mobil) -->
     <button
       id="openMenuBtn"
       title="Open Menu"
