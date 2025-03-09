@@ -241,66 +241,59 @@
     let userDocRef = null;
 
     // 2. onAuthStateChanged
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        currentUser = user;
-        userDocRef = doc(db, "users", currentUser.uid);
-        // (Opțional) încărcăm datele existente
-        const snap = await getDoc(userDocRef);
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.sex) sexInput.value = data.sex;
-          if (data.age) ageInput.value = data.age;
-          if (data.weight) weightInput.value = data.weight;
-          if (data.height) heightInput.value = data.height;
-          if (data.activityLevel) activitySelect.value = data.activityLevel;
-          if (data.goal) goalSelect.value = data.goal;
-        }
-      }
-    });
+onAuthStateChanged(auth, async (user) => {
+  const debugMsg = document.getElementById("statusProfile"); // Folosim deja <p id="statusProfile">
+  
+  if (!user) {
+    debugMsg.textContent = "DEBUG: user e null → redirect la login.html";
+    window.location.href = "login.html";
+  } else {
+    debugMsg.textContent = "DEBUG: user este " + user.uid + " → continui";
+    
+    currentUser = user;
+    userDocRef = doc(db, "users", currentUser.uid);
+
+    // (Opțional) încărcăm datele existente
+    const snap = await getDoc(userDocRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.sex) sexInput.value = data.sex;
+      if (data.age) ageInput.value = data.age;
+      if (data.weight) weightInput.value = data.weight;
+      if (data.height) heightInput.value = data.height;
+      if (data.activityLevel) activitySelect.value = data.activityLevel;
+      if (data.goal) goalSelect.value = data.goal;
+    }
+  }
+});
+
 
     // 3. Salvare profil
 saveProfileBtn.onclick = async () => {
-  console.log("saveProfileBtn clicked!");
+  statusProfile.textContent = "DEBUG: Buton Salvează & Calculează a fost APĂSAT!";
+  
   if (!currentUser) {
-    console.log("Nu există user logat");
+    statusProfile.textContent += " | DEBUG: Nu există user logat, deci nu salvez.";
     return;
   }
-      const sexVal = sexInput.value;
-      const ageVal = Number(ageInput.value);
-      const weightVal = Number(weightInput.value);
-      const heightVal = Number(heightInput.value);
-      const activityVal = activitySelect.value;
-      const goalVal = goalSelect.value;
 
-      try {
-        await updateDoc(userDocRef, {
-          sex: sexVal,
-          age: ageVal,
-          weight: weightVal,
-          height: heightVal,
-          activityLevel: activityVal,
-          goal: goalVal
-        });
-        statusProfile.textContent = "Profil salvat!";
-      } catch (err) {
-        // Dacă doc nu există, folosește setDoc
-        await setDoc(userDocRef, {
-          sex: sexVal,
-          age: ageVal,
-          weight: weightVal,
-          height: heightVal,
-          activityLevel: activityVal,
-          goal: goalVal
-        });
-        statusProfile.textContent = "Profil creat!";
-      }
+  const sexVal = sexInput.value;
+  const ageVal = Number(ageInput.value);
+  // ... restul
 
-      // (Opțional) poți afișa aici un calcul BMR/TDEE
-      // ex: showRecommendations(...) => face fade-in la recommendationSection
-    };
+  try {
+    await updateDoc(userDocRef, {
+      sex: sexVal,
+      age: ageVal,
+      // ...
+    });
+    statusProfile.textContent = "Profil salvat!";
+  } catch (err) {
+    // ...
+    statusProfile.textContent = "Profil creat!";
+  }
+};
+
 
     // 4. Generăm programul (exerciții) în funcție de goal
     function generateProgram(goal) {
@@ -347,25 +340,29 @@ saveProfileBtn.onclick = async () => {
     }
 
     // 5. La click pe "Generează Program"
-    generateProgramBtn.onclick = async () => {
-      const snap = await getDoc(userDocRef);
-      if (!snap.exists()) {
-        statusProfile.textContent = "Completează întâi profilul, apoi generează programul.";
-        return;
-      }
-      const data = snap.data();
-      const goalVal = data.goal;
-      if (!goalVal) {
-        statusProfile.textContent = "Trebuie să ai un obiectiv (slabire, crestere_masa etc.).";
-        return;
-      }
+generateProgramBtn.onclick = async () => {
+  statusProfile.textContent = "DEBUG: Buton Generează Program a fost APĂSAT!";
 
-      const program = generateProgram(goalVal);
-      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-      await setDoc(programDocRef, { days: program });
+  const snap = await getDoc(userDocRef);
+  if (!snap.exists()) {
+    statusProfile.textContent += " | Nu există userDocRef, completează profilul întâi!";
+    return;
+  }
+  const data = snap.data();
+  const goalVal = data.goal;
+  if (!goalVal) {
+    statusProfile.textContent += " | Nu există goal în profil, deci nu pot genera program.";
+    return;
+  }
 
-      statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
-    };
+  // generare
+  const program = generateProgram(goalVal);
+  const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+  await setDoc(programDocRef, { days: program });
+
+  statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+};
+
 
     // 6. Logout
     logoutBtn.onclick = () => {
