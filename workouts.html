@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>HealthFit - Workouts</title>
-  <!-- Poți folosi același style.css sau direct <style> cu ce e necesar -->
+
+  <!-- STILURI: Păstrăm o parte din CSS-ul anterior + noul snippet -->
   <style>
-    /* RESET DE BAZĂ */
+    /* Reset minimal */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: Arial, sans-serif;
       background: #f0f0f0;
@@ -33,7 +35,7 @@
       background: rgba(255,255,255,0.2);
     }
 
-    /* Containerul programului + buton reset etc. */
+    /* Container stânga-dreapta */
     .workouts-top-container {
       max-width: 1200px;
       margin: 20px auto;
@@ -41,11 +43,11 @@
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-    .workouts-header {
       display: flex;
       gap: 20px;
     }
+
+    /* Stânga: Program antrenamente */
     .program-box {
       flex: 1;
       background: #f7f7f7;
@@ -95,12 +97,15 @@
       color: #333;
     }
 
-    /* Box info profil (goal, activity) */
+    /* Dreapta: profil + imagine front/back */
     .profile-info-box {
-      flex: 1;
+      flex: 1.2; /* ceva mai lat */
       background: #f9f9f9;
       padding: 15px;
       border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
     .profile-info-box h3 {
       margin-top: 0;
@@ -109,101 +114,98 @@
       margin: 5px 0;
     }
 
-    /* SNIPPET-UL TĂU EXACT CU MAIN, BACKGROUND, ETC. */
-    html, body {
-      height: 100%; /* ca să nu apară scrollbaruri ci să folosim min-height mai jos */
-    }
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 80vh; /* ajustăm să nu se suprapună cu restul */
-      width: 100%;
-      padding: 2rem 0;
-      background: linear-gradient(25deg, #111, #555);
-    }
-    main .info {
-      font-size: .8rem;
+    /* Container pentru imaginea front/back */
+    .content {
+      /* un container intern */
       display: block;
-      width: 250px;
-      padding-top: 200px;
-      color: #fff;
-      padding-left: 2rem;
-      opacity: .5;
+      margin: auto;
+      text-align: center;
+      position: relative;
     }
-    main .info:hover {
-      opacity: 1;
+    .svg-container {
+      position: relative;
+      width: 300px;
+      height: 536px;
+      margin: 0 auto; /* centrare */
+      display: block;
+      perspective: 2000px; /* 3D */
     }
-    main .info a {
-      color: #fff;
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: block;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+    }
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+    .card figure {
+      margin: 0;
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+    .card .back {
+      transform: rotateY(180deg);
+    }
+    #frontSvg, #backSvg {
+      width: 100%;
+      height: 100%;
     }
 
-    .muscle-groups {
-      position: relative;
-      background: #eee;
-      width: 320px;
-      padding: .5rem 1rem;
-      border-radius: 5px;
-      box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, .5);
-      overflow: hidden;
-      border-top: .75rem solid #00BCD4;
-    }
-    .muscle-groups h1 {
-      margin: -.5rem -1rem 1rem;
-      padding: 0 1rem .75rem;
-      background: #00BCD4;
-      color: #eee;
-      text-align: center;
-      font-size: 1.25rem;
-    }
-    .muscle-groups h2 {
-      margin: 0 0 .5rem;
-      font-size: .8rem;
-      letter-spacing: -.03em;
-      text-transform: uppercase;
-    }
-    .muscle-groups label + h2 { margin-top: 1rem; }
-    .muscle-groups label {
-      width: 50px;
-      display: block;
-      margin-bottom: .5rem;
-      cursor: pointer;
-      font-size: .7rem;
-      opacity: .5;
-      position: relative;
-      border-left: 5px solid transparent;
-      padding-left: 6px;
-      margin-left: -11px;
-      transition: opacity 0.2s;
-    }
-    .muscle-groups label:hover, .muscle-groups label.hover {
-      opacity: 1;
-      border-color: rgba(0, 0, 0, .75);
-    }
-    .muscle-groups input:checked + label {
-      opacity: 1;
-      font-weight: bold;
-      color: #00BCD4;
-    }
-    .muscle-groups svg {
+    .labelBox {
       position: absolute;
-      right: -1.5rem;
-      bottom: 3rem;
-      height: 350px;
-      z-index: 100;
+      display: block;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      transform: scale(0);
+      transition: all 0.25s ease;
+      transform-origin: right center;
     }
-.muscle-groups svg g[id] path {
-  fill: #666 !important;  /* forțăm un gri mai închis */
-  opacity: 1;            /* nu mai estompezi silueta */
-  transition: fill 0.25s ease-in-out;
-}
-    .muscle-groups svg g g[id]:hover path {
-      cursor: pointer;
-      opacity: .5;
-      fill: #00BCD4 !important;
+    .labelBox.visible {
+      transform: scale(1);
     }
-    .muscles-helper {
-      display: none;
+    .labelBox:after {
+      content: '';
+      width: 200px;
+      border-top: 1px solid #8dc63f;
+      position: absolute;
+      right: 0px;
+      top: 50%;
+      margin-top: -1px;
+    }
+    .labelBox .name {
+      display: block;
+      font-size: 32px;
+      line-height: 32px;
+      color: #8dc63f;
+      text-align: left;
+    }
+    .labelBox .description {
+      display: block;
+      font-size: 20px;
+      line-height: 22px;
+      color: #ccc;
+      text-align: left;
+    }
+
+    /* Buton rotate */
+    .rotateBtn {
+      display: inline-block;
+      background: #ff6b00;
+      color: #fff;
+      padding: 8px 16px;
+      text-decoration: none;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+    .rotateBtn:hover {
+      background: #e65f00;
     }
   </style>
 </head>
@@ -218,80 +220,51 @@
     <li><button id="logoutBtn">Logout</button></li>
   </ul>
 
-  <!-- Container sus cu programul + info profil -->
+  <!-- Container stânga/dreapta -->
   <div class="workouts-top-container">
-    <div class="workouts-header">
-      <!-- Stânga: Program antrenamente -->
-      <div class="program-box">
-        <h2>Program de Antrenamente</h2>
-        <div id="daysContainer"></div>
-        <button id="resetBtn" class="reset-btn">Reset Program</button>
-        <p id="statusMsg"></p>
-      </div>
+    <!-- Stânga: Program -->
+    <div class="program-box">
+      <h2>Program de Antrenamente</h2>
+      <div id="daysContainer"></div>
+      <button id="resetBtn" class="reset-btn">Reset Program</button>
+      <p id="statusMsg"></p>
+    </div>
 
-      <!-- Dreapta: Info profil -->
-      <div class="profile-info-box">
+    <!-- Dreapta: Profil + Imagine front/back -->
+    <div class="profile-info-box">
+      <!-- Info profil -->
+      <div>
         <h3>Informații din Profil</h3>
         <p id="goalInfo">Obiectiv: ...</p>
         <p id="activityInfo">Nivel de activitate: ...</p>
         <p>Recomandat să te antrenezi de 3-4 ori pe săptămână.</p>
       </div>
+
+      <!-- Imagine front/back -->
+      <div class="content">
+        <div class="svg-container">
+          <div class="card">
+            <figure class="front">
+              <svg id="frontSvg"></svg>
+            </figure>
+            <figure class="back">
+              <svg id="backSvg"></svg>
+            </figure>
+          </div>
+          <div class="labelBox">
+            <span class="name"></span>
+            <span class="description"></span>
+          </div>
+        </div>
+        <a href="#" class="rotateBtn">View Back</a>
+      </div>
     </div>
   </div>
 
-  <!-- Mai jos integrăm EXACT snippet-ul tău, cu <main> -->
-  <main>
-    <div class="muscle-groups">
-      <h1>Muscle Group Selector</h1>
-      <h2>Arms</h2>
-      <input type="checkbox" class="biceps muscles-helper" id="biceps">
-        <label for="biceps">Biceps</label>
-      <input type="checkbox" class="deltoids muscles-helper" id="deltoids">
-        <label for="deltoids">Deltoids</label>
-      <input type="checkbox" class="forearms muscles-helper" id="forearms">
-        <label for="forearms">Forearms</label>
-      <input type="checkbox" class="triceps muscles-helper" id="triceps">
-        <label for="triceps">Triceps</label>
-
-      <h2>Back</h2>
-      <input type="checkbox" class="trapezius muscles-helper" id="trapezius">
-        <label for="trapezius">Trapezius</label>
-      <input type="checkbox" class="lats muscles-helper" id="lats">
-        <label for="lats">Lats</label>
-
-      <h2>Core</h2>
-      <input type="checkbox" class="abs muscles-helper" id="abs">
-        <label for="abs">Abs</label>
-      <input type="checkbox" class="obliques muscles-helper" id="obliques">
-        <label for="obliques">Obliques</label>
-      <input type="checkbox" class="pectorals muscles-helper" id="pectorals">
-        <label for="pectorals">Pectorals</label>
-
-      <h2>Legs</h2>
-      <input type="checkbox" class="adductors muscles-helper" id="adductors">
-        <label for="adductors">Adductors</label>
-      <input type="checkbox" class="calves muscles-helper" id="calves">
-        <label for="calves">Calves</label>
-      <input type="checkbox" class="hamstrings muscles-helper" id="hamstrings">
-        <label for="hamstrings">Hamstrings</label>
-      <input type="checkbox" class="glutes muscles-helper" id="glutes">
-        <label for="glutes">Glutes</label>
-      <input type="checkbox" class="quads muscles-helper" id="quads">
-        <label for="quads">Quads</label>
-
-      <!-- SVG EXACT cum l-ai dat -->
-      <svg width="100%" height="100%" viewBox="0 0 176 207" ... >
-        <!-- TOT conținutul tău de <svg> -->
-      </svg>
-    </div>
-
-    <!-- Info lateral, la fel ca snippet-ul -->
-    <div class="info">
-      <p>Uses mostly plain HTML and SASS, but also uses a bit of Javascript (vanilla) for the hover effect...</p>
-      <p>Try clicking the muscle groups or the labels.</p>
-      <p>By <a href="http://ryanmpoe.com">Ryan M. Poe</a> (<a href="https://twitter.com/RyanPoe85">@RyanPoe85</a>) for the fitness website <a href="http://w8mngr.com/">w8mngr.com</a></p>
-    </div>
-  </main>
+  <!-- JS + Snap.svg + hoverIntent etc. -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.10.1/jquery.hoverIntent.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
@@ -309,7 +282,7 @@
 
     // 1. Config
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "API_KEY_HERE",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -320,13 +293,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ELEMENTE PENTRU PROGRAM
+    // ELEMENTE
     const logoutBtn = document.getElementById("logoutBtn");
     const daysContainer = document.getElementById("daysContainer");
     const resetBtn = document.getElementById("resetBtn");
     const statusMsg = document.getElementById("statusMsg");
     const goalInfo = document.getElementById("goalInfo");
     const activityInfo = document.getElementById("activityInfo");
+    const rotateBtn = document.querySelector(".rotateBtn");
 
     let currentUser = null;
     let programDocRef = null;
@@ -339,8 +313,9 @@
       } else {
         currentUser = user;
         programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-        await loadProfileInfo(); // info goal, activity
-        await loadProgram();     // program
+        await loadProfileInfo();
+        await loadProgram();
+        initFrontBackSVG(); // Snap.svg init
       }
     });
 
@@ -354,7 +329,6 @@
       }
     }
 
-    // 3. loadProgram
     async function loadProgram() {
       const snap = await getDoc(programDocRef);
       if (!snap.exists()) {
@@ -367,10 +341,9 @@
         return;
       }
       renderDays(programData.days);
-      updateMusclesRecovery();
+      // Ex: updateMusclesRecovery() -> adaptare la front/back?
     }
 
-    // 4. Afișăm antrenamentele
     function renderDays(daysArray) {
       daysContainer.innerHTML = "";
       daysArray.forEach((dayObj, dayIndex) => {
@@ -378,58 +351,45 @@
         dayDiv.classList.add("program-day");
 
         // Bifa
-        const dayCheckbox = document.createElement("input");
-        dayCheckbox.type = "checkbox";
-        dayCheckbox.checked = dayObj.done === true;
-        dayCheckbox.onchange = () => toggleDay(dayIndex, dayCheckbox.checked);
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!dayObj.done;
+        cb.onchange = () => toggleDay(dayIndex, cb.checked);
 
-        // Titlu
-        const dayTitle = document.createElement("h4");
-        dayTitle.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
+        const h4 = document.createElement("h4");
+        h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
 
-        // Buton "Vezi exercițiile"
         const showBtn = document.createElement("button");
         showBtn.textContent = "Vezi exercițiile";
         showBtn.style.marginLeft = "10px";
+        const exercisesUL = document.createElement("ul");
+        exercisesUL.classList.add("exercise-list");
         showBtn.onclick = () => {
           exercisesUL.classList.toggle("active");
         };
 
-        // Container top (checkbox + titlu + buton)
-        const topDiv = document.createElement("div");
-        topDiv.appendChild(dayCheckbox);
-        topDiv.appendChild(dayTitle);
-        topDiv.appendChild(showBtn);
-
-        dayDiv.appendChild(topDiv);
-
-        // Lista exerciții
-        const exercisesUL = document.createElement("ul");
-        exercisesUL.classList.add("exercise-list");
         dayObj.exercises.forEach(ex => {
           const li = document.createElement("li");
-          li.textContent = ex.name + " - " + ex.description +
-            (ex.alternatives && ex.alternatives.length>0
-              ? " [Alternativ: " + ex.alternatives.join(", ") + "]"
-              : "");
+          li.textContent = ex.name + " - " + ex.description;
           exercisesUL.appendChild(li);
         });
-        dayDiv.appendChild(exercisesUL);
 
+        dayDiv.appendChild(cb);
+        dayDiv.appendChild(h4);
+        dayDiv.appendChild(showBtn);
+        dayDiv.appendChild(exercisesUL);
         daysContainer.appendChild(dayDiv);
       });
     }
 
-    // 5. toggleDay
     async function toggleDay(dayIndex, isDone) {
       programData.days[dayIndex].done = isDone;
       programData.days[dayIndex].doneDate = isDone ? new Date().toISOString() : null;
       await updateDoc(programDocRef, { days: programData.days });
       renderDays(programData.days);
-      updateMusclesRecovery();
+      // updateMusclesRecovery() ...
     }
 
-    // 6. Reset
     resetBtn.onclick = async () => {
       if (!programData || !programData.days) return;
       programData.days.forEach(day => {
@@ -439,88 +399,95 @@
       await updateDoc(programDocRef, { days: programData.days });
       statusMsg.textContent = "Program resetat!";
       renderDays(programData.days);
-      updateMusclesRecovery();
     };
 
-    // 7. updateMusclesRecovery => colorăm mușchii
-    function updateMusclesRecovery() {
-      // Debifăm toate grupele
-      const muscleIDs = [
-        "biceps","triceps","deltoids","forearms","trapezius","lats",
-        "abs","obliques","pectorals","adductors","calves","hamstrings",
-        "glutes","quads"
-      ];
-      muscleIDs.forEach(id => {
-        const inputEl = document.getElementById(id);
-        if (inputEl) inputEl.checked = false;
-      });
-
-      if (!programData || !programData.days) return;
-      const now = new Date();
-      programData.days.forEach(day => {
-        if (day.done && day.doneDate) {
-          const d = new Date(day.doneDate);
-          const diffH = (now - d) / 36e5;
-          if (diffH < 48) {
-            // Bifăm grupele => colorate
-            day.muscleGroups.forEach(mg => {
-              checkMuscleGroup(mg.toLowerCase());
-            });
-          }
-        }
-      });
-    }
-
-    function checkMuscleGroup(group) {
-      const map = {
-        "chest": ["pectorals"],
-        "triceps": ["triceps"],
-        "biceps": ["biceps"],
-        "back": ["lats","trapezius"],
-        "legs": ["quads","hamstrings","glutes","calves","adductors"],
-        "shoulders": ["deltoids"],
-        "abs": ["abs","obliques"]
-      };
-      const ids = map[group];
-      if (!ids) return;
-      ids.forEach(id => {
-        const inputEl = document.getElementById(id);
-        if (inputEl) inputEl.checked = true;
-      });
-    }
-
-    // 8. Logout
     logoutBtn.onclick = () => {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     };
 
-    // 9. Cod JS snippet: hover/click pe mușchi
-    document.querySelectorAll(".muscle-groups svg g g[id]").forEach(function(group) {
-      group.addEventListener('mouseover', function(ev) {
-        const theID = getGroupID(ev);
-        const label = document.querySelector(`label[for=${theID}]`);
-        if (label) label.classList.add("hover");
-      });
-      group.addEventListener('mouseout', function(ev) {
-        const theID = getGroupID(ev);
-        const label = document.querySelector(`label[for=${theID}]`);
-        if (label) label.classList.remove("hover");
-      });
-      group.addEventListener('click', function(ev) {
-        const theID = getGroupID(ev);
-        const input = document.getElementById(theID);
-        if (input) input.checked = !input.checked;
-      });
-    });
+    // =========== FRONT/BACK LOGIC (Snap.svg) ===========
+    function initFrontBackSVG() {
+      const frontSVG = Snap("#frontSvg");
+      const backSVG = Snap("#backSvg");
 
-    function getGroupID(ev) {
-      let target = ev.currentTarget;
-      if (!target.id && target.parentNode) {
-        target = target.parentNode;
+      const $labelBox = document.querySelector(".labelBox");
+      const $labelName = $labelBox.querySelector(".name");
+      const $labelDesc = $labelBox.querySelector(".description");
+
+      // LOAD FRONT
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", function (data) {
+        frontSVG.append(data);
+        // Aici poți să selectezi elementele #muscleChest, etc. dacă vrei
+        // Aplica logica hoverIntent
+        const $groupsFront = ["#muscleChest","#muscleArmsFront","#muscleLegsFront"];
+        $groupsFront.forEach(sel => {
+          const el = document.querySelector(sel);
+          if (el) {
+            $(el).hoverIntent({
+              over: () => activateMuscles(el),
+              out: () => deactivateMuscles(el),
+              interval: 100,
+              timeout: 200
+            });
+          }
+        });
+      });
+
+      // LOAD BACK
+      Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", function (data) {
+        backSVG.append(data);
+        // Aici la fel
+        const $groupsBack = ["#muscleBack","#muscleArmsBack","#muscleLegsBack"];
+        $groupsBack.forEach(sel => {
+          const el = document.querySelector(sel);
+          if (el) {
+            $(el).hoverIntent({
+              over: () => activateMuscles(el),
+              out: () => deactivateMuscles(el),
+              interval: 100,
+              timeout: 200
+            });
+          }
+        });
+      });
+
+      function activateMuscles(domEl) {
+        // ex. fill green
+        $(domEl).find(".muscle").css({ fill: "#8dc63f" });
+        // name/desc
+        let id = domEl.id; // ex. "muscleChest"
+        let name = "???";
+        let desc = "...";
+        if (id==="muscleChest") { name="Chest"; desc="Pectorals"; }
+        // etc. extinzi logică
+
+        $labelName.textContent = name;
+        $labelDesc.textContent = desc;
+        setTimeout(() => {
+          $labelBox.classList.add("visible");
+          // Poți ajusta .style.marginTop, .style.marginLeft etc.
+          $labelBox.style.marginTop = "-300px";
+          $labelBox.style.marginLeft= "-450px";
+        }, 200);
       }
-      return (target.id || "").toLowerCase();
+      function deactivateMuscles(domEl) {
+        $(domEl).find(".muscle").css({ fill: "#515761" });
+        $labelBox.classList.remove("visible");
+      }
+
+      rotateBtn.addEventListener("click", function(e){
+        e.preventDefault();
+        const cardEl = document.querySelector(".card");
+        if (cardEl.classList.contains("flipped")) {
+          cardEl.classList.remove("flipped");
+          rotateBtn.textContent = "View Back";
+        } else {
+          cardEl.classList.add("flipped");
+          rotateBtn.textContent = "View Front";
+        }
+      });
     }
   </script>
 </body>
