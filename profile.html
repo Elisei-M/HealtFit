@@ -10,12 +10,13 @@
       background: #f0f0f0;
       margin: 0; padding: 0;
     }
-    /* Navbar simplu */
+    /* Navbar */
     .navbar {
       list-style: none;
       display: flex;
       background: rgba(0, 0, 0, 0.8);
       padding: 10px;
+      margin: 0;
     }
     .navbar li {
       margin-right: 15px;
@@ -233,49 +234,272 @@
       displayRecommendations(rec);
     };
 
-    // 4. Generăm program
-  generateProgramBtn.onclick = async () => {
-    try {
-      statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
+    // 4. Generăm program (automat dintr-o "bibliotecă" de exerciții)
+    generateProgramBtn.onclick = async () => {
+      try {
+        statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
 
-      if (!currentUser) {
-        statusProfile.textContent += " | User e null, deci nu pot genera.";
-        return;
+        if (!currentUser) {
+          statusProfile.textContent += " | User e null, deci nu pot genera.";
+          return;
+        }
+        statusProfile.textContent += " | OK user.";
+
+        const snap = await getDoc(userDocRef);
+        if (!snap.exists()) {
+          statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
+          return;
+        }
+        statusProfile.textContent += " | OK profil doc.";
+
+        const data = snap.data();
+        const goalVal = data.goal;
+        if (!goalVal) {
+          statusProfile.textContent += " | N-ai setat goal în profil!";
+          return;
+        }
+        statusProfile.textContent += " | OK goal: " + goalVal;
+
+        // 4.1 Generăm program dinamic
+        const program = generateProgram(goalVal);
+        const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+
+        // 4.2 Salvăm programul
+        await setDoc(programDocRef, { days: program });
+        statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
+
+      } catch (e) {
+        statusProfile.textContent = "Eroare la generarea programului: " + e.message;
       }
-      statusProfile.textContent += " | OK user.";
+    };
 
-      const snap = await getDoc(userDocRef);
-      if (!snap.exists()) {
-        statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
-        return;
+    // ~~~~~~~~ BIBLIOTECĂ EXERCIȚII ~~~~~~~~
+    // Cheia: muscleGroup => array de exerciții (name, description, alternatives)
+    const exercisesLibrary = {
+      chest: [
+        { 
+          name: "Bench Press", 
+          description: "Exercițiu compus pentru piept...", 
+          alternatives: ["Smith Machine Bench Press", "Push-ups"] 
+        },
+        { 
+          name: "Dumbbell Chest Fly", 
+          description: "Izolare piept...", 
+          alternatives: ["Cable Fly", "Machine Fly"] 
+        },
+        {
+          name: "Incline Dumbbell Press",
+          description: "Piept parte superioară...",
+          alternatives: ["Incline Barbell Press"]
+        }
+      ],
+      triceps: [
+        {
+          name: "Parallel Bar Dips (Triceps focus)",
+          description: "Exercițiu compus pt. triceps...",
+          alternatives: ["Bench Dips"]
+        },
+        {
+          name: "Tracțiuni cu gantera (Triceps)",
+          description: "Triceps overhead extension...",
+          alternatives: []
+        }
+      ],
+      back: [
+        {
+          name: "Lat Pulldown",
+          description: "Pentru dorsal...",
+          alternatives: ["Pull-ups"]
+        },
+        {
+          name: "Seated Cable Row",
+          description: "...",
+          alternatives: []
+        }
+      ],
+      biceps: [
+        {
+          name: "Barbell Biceps Curl",
+          description: "...",
+          alternatives: ["Dumbbell Curl"]
+        },
+        {
+          name: "Hammer Curl",
+          description: "...",
+          alternatives: []
+        }
+      ],
+      legs: [
+        {
+          name: "Squat",
+          description: "Exercițiu compus pentru picioare",
+          alternatives: ["Leg Press"]
+        },
+        {
+          name: "Lunges",
+          description: "...",
+          alternatives: []
+        }
+      ],
+      shoulders: [
+        {
+          name: "Shoulder Press",
+          description: "...",
+          alternatives: ["Arnold Press"]
+        },
+        {
+          name: "Lateral Raises",
+          description: "...",
+          alternatives: []
+        }
+      ]
+    };
+
+    // 4.3 Funcție care generează programul pe baza obiectivului
+    function generateProgram(goal) {
+      // Poți face 4 zile standard, adaptate la goal
+      // Exemplu: pentru "slabire" => 4 zile: chest&triceps, back&biceps, legs&shoulders, cardio
+      if (goal === "slabire") {
+        return [
+          {
+            title: "Antrenament 1 (Piept & Triceps)",
+            muscleGroups: ["chest", "triceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["chest","triceps"])
+          },
+          {
+            title: "Antrenament 2 (Spate & Biceps)",
+            muscleGroups: ["back", "biceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["back","biceps"])
+          },
+          {
+            title: "Antrenament 3 (Picioare & Umeri)",
+            muscleGroups: ["legs","shoulders"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["legs","shoulders"])
+          },
+          {
+            title: "Antrenament 4 (Cardio / Full Body)",
+            muscleGroups: ["chest","back","legs"],
+            done: false,
+            doneDate: null,
+            exercises: [
+              {
+                name: "Burpees",
+                description: "...",
+                alternatives: []
+              },
+              {
+                name: "Plank",
+                description: "...",
+                alternatives: []
+              }
+            ]
+          }
+        ];
+      } 
+      else if (goal === "crestere_masa") {
+        // alt exemplu: chest&biceps, back&triceps, legs&shoulders, etc.
+        return [
+          {
+            title: "Antrenament 1 (Piept & Biceps)",
+            muscleGroups: ["chest","biceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["chest","biceps"])
+          },
+          {
+            title: "Antrenament 2 (Spate & Triceps)",
+            muscleGroups: ["back","triceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["back","triceps"])
+          },
+          {
+            title: "Antrenament 3 (Picioare & Umeri)",
+            muscleGroups: ["legs","shoulders"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["legs","shoulders"])
+          },
+          {
+            title: "Antrenament 4 (Piept & Biceps - variantă 2)",
+            muscleGroups: ["chest","biceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["chest","biceps"])
+          }
+        ];
       }
-      statusProfile.textContent += " | OK profil doc.";
-
-      const data = snap.data();
-      const goalVal = data.goal;
-      if (!goalVal) {
-        statusProfile.textContent += " | N-ai setat goal în profil!";
-        return;
+      else if (goal === "definire") {
+        // e similar cu "slabire" dar putem schimba
+        return [
+          {
+            title: "Antrenament 1 (Piept & Triceps)",
+            muscleGroups: ["chest", "triceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["chest","triceps"])
+          },
+          {
+            title: "Antrenament 2 (Spate & Biceps)",
+            muscleGroups: ["back","biceps"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["back","biceps"])
+          },
+          {
+            title: "Antrenament 3 (Picioare & Umeri)",
+            muscleGroups: ["legs","shoulders"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["legs","shoulders"])
+          },
+          {
+            title: "Antrenament 4 (Cardio / HIIT)",
+            muscleGroups: ["legs"], 
+            done: false,
+            doneDate: null,
+            exercises: [
+              { name: "Sprinting", description: "Intervale HIIT", alternatives: [] }
+            ]
+          }
+        ];
       }
-      statusProfile.textContent += " | OK goal: " + goalVal;
-
-      const program = generateProgram(goalVal);
-      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-
-      await setDoc(programDocRef, { days: program });
-      statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
-
-    } catch (e) {
-      // DACĂ e vreo eroare de runtime, o afișăm aici
-      statusProfile.textContent = "Eroare la generarea programului: " + e.message;
+      else {
+        // fallback (goal=ingrasare sau necunoscut)
+        return [
+          {
+            title: "Antrenament 1 (Full Body)",
+            muscleGroups: ["chest","back","legs"],
+            done: false,
+            doneDate: null,
+            exercises: gatherExercises(["chest","back","legs"])
+          }
+        ];
+      }
     }
-  };
 
+    // 4.4 Funcție care ia exerciții din exercisesLibrary pentru grupele date
+    function gatherExercises(muscleGroups) {
+      let result = [];
+      // Exemplu simplu: luăm 2 exerciții pentru fiecare grupă
+      muscleGroups.forEach(mg => {
+        const lib = exercisesLibrary[mg] || [];
+        // Dacă vrei random, extragi random 2. De exemplu:
+        // result.push( ... pickRandom(lib, 2) );
+        // Dar aici punem TOT ce e în library pentru mg:
+        result = result.concat(lib);
+      });
+      return result;
+    }
 
-
-    // 5. Funcție de calcul recomandări
+    // ~~~~~~~~ Calcule Recomandări + Afișare ~~~~~~~~
     function calculateRecommendations(sex, age, weight, height, activity, goal) {
-      // Ex. Mifflin-St Jeor minimal
       let BMR;
       if (sex === "barbat") {
         BMR = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -283,12 +507,12 @@
         BMR = 10 * weight + 6.25 * height - 5 * age - 161;
       }
 
-      let activityFactor = 1.2; // sedentar default
+      let activityFactor = 1.2;
       if (activity === "moderat") activityFactor = 1.375;
       if (activity === "activ") activityFactor = 1.55;
       if (activity === "foarteActiv") activityFactor = 1.725;
 
-      const TDEE = BMR * activityFactor; // menținere
+      const TDEE = BMR * activityFactor;
       let targetCalories = TDEE;
       let messageGoal = "";
 
@@ -308,7 +532,6 @@
         messageGoal = "nu ai selectat un obiectiv clar";
       }
 
-      // Simplu: macros (30% proteine, 40% carbo, 30% grăsimi)
       const proteinCals = 0.3 * targetCalories;
       const carbCals = 0.4 * targetCalories;
       const fatCals = 0.3 * targetCalories;
@@ -317,7 +540,6 @@
       const carbGrams = Math.round(carbCals / 4);
       const fatGrams = Math.round(fatCals / 9);
 
-      // Apă (35 ml / kg)
       const waterLiters = ((weight || 70) * 35) / 1000;
 
       return {
@@ -332,7 +554,6 @@
       };
     }
 
-    // 6. Afișăm recomandările
     function displayRecommendations(rec) {
       recommendationText.innerHTML = `
         <p><strong>Calorii menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
