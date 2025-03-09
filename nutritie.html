@@ -3,65 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <title>HealthFit - Nutriție</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+    }
+    .navbar {
+      display: flex; list-style: none;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px; margin: 0;
+    }
+    .navbar li { margin-right: 15px; }
+    .navbar a, .navbar button {
+      color: #fff; text-decoration: none;
+      padding: 5px 10px; border: none; background: none;
+      cursor: pointer;
+    }
+    .navbar a:hover, .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+    h3.title { margin-top: 0; margin-bottom: 10px; }
+    .form-group {
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%; padding: 8px;
+    }
+    #statusMeal {
+      margin-top: 10px;
+      color: #333;
+      text-align: center;
+    }
+    #mealsList li {
+      margin-bottom: 5px;
+    }
+    #totals {
+      margin-top: 10px;
+      color: #333;
+      font-weight: bold;
+    }
+    .date-box {
+      margin-bottom: 15px;
+    }
+    .date-box label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .logout-btn {
+      background: #444; color: #fff; padding: 8px 16px;
+      border: none; cursor: pointer; border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Navbar simplu -->
-  <header>
-    <nav>
-      <ul class="navbar">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="profile.html">Profil</a></li>
-        <li><a href="workouts.html">Workouts</a></li>
-        <li><button id="logoutBtn">Logout</button></li>
-      </ul>
-    </nav>
-  </header>
+  <!-- Navbar -->
+  <ul class="navbar">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="profile.html">Profil</a></li>
+    <li><a href="workouts.html">Workouts</a></li>
+    <li><a href="nutritie.html">Nutriție</a></li>
+    <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+  </ul>
 
+  <!-- Selectare data + box adaugare masa -->
   <div class="container">
-    <div class="form">
-      <h3 class="title">Adaugă Masă</h3>
-      <form>
-        <!-- Nume masă (Mic dejun, Prânz, Cină, Gustare) -->
-        <div class="form-group">
-          <input type="text" id="mealName" required/>
-          <label>Nume Masă</label>
-        </div>
-        <!-- Calorii -->
-        <div class="form-group">
-          <input type="number" id="calories" required/>
-          <label>Calorii</label>
-        </div>
-        <!-- Proteine -->
-        <div class="form-group">
-          <input type="number" id="proteins" required/>
-          <label>Proteine (g)</label>
-        </div>
-        <!-- Carbohidrați -->
-        <div class="form-group">
-          <input type="number" id="carbs" required/>
-          <label>Carbohidrați (g)</label>
-        </div>
-        <!-- Grăsimi -->
-        <div class="form-group">
-          <input type="number" id="fats" required/>
-          <label>Grăsimi (g)</label>
-        </div>
+    <h3 class="title">Nutriție - Adaugă Masă</h3>
 
-        <input type="button" value="Adaugă Masă" class="submit" id="addMealBtn">
-        <p id="statusMeal" style="text-align:center;"></p>
-      </form>
+    <!-- Selectare dată (pentru a adăuga mesele pe o anumită zi) -->
+    <div class="date-box">
+      <label for="mealDate">Data:</label>
+      <input type="date" id="mealDate" />
     </div>
+
+    <div class="form-group">
+      <label for="mealName">Nume Masă</label>
+      <input type="text" id="mealName" placeholder="Mic dejun, Prânz, Gustare..." />
+    </div>
+    <div class="form-group">
+      <label for="calories">Calorii</label>
+      <input type="number" id="calories" placeholder="Ex: 500" />
+    </div>
+    <div class="form-group">
+      <label for="proteins">Proteine (g)</label>
+      <input type="number" id="proteins" placeholder="Ex: 30" />
+    </div>
+    <div class="form-group">
+      <label for="carbs">Carbohidrați (g)</label>
+      <input type="number" id="carbs" placeholder="Ex: 50" />
+    </div>
+    <div class="form-group">
+      <label for="fats">Grăsimi (g)</label>
+      <input type="number" id="fats" placeholder="Ex: 10" />
+    </div>
+
+    <button id="addMealBtn">Adaugă Masă</button>
+    <p id="statusMeal"></p>
   </div>
 
-  <!-- Afișare mese + total zilnic -->
+  <!-- Afișare mese + totaluri zilnice + comparare cu recomandări -->
   <div class="container">
-    <div class="form">
-      <h3 class="title">Mesele Zilnice</h3>
-      <ul id="mealsList" style="color:#fff; list-style:none; padding:0;"></ul>
-      <p id="totals" style="color:#fff; margin-top:10px;"></p>
-    </div>
+    <h3 class="title">Mesele Zilnice</h3>
+    <ul id="mealsList"></ul>
+    <p id="totals"></p>
+    <p id="compareRecommended" style="color:#333;"></p>
   </div>
 
   <script type="module">
@@ -74,13 +135,16 @@
     import {
       getFirestore,
       collection,
+      query,
+      where,
       addDoc,
       getDocs,
       doc,
-      getDoc
+      getDoc,
+      orderBy
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Configurație Firebase
+    // === Config Firebase ===
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -93,7 +157,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 2. Elemente HTML
+    // === Element refs ===
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mealDateInput = document.getElementById("mealDate");
     const mealNameInput = document.getElementById("mealName");
     const caloriesInput = document.getElementById("calories");
     const proteinsInput = document.getElementById("proteins");
@@ -103,128 +169,542 @@
     const statusMeal = document.getElementById("statusMeal");
     const mealsList = document.getElementById("mealsList");
     const totalsEl = document.getElementById("totals");
-    const logoutBtn = document.getElementById("logoutBtn");
+    const compareRecommendedEl = document.getElementById("compareRecommended");
 
     let currentUser = null;
 
-    // 3. Verificăm user-ul
+    // Stocăm aici recomandările userului (calorii, proteine etc.)
+    let recommendedCalories = 0;
+    let recommendedProteins = 0;
+    let recommendedCarbs = 0;
+    let recommendedFats = 0;
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Afișăm mesele existente
+        // 1) Citim recomandările din /users/{uid}
+        await loadUserRecommendations();
+        // 2) Setăm data implicită la azi
+        mealDateInput.value = new Date().toISOString().split("T")[0];
+        // 3) Afișăm mesele
         await loadMeals();
-        // (Opțional) afișăm macros recomandate din /users/{uid} dacă vrei
-        // ex: showRecommendedMacros();
       }
     });
 
-    // 4. Funcție de încărcare a meselor din subcolecția "meals"
-    async function loadMeals() {
+    // === Citim doc-ul /users/{uid} și extragem recommendedXxxx ===
+    async function loadUserRecommendations() {
       if (!currentUser) return;
-
-      // Preluăm toate mesele
-      const mealsRef = collection(db, "users", currentUser.uid, "meals");
-      const querySnapshot = await getDocs(mealsRef);
-
-      // Curățăm lista
-      mealsList.innerHTML = "";
-
-      let totalCalories = 0;
-      let totalProteins = 0;
-      let totalCarbs = 0;
-      let totalFats = 0;
-
-      querySnapshot.forEach((docSnap) => {
-        const mealData = docSnap.data();
-        const li = document.createElement("li");
-        li.style.marginBottom = "10px";
-
-        // Adunăm la totaluri
-        totalCalories += mealData.calories || 0;
-        totalProteins += mealData.proteins || 0;
-        totalCarbs += mealData.carbs || 0;
-        totalFats += mealData.fats || 0;
-
-        li.innerHTML = `
-          <strong>${mealData.mealName || "Masă"}</strong>:
-          ${mealData.calories} kcal, 
-          P: ${mealData.proteins} g, 
-          C: ${mealData.carbs} g, 
-          F: ${mealData.fats} g
-        `;
-        mealsList.appendChild(li);
-      });
-
-      // Afișăm totalul zilnic
-      totalsEl.innerHTML = `
-        <strong>Total zilnic:</strong> 
-        ${totalCalories} kcal, 
-        P: ${totalProteins} g, 
-        C: ${totalCarbs} g, 
-        F: ${totalFats} g
-      `;
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        recommendedCalories = data.recommendedCalories || 2000;
+        recommendedProteins = data.recommendedProteins || 120;
+        recommendedCarbs = data.recommendedCarbs || 200;
+        recommendedFats = data.recommendedFats || 70;
+      }
     }
 
-    // 5. Adăugare masă
+    // === Adăugăm o masă în subcolecția /users/{uid}/meals, cu un "date" ===
     addMealBtn.onclick = async () => {
       if (!currentUser) {
         statusMeal.innerText = "Trebuie să fii logat!";
         return;
       }
+      const selectedDate = mealDateInput.value; // "2025-03-09" de ex.
+      if (!selectedDate) {
+        statusMeal.innerText = "Selectează o dată!";
+        return;
+      }
 
-      const mealNameVal = mealNameInput.value;
-      const caloriesVal = Number(caloriesInput.value);
-      const proteinsVal = Number(proteinsInput.value);
+      const mealNameVal = mealNameInput.value.trim();
+      const calVal = Number(caloriesInput.value);
+      const protVal = Number(proteinsInput.value);
       const carbsVal = Number(carbsInput.value);
       const fatsVal = Number(fatsInput.value);
 
-      if (!mealNameVal || !caloriesVal || !proteinsVal || !carbsVal || !fatsVal) {
+      if (!mealNameVal || !calVal || !protVal || !carbsVal || !fatsVal) {
         statusMeal.innerText = "Completează toate câmpurile!";
         return;
       }
 
       try {
+        // Adăugăm doc cu datele mesei
         await addDoc(collection(db, "users", currentUser.uid, "meals"), {
+          date: selectedDate, // stocăm "2025-03-09"
           mealName: mealNameVal,
-          calories: caloriesVal,
-          proteins: proteinsVal,
+          calories: calVal,
+          proteins: protVal,
           carbs: carbsVal,
           fats: fatsVal,
           createdAt: new Date()
         });
-        statusMeal.innerText = "Masă adăugată cu succes!";
-        // Resetăm formularul
+        statusMeal.innerText = "Masă adăugată!";
+        // Reset
         mealNameInput.value = "";
         caloriesInput.value = "";
         proteinsInput.value = "";
         carbsInput.value = "";
         fatsInput.value = "";
-        // Re-încărcăm lista
+        // Reîncărcăm mesele
         await loadMeals();
-      } catch (error) {
-        statusMeal.innerText = "Eroare la adăugare: " + error.message;
+      } catch (err) {
+        statusMeal.innerText = "Eroare la adăugare: " + err.message;
       }
     };
 
-    // 6. Logout
+    // === loadMeals: preluăm toate mesele pentru data selectată ===
+    async function loadMeals() {
+      if (!currentUser) return;
+      mealsList.innerHTML = "";
+      totalsEl.innerHTML = "";
+      compareRecommendedEl.innerHTML = "";
+
+      const selectedDate = mealDateInput.value;
+      if (!selectedDate) {
+        // Nimic de afișat
+        return;
+      }
+
+      // Facem un query la /users/{uid}/meals unde date == selectedDate
+      const mealsRef = collection(db, "users", currentUser.uid, "meals");
+      const q = query(mealsRef, where("date", "==", selectedDate), orderBy("createdAt", "asc"));
+      const querySnapshot = await getDocs(q);
+
+      let totalCal = 0;
+      let totalProt = 0;
+      let totalCarb = 0;
+      let totalFat = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const m = docSnap.data();
+        // Adunăm la totaluri
+        totalCal += m.calories || 0;
+        totalProt += m.proteins || 0;
+        totalCarb += m.carbs || 0;
+        totalFat += m.fats || 0;
+
+        // Afișăm în listă
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${m.mealName}</strong> - 
+          ${m.calories} kcal, P: ${m.proteins} g, 
+          C: ${m.carbs} g, F: ${m.fats} g
+        `;
+        mealsList.appendChild(li);
+      });
+
+      // Afișăm totalul
+      totalsEl.innerHTML = `
+        Total pt. ${selectedDate}: 
+        ${totalCal} kcal, 
+        P: ${totalProt} g, 
+        C: ${totalCarb} g, 
+        F: ${totalFat} g
+      `;
+
+      // Comparăm cu recomandările
+      // ex. "Din 2000 kcal, ai consumat 1800. Mai ai 200"
+      const diffCal = recommendedCalories - totalCal;
+      const diffProt = recommendedProteins - totalProt;
+      const diffCarb = recommendedCarbs - totalCarb;
+      const diffFat = recommendedFats - totalFat;
+
+      compareRecommendedEl.innerHTML = `
+        <p>Recomandări (profil): ${recommendedCalories} kcal / 
+          P: ${recommendedProteins} g / 
+          C: ${recommendedCarbs} g / 
+          F: ${recommendedFats} g</p>
+        <p>Consum actual: ${totalCal} kcal / 
+          P: ${totalProt} g / 
+          C: ${totalCarb} g / 
+          F: ${totalFat} g</p>
+        <p>
+          Diferență: 
+          <span style="color:${diffCal<0?'red':'green'}">
+            Calorii: ${diffCal>0?`+${diffCal}`:diffCal}
+          </span>,
+          <span style="color:${diffProt<0?'red':'green'}">
+            Proteine: ${diffProt>0?`+${diffProt}`:diffProt}
+          </span>,
+          <span style="color:${diffCarb<0?'red':'green'}">
+            Carbo: ${diffCarb>0?`+${diffCarb}`:diffCarb}
+          </span>,
+          <span style="color:${diffFat<0?'red':'green'}">
+            Grăsimi: ${diffFat>0?`+${diffFat}`:diffFat}
+          </span>
+        </p>
+      `;
+    }
+
+    // Când se schimbă data, reafișăm mesele
+    mealDateInput.onchange = async () => {
+      await loadMeals();
+    };
+
+    // === Logout ===
     logoutBtn.onclick = () => {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     };
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>HealthFit - Nutriție</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+    }
+    .navbar {
+      display: flex; list-style: none;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px; margin: 0;
+    }
+    .navbar li { margin-right: 15px; }
+    .navbar a, .navbar button {
+      color: #fff; text-decoration: none;
+      padding: 5px 10px; border: none; background: none;
+      cursor: pointer;
+    }
+    .navbar a:hover, .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+    h3.title { margin-top: 0; margin-bottom: 10px; }
+    .form-group {
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%; padding: 8px;
+    }
+    #statusMeal {
+      margin-top: 10px;
+      color: #333;
+      text-align: center;
+    }
+    #mealsList li {
+      margin-bottom: 5px;
+    }
+    #totals {
+      margin-top: 10px;
+      color: #333;
+      font-weight: bold;
+    }
+    .date-box {
+      margin-bottom: 15px;
+    }
+    .date-box label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .logout-btn {
+      background: #444; color: #fff; padding: 8px 16px;
+      border: none; cursor: pointer; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
 
-    // (Opțional) funcție să afișezi macros recomandate din /users/{uid} 
-    // dacă vrei să le compari cu ce a consumat userul
-    async function showRecommendedMacros() {
+  <!-- Navbar -->
+  <ul class="navbar">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="profile.html">Profil</a></li>
+    <li><a href="workouts.html">Workouts</a></li>
+    <li><a href="nutritie.html">Nutriție</a></li>
+    <li><button id="logoutBtn" class="logout-btn">Logout</button></li>
+  </ul>
+
+  <!-- Selectare data + box adaugare masa -->
+  <div class="container">
+    <h3 class="title">Nutriție - Adaugă Masă</h3>
+
+    <!-- Selectare dată (pentru a adăuga mesele pe o anumită zi) -->
+    <div class="date-box">
+      <label for="mealDate">Data:</label>
+      <input type="date" id="mealDate" />
+    </div>
+
+    <div class="form-group">
+      <label for="mealName">Nume Masă</label>
+      <input type="text" id="mealName" placeholder="Mic dejun, Prânz, Gustare..." />
+    </div>
+    <div class="form-group">
+      <label for="calories">Calorii</label>
+      <input type="number" id="calories" placeholder="Ex: 500" />
+    </div>
+    <div class="form-group">
+      <label for="proteins">Proteine (g)</label>
+      <input type="number" id="proteins" placeholder="Ex: 30" />
+    </div>
+    <div class="form-group">
+      <label for="carbs">Carbohidrați (g)</label>
+      <input type="number" id="carbs" placeholder="Ex: 50" />
+    </div>
+    <div class="form-group">
+      <label for="fats">Grăsimi (g)</label>
+      <input type="number" id="fats" placeholder="Ex: 10" />
+    </div>
+
+    <button id="addMealBtn">Adaugă Masă</button>
+    <p id="statusMeal"></p>
+  </div>
+
+  <!-- Afișare mese + totaluri zilnice + comparare cu recomandări -->
+  <div class="container">
+    <h3 class="title">Mesele Zilnice</h3>
+    <ul id="mealsList"></ul>
+    <p id="totals"></p>
+    <p id="compareRecommended" style="color:#333;"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      addDoc,
+      getDocs,
+      doc,
+      getDoc,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // === Config Firebase ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // === Element refs ===
+    const logoutBtn = document.getElementById("logoutBtn");
+    const mealDateInput = document.getElementById("mealDate");
+    const mealNameInput = document.getElementById("mealName");
+    const caloriesInput = document.getElementById("calories");
+    const proteinsInput = document.getElementById("proteins");
+    const carbsInput = document.getElementById("carbs");
+    const fatsInput = document.getElementById("fats");
+    const addMealBtn = document.getElementById("addMealBtn");
+    const statusMeal = document.getElementById("statusMeal");
+    const mealsList = document.getElementById("mealsList");
+    const totalsEl = document.getElementById("totals");
+    const compareRecommendedEl = document.getElementById("compareRecommended");
+
+    let currentUser = null;
+
+    // Stocăm aici recomandările userului (calorii, proteine etc.)
+    let recommendedCalories = 0;
+    let recommendedProteins = 0;
+    let recommendedCarbs = 0;
+    let recommendedFats = 0;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        // 1) Citim recomandările din /users/{uid}
+        await loadUserRecommendations();
+        // 2) Setăm data implicită la azi
+        mealDateInput.value = new Date().toISOString().split("T")[0];
+        // 3) Afișăm mesele
+        await loadMeals();
+      }
+    });
+
+    // === Citim doc-ul /users/{uid} și extragem recommendedXxxx ===
+    async function loadUserRecommendations() {
+      if (!currentUser) return;
       const userDocRef = doc(db, "users", currentUser.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        // dacă ai salvat "targetCalories", "protein", "carbs", "fat" în doc, le poți afișa
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        recommendedCalories = data.recommendedCalories || 2000;
+        recommendedProteins = data.recommendedProteins || 120;
+        recommendedCarbs = data.recommendedCarbs || 200;
+        recommendedFats = data.recommendedFats || 70;
       }
     }
+
+    // === Adăugăm o masă în subcolecția /users/{uid}/meals, cu un "date" ===
+    addMealBtn.onclick = async () => {
+      if (!currentUser) {
+        statusMeal.innerText = "Trebuie să fii logat!";
+        return;
+      }
+      const selectedDate = mealDateInput.value; // "2025-03-09" de ex.
+      if (!selectedDate) {
+        statusMeal.innerText = "Selectează o dată!";
+        return;
+      }
+
+      const mealNameVal = mealNameInput.value.trim();
+      const calVal = Number(caloriesInput.value);
+      const protVal = Number(proteinsInput.value);
+      const carbsVal = Number(carbsInput.value);
+      const fatsVal = Number(fatsInput.value);
+
+      if (!mealNameVal || !calVal || !protVal || !carbsVal || !fatsVal) {
+        statusMeal.innerText = "Completează toate câmpurile!";
+        return;
+      }
+
+      try {
+        // Adăugăm doc cu datele mesei
+        await addDoc(collection(db, "users", currentUser.uid, "meals"), {
+          date: selectedDate, // stocăm "2025-03-09"
+          mealName: mealNameVal,
+          calories: calVal,
+          proteins: protVal,
+          carbs: carbsVal,
+          fats: fatsVal,
+          createdAt: new Date()
+        });
+        statusMeal.innerText = "Masă adăugată!";
+        // Reset
+        mealNameInput.value = "";
+        caloriesInput.value = "";
+        proteinsInput.value = "";
+        carbsInput.value = "";
+        fatsInput.value = "";
+        // Reîncărcăm mesele
+        await loadMeals();
+      } catch (err) {
+        statusMeal.innerText = "Eroare la adăugare: " + err.message;
+      }
+    };
+
+    // === loadMeals: preluăm toate mesele pentru data selectată ===
+    async function loadMeals() {
+      if (!currentUser) return;
+      mealsList.innerHTML = "";
+      totalsEl.innerHTML = "";
+      compareRecommendedEl.innerHTML = "";
+
+      const selectedDate = mealDateInput.value;
+      if (!selectedDate) {
+        // Nimic de afișat
+        return;
+      }
+
+      // Facem un query la /users/{uid}/meals unde date == selectedDate
+      const mealsRef = collection(db, "users", currentUser.uid, "meals");
+      const q = query(mealsRef, where("date", "==", selectedDate), orderBy("createdAt", "asc"));
+      const querySnapshot = await getDocs(q);
+
+      let totalCal = 0;
+      let totalProt = 0;
+      let totalCarb = 0;
+      let totalFat = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        const m = docSnap.data();
+        // Adunăm la totaluri
+        totalCal += m.calories || 0;
+        totalProt += m.proteins || 0;
+        totalCarb += m.carbs || 0;
+        totalFat += m.fats || 0;
+
+        // Afișăm în listă
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${m.mealName}</strong> - 
+          ${m.calories} kcal, P: ${m.proteins} g, 
+          C: ${m.carbs} g, F: ${m.fats} g
+        `;
+        mealsList.appendChild(li);
+      });
+
+      // Afișăm totalul
+      totalsEl.innerHTML = `
+        Total pt. ${selectedDate}: 
+        ${totalCal} kcal, 
+        P: ${totalProt} g, 
+        C: ${totalCarb} g, 
+        F: ${totalFat} g
+      `;
+
+      // Comparăm cu recomandările
+      // ex. "Din 2000 kcal, ai consumat 1800. Mai ai 200"
+      const diffCal = recommendedCalories - totalCal;
+      const diffProt = recommendedProteins - totalProt;
+      const diffCarb = recommendedCarbs - totalCarb;
+      const diffFat = recommendedFats - totalFat;
+
+      compareRecommendedEl.innerHTML = `
+        <p>Recomandări (profil): ${recommendedCalories} kcal / 
+          P: ${recommendedProteins} g / 
+          C: ${recommendedCarbs} g / 
+          F: ${recommendedFats} g</p>
+        <p>Consum actual: ${totalCal} kcal / 
+          P: ${totalProt} g / 
+          C: ${totalCarb} g / 
+          F: ${totalFat} g</p>
+        <p>
+          Diferență: 
+          <span style="color:${diffCal<0?'red':'green'}">
+            Calorii: ${diffCal>0?`+${diffCal}`:diffCal}
+          </span>,
+          <span style="color:${diffProt<0?'red':'green'}">
+            Proteine: ${diffProt>0?`+${diffProt}`:diffProt}
+          </span>,
+          <span style="color:${diffCarb<0?'red':'green'}">
+            Carbo: ${diffCarb>0?`+${diffCarb}`:diffCarb}
+          </span>,
+          <span style="color:${diffFat<0?'red':'green'}">
+            Grăsimi: ${diffFat>0?`+${diffFat}`:diffFat}
+          </span>
+        </p>
+      `;
+    }
+
+    // Când se schimbă data, reafișăm mesele
+    mealDateInput.onchange = async () => {
+      await loadMeals();
+    };
+
+    // === Logout ===
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
   </script>
 </body>
 </html>
