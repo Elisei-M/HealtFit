@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Remix Icons (pt. hamburger etc.) -->
+  <title>HealthFit - Home</title>
+
+  <!-- Remix Icons (pentru hamburger etc.) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" />
 
   <!-- open-props & normalize -->
@@ -16,33 +18,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap" rel="stylesheet"/>
 
   <style>
-    /* ==================== Variabile / reset minimal ==================== */
     :root {
+      /* Fonturi */
       font-family: 'Oswald', sans-serif;
-      /* Culori de brand */
+      --font-title: 'Bebas Neue', sans-serif;
+
+      /* Culori */
+      --surface-1: #111;     /* fundal navbar, etc. */
+      --text-1: #fff;        /* text alb */
       --brand-1: hsl(349, 100%, 58%);
-      --brand-2: hsl(210, 100%, 50%);
 
-      --surface-1: #111;  /* fundal navbar, etc. */
-      --text-1: #fff;     /* text alb */
-      --radius-3: 8px;
-
-      /* Poți ajusta dimensiuni */
+      /* Dimensiuni */
       --nav-height: 5rem;
+      --radius: 8px;
     }
     body {
       margin: 0;
       background: #000;
-      color: #fff;
-      font-family: 'Oswald', sans-serif;
+      color: var(--text-1);
+      font-family: var(--font-family, 'Oswald', sans-serif);
     }
     h1, h2, h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-weight: normal;
+      font-family: var(--font-title);
       margin: 0.5rem 0;
     }
 
-    /* ==================== NAVBAR ==================== */
+    /* ===== NAVBAR ===== */
     .Navbar {
       position: sticky;
       top: 0;
@@ -51,7 +52,7 @@
       height: var(--nav-height);
     }
     .Navbar .container {
-      max-inline-size: 1600px;
+      max-width: 1600px;
       margin: 0 auto;
       height: 100%;
       display: flex;
@@ -60,11 +61,11 @@
       padding-inline: 1rem;
     }
     .Logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
+      font-family: var(--font-title);
+      font-size: 2.5rem;
       color: var(--text-1);
     }
-    /* Meniul principal (desktop) */
+    /* Meniu principal */
     .menu {
       list-style: none;
       display: flex;
@@ -75,12 +76,11 @@
       text-decoration: none;
       color: var(--text-1);
       font-size: 1rem;
-      transition: color 0.2s ease;
     }
     .menu a:hover {
       color: var(--brand-1);
     }
-
+    /* Butoane hamburger */
     .NavButton {
       background: none;
       border: none;
@@ -88,19 +88,17 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
-
-    /* Hamburgermenu apare pe mobil, dispare pe desktop */
     #openMenuBtn {
-      display: none;
+      display: none; /* ascuns pe desktop */
     }
     @media (max-width: 768px) {
       #openMenuBtn {
         display: block;
       }
       .menu {
-        /* ascundem pe mobil + devine overlay */
+        /* ascundem pe mobil + devine overlay fullscreen */
         position: fixed;
-        top: 0; right: 0; bottom: 0; left: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         flex-direction: column;
         align-items: flex-start;
         padding: 2rem;
@@ -117,11 +115,10 @@
         margin-bottom: 1rem;
         border-bottom: 1px solid #555;
       }
-    }
-    /* Desktop: ascundem butonul de close/hamburger, meniu e normal */
-    @media (min-width: 769px) {
-      #closeMenuBtn {
-        display: none;
+      /* Pe mobil, brand repetat e opțional; îl eliminăm complet din meniu
+         => scoatem <header> cu .Logo ca să nu apară a doua oară. */
+      .menu > .Logo {
+        display: none; /* Eliminăm brand-ul duplicat */
       }
     }
 
@@ -136,50 +133,54 @@
       color: var(--brand-1);
     }
 
-    /* Ascundem / arătăm link Login/Logout cu JS + Auth */
-    #loginLink, #logoutLink {
-      display: inline-block;
+    /* Ascundem link Logout inițial, îl arătăm cu JS dacă user e logat */
+    #logoutLink { display: none; }
+
+    /* Navbar ascuns la scroll-down */
+    .Navbar {
+      transition: transform 0.4s ease;
+    }
+    body[scroll-direction='down'] .Navbar {
+      transform: translateY(-100%);
     }
 
-    /* ==================== HERO ==================== */
+    /* ====== HERO ====== */
     .hero {
       position: relative;
-      min-height: calc(100vh - var(--nav-height));
+      width: 100%;
+      height: calc(100vh - var(--nav-height)); /* full screen minus navbar */
       display: grid;
       align-items: center;
     }
     .hero > * {
       grid-area: 1/1;
     }
+    .hero .visual {
+      overflow: hidden;
+    }
     .hero .visual img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
     .hero .content {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
+      position: relative;
+      z-index: 2;
       text-align: center;
       padding: 1rem;
     }
     .hero h1 {
-      font-size: 5rem;
+      font-size: 4rem;
       text-transform: uppercase;
       margin-bottom: 1rem;
-    }
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 2.5rem;
-      }
     }
     .LinkButton {
       display: inline-block;
       padding: 0.75rem 1.25rem;
       background: var(--brand-1);
       color: #fff;
-      border-radius: var(--radius-3);
+      border-radius: var(--radius);
       text-decoration: none;
       text-transform: uppercase;
       font-weight: 700;
@@ -189,7 +190,7 @@
       background: #ff5050;
     }
 
-    /* ==================== FOLD / #discover ==================== */
+    /* ====== FOLD / #discover ====== */
     .fold {
       padding: 2rem;
       display: flex;
@@ -202,9 +203,18 @@
       line-height: 1.3;
     }
 
-    /* ==================== .schedule (#schedules) ==================== */
+    /* ====== #schedules ====== */
     .schedule {
       padding: 2rem;
+    }
+    .schedule .container {
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .schedule .container {
+        grid-template-columns: 1fr 1fr;
+      }
     }
     .schedule h2 {
       color: var(--brand-1);
@@ -228,17 +238,9 @@
       color: var(--brand-1);
     }
     .table-wrapper {
-      margin-bottom: 2rem;
-    }
-    @media (min-width: 769px) {
-      .schedule .container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-      }
+      margin-bottom: 1.5rem;
     }
 
-    /* .showcase sub-secțiune */
     .showcase {
       position: relative;
       overflow: hidden;
@@ -255,7 +257,7 @@
       mix-blend-mode: screen;
     }
 
-    /* ==================== .cards (#plans) ==================== */
+    /* ====== #plans .cards ====== */
     .cards {
       padding: 2rem;
     }
@@ -273,7 +275,7 @@
       background: #222;
       color: #fff;
       padding: 1rem;
-      border-radius: var(--radius-3);
+      border-radius: var(--radius);
       text-decoration: none;
       transition: background 0.2s;
     }
@@ -289,7 +291,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ==================== #about ==================== */
+    /* ====== #about ====== */
     .about {
       min-height: 80vh;
       background: #111;
@@ -309,14 +311,6 @@
       margin-top: 1rem;
       color: #666;
     }
-
-    /* ============ Scroll direction -> ascundem navbar la scroll down ============ */
-    .Navbar {
-      transition: transform 0.4s ease;
-    }
-    body[scroll-direction='down'] .Navbar {
-      transform: translateY(-100%);
-    }
   </style>
 </head>
 <body>
@@ -326,19 +320,25 @@
     <div class="container">
       <div class="Logo">HealtFit.</div>
 
-      <!-- Meniu -->
       <ul id="menu" class="menu">
-        <header class="inline">
-          <div class="Logo">HealtFit.</div>
+        <!-- Scoatem brand-ul duplicat de aici 
+             <header class="inline">
+               <div class="Logo">HealtFit.</div>
+               <button id="closeMenuBtn" ...> ... </button>
+             </header> 
+        -->
+        <!-- Punem doar butonul de close sus, dacă vrei: -->
+        <li>
           <button
             id="closeMenuBtn"
             title="Close Menu"
             aria-label="Close Menu"
             class="NavButton"
+            style="display:none;"
           >
             <i class="ri-close-line"></i>
           </button>
-        </header>
+        </li>
 
         <li><a href="index.html" class="NavLink">Home</a></li>
         <li><a href="profile.html" class="NavLink">Profil</a></li>
@@ -348,7 +348,7 @@
         <!-- Link "Login" (arătăm doar când user e delogat) -->
         <li><a href="login.html" id="loginLink" class="NavLink">Login</a></li>
         <!-- Link "Logout" (arătăm doar când user e logat) -->
-        <li><a href="#" id="logoutLink" class="NavLink" style="display:none;">Logout</a></li>
+        <li><a href="#" id="logoutLink" class="NavLink">Logout</a></li>
       </ul>
 
       <!-- Buton hamburger (mobil) -->
@@ -363,7 +363,7 @@
     </div>
   </nav>
 
-  <!-- CONȚINUT (Hero + secțiuni) -->
+  <!-- MAIN -->
   <main>
     <!-- HOME / HERO -->
     <section id="home">
@@ -390,11 +390,10 @@
             />
           </picture>
         </div>
-
         <div class="content">
           <h1>Good Morning Champ</h1>
           <div class="wrapper">
-            <a href="#discover" class="LinkButton Primary"> DISCOVER MORE </a>
+            <a href="#discover" class="LinkButton">Discover More</a>
           </div>
         </div>
       </div>
@@ -403,7 +402,7 @@
         <div class="subject">
           <p>
             It's a new day,
-            <span style="color: var(--brand-1);">
+            <span style="color: var(--brand-1)">
               a new opportunity to sculpt the best version of yourself.
               Embrace the energy,
             </span>
@@ -538,21 +537,29 @@
     </section>
   </main>
 
-  <!-- Script hamburger + scroll direction + textReplace -->
+  <!-- Script hamburger + scroll direction + mic exemplu textReplace -->
   <script>
     // ---- Meniu hamburger ----
-    const openMenuBtn = document.querySelector('#openMenuBtn');
-    const closeMenuBtn = document.querySelector('#closeMenuBtn');
-    const menu = document.querySelector('#menu');
+    const openMenuBtn = document.getElementById('openMenuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const menu = document.getElementById('menu');
 
     function openMenu() {
       menu.classList.add('open');
-      closeMenuBtn.focus();
+      if (closeMenuBtn) {
+        closeMenuBtn.style.display = 'block';
+        closeMenuBtn.focus();
+      }
       window.addEventListener('keyup', handleCloseWithESC);
     }
     function closeMenu() {
       menu.classList.remove('open');
-      openMenuBtn.focus();
+      if (openMenuBtn) {
+        openMenuBtn.focus();
+      }
+      if (closeMenuBtn) {
+        closeMenuBtn.style.display = 'none';
+      }
       window.removeEventListener('keyup', handleCloseWithESC);
     }
     function handleCloseWithESC(e) {
@@ -565,20 +572,14 @@
       else document.startViewTransition(() => updateDom());
     }
 
-    openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
-    closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
+    openMenuBtn?.addEventListener('click', () => handleViewTransition(openMenu));
+    closeMenuBtn?.addEventListener('click', () => handleViewTransition(closeMenu));
 
     document.querySelectorAll('.NavLink').forEach(link => {
       link.addEventListener('click', () => handleViewTransition(closeMenu));
     });
 
-    // ---- Simulare login vs. logout (dacă vrei real firebase, integrezi alt script) ----
-    const loginLink = document.getElementById('loginLink');
-    const logoutLink = document.getElementById('logoutLink');
-    // ex: if user is logged, hide login, show logout
-    // logoutLink.style.display = 'none';
-
-    // ---- Ascundem navbar la scroll down ----
+    // ---- Ascundem navbar la scroll-down ----
     let scrollDirection;
     document.addEventListener('scroll', (e) => {
       const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -590,7 +591,7 @@
       e.target.lastScrollTop = st <= 0 ? 0 : st;
     }, { passive: true });
 
-    // ---- Schimbare text in #target-word ----
+    // ---- Schimbare text #target-word (exemplu simplu) ----
     const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
     textReplace(words, 'target-word', 1200);
 
