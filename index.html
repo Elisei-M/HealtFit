@@ -26,95 +26,107 @@
     }
 
     /* =============== NAVBAR =============== */
-    .Navbar {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      background: rgba(0,0,0,0.8);
-      padding: 0.8rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: transform 0.4s ease;
-    }
-    /* la scroll */
-    [scroll-direction='down'] .Navbar {
-      transform: translateY(-120%);
-    }
+/* NAVBAR GENERAL */
+.Navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.8);
+  padding: 0.8rem 1rem;
+  font-size: 1.2rem; /* text mai mare în navbar */
+}
 
-    .Navbar .Logo {
-      font-size: 2.8rem; /* font mai mare */
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #0df1a7; /* culoare futuristic */
-      text-transform: uppercase;
-    }
+/* Constrângem lățimea și organizăm conținutul */
+.Navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px; /* sau cât dorești */
+  margin: 0 auto;
+}
 
-    .NavButton {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.8rem;
-      cursor: pointer;
-    }
+/* LOGO */
+.Logo {
+  font-size: 2.4rem; /* și mai mare, dacă vrei */
+  font-weight: 700;
+  color: #0df1a7; /* nuanță futuristă */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
 
-    .menu {
-      display: flex;
-      gap: 1.5rem;
-    }
+/* Butoane hamburger */
+.NavButton {
+  display: none; /* ascuns pe desktop, vizibil pe mobil */
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
 
-    .NavLink {
-      color: #fff;
-      text-decoration: none;
-      font-size: 1.3rem; /* text mai mare */
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-    .NavLink:hover {
-      color: #0df1a7;
-    }
+/* Meniul + link-uri */
+.menu {
+  display: flex;
+  gap: 1.5rem;
+}
 
-    /* Mobile - ascundem meniu si afisam hamburger */
-    #openMenuBtn {
-      display: none;
-    }
-    #closeMenuBtn {
-      display: none;
-    }
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
 
-    /* ========== Meniu Mobile ========== */
-    @media screen and (max-width: 768px) {
-      .menu {
-        position: fixed;
-        top: 0; right: 0;
-        width: 70%;
-        height: 100vh;
-        background: rgba(0,0,0,0.95);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        transform: translateX(100%);
-        transition: transform 0.4s ease;
-      }
-      .menu.open {
-        transform: translateX(0%);
-      }
+/* Stil link-uri */
+.NavLink {
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.NavLink:hover {
+  color: #0df1a7;
+}
 
-      #openMenuBtn {
-        display: inline-block;
-      }
-      #closeMenuBtn {
-        display: block;
-        position: absolute;
-        top: 1rem; right: 1rem;
-        font-size: 2rem;
-      }
+/* ---------- MEDIA QUERY: mobil ---------- */
+@media (max-width: 768px) {
+  /* Afișăm butonul de meniu (hamburger) */
+  .NavButton {
+    display: inline-block;
+  }
 
-      .NavLink {
-        font-size: 1.6rem;
-      }
-    }
+  /* Meniul devine panel lateral pe mobil */
+  .menu {
+    position: fixed;
+    top: 0; right: 0;
+    width: 70%;
+    height: 100vh;
+    background: rgba(0,0,0,0.95);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
+  }
+  .menu.open {
+    transform: translateX(0);
+  }
+
+  /* Butonul de închidere (x) apare în meniu */
+  #closeMenuBtn {
+    position: absolute;
+    top: 1rem; 
+    right: 1rem;
+  }
+
+  /* Link-urile pe mobil stivuite pe verticală */
+  .nav-links {
+    flex-direction: column;
+  }
+}
+
 
     /* =============== MAIN =============== */
     main {
@@ -367,27 +379,56 @@
 <body>
 
 <!-- NAVBAR -->
+<!-- NAVBAR -->
 <nav class="Navbar">
   <div class="container">
-    <!-- Logo-ul afișat o singură dată, în stânga -->
+    <!-- Logo afișat o singură dată, în stânga -->
     <div class="Logo">HealthFit.</div>
 
-    <!-- Lista de link-uri, în dreapta -->
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="profile.html">Profil</a></li>
-      <li><a href="nutritie.html">Nutriție</a></li>
-      <li><a href="workouts.html">Antrenamente</a></li>
+    <!-- Buton de deschidere meniu (hamburger), vizibil doar pe mobil -->
+    <button 
+      id="openMenuBtn" 
+      class="NavButton" 
+      title="Open Menu" 
+      aria-label="Open Menu"
+    >
+      <i class="ri-menu-line"></i>
+    </button>
 
-      <!-- Link / Buton pentru Login și Logout (afișate condițional din JavaScript) -->
-      <li id="nav-login"><a href="login.html">Login</a></li>
-      <li id="nav-logout" style="display:none;">
-        <button>Logout</button>
-      </li>
-    </ul>
+    <!-- Meniul propriu-zis (desktop + mobil) -->
+    <div id="menu" class="menu">
+      <!-- Buton de închidere meniu (x), vizibil doar pe mobil -->
+      <button 
+        id="closeMenuBtn" 
+        class="NavButton" 
+        title="Close Menu" 
+        aria-label="Close Menu"
+      >
+        <i class="ri-close-line"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="NavLink">Home</a></li>
+        <li><a href="profile.html" class="NavLink">Profil</a></li>
+        <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+        <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+
+        <!-- Link / Buton Login și Logout (afișate/ascunse din JavaScript) -->
+        <li id="nav-login">
+          <a href="login.html" class="NavLink">Login</a>
+        </li>
+        <li id="nav-logout" style="display:none;">
+          <button 
+            class="NavLink" 
+            style="background:none; border:none; cursor:pointer;"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
-
 
   <main>
     <!-- HERO -->
