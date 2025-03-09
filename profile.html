@@ -4,52 +4,121 @@
   <meta charset="UTF-8">
   <title>Profil Utilizator | HealthFit</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0; padding: 0;
+    }
+    /* Navbar simplu */
+    .navbar {
+      list-style: none;
+      display: flex;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+    }
+    .navbar li {
+      margin-right: 15px;
+    }
+    .navbar a, .navbar button {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+    .navbar a:hover, .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    #statusProfile {
+      margin-top: 10px;
+      color: #333;
+    }
+    button {
+      background-color: #ff6b00;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #e65f00;
+    }
+
+    /* Recomandări */
+    #recommendationSection {
+      margin-top: 20px;
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 6px;
+      display: none; /* îl facem vizibil după calcule */
+    }
+    .action-buttons {
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <!-- NAVBAR -->
-  <header>
-    <nav>
-      <ul class="navbar">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="nutritie.html">Nutriție</a></li>
-        <li><a href="workouts.html">Workouts</a></li>
-        <li><button id="logoutBtn">Logout</button></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- FORMULAR PROFIL (sex, age, weight, height, activity, goal) -->
+  <!-- Navbar -->
+  <ul class="navbar">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="nutritie.html">Nutriție</a></li>
+    <li><a href="workouts.html">Workouts</a></li>
+    <li><button id="logoutBtn">Logout</button></li>
+  </ul>
+
   <div class="container">
     <h2>Profilul Tău</h2>
-    <div>
-      <select id="sex">
-        <option value="">Sex</option>
-        <option value="barbat">Masculin</option>
-        <option value="femeie">Feminin</option>
-      </select>
-      <input type="number" id="age" placeholder="Vârstă" />
-      <input type="number" id="weight" placeholder="Greutate (kg)" />
-      <input type="number" id="height" placeholder="Înălțime (cm)" />
-      <select id="activityLevel">
-        <option value="">Nivel de activitate</option>
-        <option value="sedentar">Sedentar</option>
-        <option value="moderat">Moderat</option>
-        <option value="activ">Activ</option>
-        <option value="foarteActiv">Foarte activ</option>
-      </select>
-      <select id="goal">
-        <option value="">Obiectiv</option>
-        <option value="slabire">Slăbire</option>
-        <option value="ingrasare">Îngrășare</option>
-        <option value="crestere_masa">Creștere masă</option>
-        <option value="definire">Definire</option>
-      </select>
-    </div>
+    <select id="sex">
+      <option value="">Sex</option>
+      <option value="barbat">Masculin</option>
+      <option value="femeie">Feminin</option>
+    </select>
+    <input type="number" id="age" placeholder="Vârstă" />
+    <input type="number" id="weight" placeholder="Greutate (kg)" />
+    <input type="number" id="height" placeholder="Înălțime (cm)" />
+    <select id="activityLevel">
+      <option value="">Nivel de activitate</option>
+      <option value="sedentar">Sedentar</option>
+      <option value="moderat">Moderat</option>
+      <option value="activ">Activ</option>
+      <option value="foarteActiv">Foarte activ</option>
+    </select>
+    <select id="goal">
+      <option value="">Obiectiv</option>
+      <option value="slabire">Slăbire</option>
+      <option value="ingrasare">Îngrășare</option>
+      <option value="crestere_masa">Creștere masă</option>
+      <option value="definire">Definire</option>
+    </select>
 
     <button id="saveProfileBtn">Salvează & Calculează</button>
     <button id="generateProgramBtn">Generează Program</button>
     <p id="statusProfile"></p>
+
+    <!-- Recomandări afisate dupa calcule -->
+    <div id="recommendationSection">
+      <h3>Recomandări pentru obiectivul tău</h3>
+      <div id="recommendationText"></div>
+      <div class="action-buttons">
+        <button id="goWorkoutsBtn">Mergi la Workouts</button>
+        <button id="goNutritionBtn">Mergi la Nutriție</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -67,7 +136,7 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // Firebase Config
+    // 1. Config
     const firebaseConfig = {
       apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
       authDomain: "healthfit-9de3f.firebaseapp.com",
@@ -81,6 +150,7 @@
     const db = getFirestore(app);
 
     // Element refs
+    const logoutBtn = document.getElementById("logoutBtn");
     const sexInput = document.getElementById("sex");
     const ageInput = document.getElementById("age");
     const weightInput = document.getElementById("weight");
@@ -91,17 +161,23 @@
     const generateProgramBtn = document.getElementById("generateProgramBtn");
     const statusProfile = document.getElementById("statusProfile");
 
+    // Recomandări
+    const recommendationSection = document.getElementById("recommendationSection");
+    const recommendationText = document.getElementById("recommendationText");
+    const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
+    const goNutritionBtn = document.getElementById("goNutritionBtn");
+
     let currentUser = null;
     let userDocRef = null;
 
-    // onAuthStateChanged
+    // 2. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
         currentUser = user;
         userDocRef = doc(db, "users", currentUser.uid);
-        // (Opțional) poți încărca datele existente
+        // încărcăm datele existente
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
           const data = snap.data();
@@ -115,9 +191,13 @@
       }
     });
 
-    // Funcție de salvare date profil (simplu)
+    // 3. Salvare profil + calcule
     saveProfileBtn.onclick = async () => {
-      if (!currentUser) return;
+      if (!currentUser) {
+        statusProfile.textContent = "Trebuie să fii logat!";
+        return;
+      }
+
       const sexVal = sexInput.value;
       const ageVal = Number(ageInput.value);
       const weightVal = Number(weightInput.value);
@@ -125,6 +205,7 @@
       const activityVal = activitySelect.value;
       const goalVal = goalSelect.value;
 
+      // Salvează datele în Firestore
       try {
         await updateDoc(userDocRef, {
           sex: sexVal,
@@ -136,7 +217,6 @@
         });
         statusProfile.textContent = "Profil salvat!";
       } catch (err) {
-        // Dacă doc nu există, folosește setDoc
         await setDoc(userDocRef, {
           sex: sexVal,
           age: ageVal,
@@ -147,157 +227,18 @@
         });
         statusProfile.textContent = "Profil creat!";
       }
+
+      // Calculează recomandări
+      const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
+      displayRecommendations(rec);
     };
 
-    // Funcție care generează programul (exerciții) în funcție de goal
-    function generateProgram(goal) {
-      // Hardcoded exemplu:
-      if (goal === "slabire") {
-        return [
-          {
-            title: "Antrenament 1 (Piept & Triceps)",
-            muscleGroups: ["chest", "triceps"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Bench Press",
-                description: "Exercițiu compus pentru piept...",
-                alternatives: ["Smith Machine Bench Press", "Push-ups"],
-                done: false
-              },
-              {
-                name: "Dumbbell Chest Fly",
-                description: "...",
-                alternatives: ["Cable Fly", "Machine Fly"],
-                done: false
-              },
-              {
-                name: "Incline Dumbbell Chest Press",
-                description: "...",
-                alternatives: ["Incline Barbell Press"],
-                done: false
-              },
-              {
-                name: "Parallel Bar Dips (Triceps focus)",
-                description: "...",
-                alternatives: ["Bench Dips"],
-                done: false
-              },
-              {
-                name: "Tracțiuni cu gantera (Triceps)",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          },
-          {
-            title: "Antrenament 2 (Spate & Biceps)",
-            muscleGroups: ["back", "biceps"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Lat Pulldown",
-                description: "Pentru dorsal...",
-                alternatives: ["Pull-ups"],
-                done: false
-              },
-              {
-                name: "Seated Cable Row",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Barbell Biceps Curl",
-                description: "...",
-                alternatives: ["Dumbbell Curl"],
-                done: false
-              },
-              {
-                name: "Hammer Curl",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          },
-          {
-            title: "Antrenament 3 (Picioare & Umeri)",
-            muscleGroups: ["legs", "shoulders"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Squat",
-                description: "Exercițiu compus pentru picioare",
-                alternatives: ["Leg Press"],
-                done: false
-              },
-              {
-                name: "Lunges",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Shoulder Press",
-                description: "...",
-                alternatives: ["Arnold Press"],
-                done: false
-              },
-              {
-                name: "Lateral Raises",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          },
-          {
-            title: "Antrenament 4 (Full Body / Cardio)",
-            muscleGroups: ["chest", "back", "legs"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Burpees",
-                description: "...",
-                alternatives: [],
-                done: false
-              },
-              {
-                name: "Plank",
-                description: "...",
-                alternatives: [],
-                done: false
-              }
-            ]
-          }
-        ];
-      } else if (goal === "crestere_masa") {
-        // alt program
-        return [
-          // ...
-        ];
-      } else {
-        // fallback
-        return [
-          {
-            title: "Antrenament 1 (Default)",
-            muscleGroups: ["chest", "triceps"],
-            done: false,
-            doneDate: null,
-            exercises: []
-          }
-        ];
-      }
-    }
-
-    // La click pe "Generează Program"
+    // 4. Generăm program
     generateProgramBtn.onclick = async () => {
+      if (!currentUser) {
+        statusProfile.textContent = "Nu există user logat!";
+        return;
+      }
       const snap = await getDoc(userDocRef);
       if (!snap.exists()) {
         statusProfile.textContent = "Completează întâi profilul, apoi generează programul.";
@@ -310,15 +251,100 @@
         return;
       }
 
-      // Generăm program
+      // generăm program
       const program = generateProgram(goalVal);
-      // Salvăm la /users/{uid}/program/activeProgram
       const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-      await setDoc(programDocRef, {
-        days: program
-      });
-
+      await setDoc(programDocRef, { days: program });
       statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+    };
+
+    // 5. Funcție de calcul recomandări
+    function calculateRecommendations(sex, age, weight, height, activity, goal) {
+      // Ex. Mifflin-St Jeor minimal
+      let BMR;
+      if (sex === "barbat") {
+        BMR = 10 * weight + 6.25 * height - 5 * age + 5;
+      } else {
+        BMR = 10 * weight + 6.25 * height - 5 * age - 161;
+      }
+
+      let activityFactor = 1.2; // sedentar default
+      if (activity === "moderat") activityFactor = 1.375;
+      if (activity === "activ") activityFactor = 1.55;
+      if (activity === "foarteActiv") activityFactor = 1.725;
+
+      const TDEE = BMR * activityFactor; // menținere
+      let targetCalories = TDEE;
+      let messageGoal = "";
+
+      if (goal === "slabire") {
+        targetCalories = TDEE - 300;
+        messageGoal = "trebuie să intri în deficit caloric moderat (~300 kcal)";
+      } else if (goal === "ingrasare") {
+        targetCalories = TDEE + 300;
+        messageGoal = "trebuie să intri în surplus caloric moderat (~300 kcal)";
+      } else if (goal === "crestere_masa") {
+        targetCalories = TDEE + 200;
+        messageGoal = "trebuie să menții un surplus caloric pentru creștere masă (~200 kcal)";
+      } else if (goal === "definire") {
+        targetCalories = TDEE - 200;
+        messageGoal = "trebuie să ai un deficit caloric mic (~200 kcal) pentru definire";
+      } else {
+        messageGoal = "nu ai selectat un obiectiv clar";
+      }
+
+      // Simplu: macros (30% proteine, 40% carbo, 30% grăsimi)
+      const proteinCals = 0.3 * targetCalories;
+      const carbCals = 0.4 * targetCalories;
+      const fatCals = 0.3 * targetCalories;
+
+      const proteinGrams = Math.round(proteinCals / 4);
+      const carbGrams = Math.round(carbCals / 4);
+      const fatGrams = Math.round(fatCals / 9);
+
+      // Apă (35 ml / kg)
+      const waterLiters = ((weight || 70) * 35) / 1000;
+
+      return {
+        BMR: Math.round(BMR),
+        TDEE: Math.round(TDEE),
+        targetCalories: Math.round(targetCalories),
+        protein: proteinGrams,
+        carbs: carbGrams,
+        fat: fatGrams,
+        water: waterLiters.toFixed(2),
+        messageGoal
+      };
+    }
+
+    // 6. Afișăm recomandările
+    function displayRecommendations(rec) {
+      recommendationText.innerHTML = `
+        <p><strong>Calorii menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
+        <p><strong>Calorii recomandate pt. obiectiv:</strong> ${rec.targetCalories} kcal/zi</p>
+        <p><strong>Proteine:</strong> ${rec.protein} g/zi, 
+           <strong>Carbohidrați:</strong> ${rec.carbs} g/zi, 
+           <strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
+        <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
+        <p>Pentru obiectivul ales, <strong>${rec.messageGoal}</strong>.</p>
+        <p>Recomandat să te antrenezi de 3-4 ori pe săptămână.</p>
+      `;
+      recommendationSection.style.display = "block";
+    }
+
+    // 7. Butoane navigare
+    goWorkoutsBtn.onclick = () => {
+      window.location.href = "workouts.html";
+    };
+    goNutritionBtn.onclick = () => {
+      window.location.href = "nutritie.html";
+    };
+
+    // 8. Logout
+    logoutBtn.onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
     };
   </script>
 </body>
