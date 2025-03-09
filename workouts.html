@@ -32,9 +32,7 @@
       background: rgba(255,255,255,0.2);
     }
 
-    .workouts-container {
-      display: flex;
-      gap: 20px;
+    .container-workouts {
       max-width: 1200px;
       margin: 40px auto;
       padding: 20px;
@@ -42,45 +40,40 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
+    .top-section {
+      display: flex;
+      gap: 20px;
+    }
 
-    /* Stânga: lista de antrenamente */
-    .program-list {
+    /* Stânga: Program antrenamente */
+    .program-box {
       flex: 1;
-      min-width: 350px;
-      color: #333;
+      min-width: 400px;
+      background: #f7f7f7;
+      border-radius: 6px;
+      padding: 15px;
     }
     .program-day {
-      background: #f7f7f7;
+      background: #fff;
       margin-bottom: 10px;
       padding: 10px;
       border-radius: 6px;
+      border: 1px solid #ddd;
     }
     .program-day h4 {
       margin: 0 0 5px;
       cursor: pointer;
     }
-    .exercises {
+    .exercise-list {
       margin-left: 20px;
       display: none;
     }
-    .exercises.active {
+    .exercise-list.active {
       display: block;
     }
-    .exercises li {
+    .exercise-list li {
       list-style: none;
       margin-bottom: 5px;
-    }
-    .submit {
-      background-color: #ff6b00;
-      border: none;
-      color: #fff;
-      padding: 8px 16px;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-    .submit:hover {
-      background-color: #e65f00;
     }
 
     .reset-btn {
@@ -95,23 +88,35 @@
     .reset-btn:hover {
       background: #222;
     }
-
     #statusMsg {
       margin-top: 10px;
       color: #333;
     }
 
-    /* Dreapta: container cu grupele musculare */
-    .svg-container {
+    /* Dreapta: Info din profil */
+    .profile-info-box {
       flex: 1;
-      min-width: 400px;
-      position: relative;
-      text-align: center;
+      min-width: 300px;
       background: #f9f9f9;
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 6px;
+      padding: 15px;
+      color: #333;
     }
-    .svg-container h3 {
+    .profile-info-box h3 {
+      margin-top: 0;
+    }
+    .profile-info-box p {
+      margin: 5px 0;
+    }
+
+    /* SVG container dedesubt */
+    .svg-box {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    .svg-box h3 {
       margin-top: 0;
     }
 
@@ -189,31 +194,39 @@
     <li><button id="logoutBtn">Logout</button></li>
   </ul>
 
-  <div class="workouts-container">
-    <!-- Stânga: Program antrenamente -->
-    <div class="program-list">
-      <h2>Programul Tău de Antrenamente</h2>
-      <div id="daysContainer"></div>
-      <button id="resetBtn" class="reset-btn">Reset Program</button>
-      <p id="statusMsg"></p>
+  <div class="container-workouts">
+    <div class="top-section">
+      <!-- Box Stânga: Program Antrenamente -->
+      <div class="program-box">
+        <h2>Program de Antrenamente</h2>
+        <div id="daysContainer"></div>
+        <button id="resetBtn" class="reset-btn">Reset Program</button>
+        <p id="statusMsg"></p>
+      </div>
+
+      <!-- Box Dreapta: Info profil -->
+      <div class="profile-info-box">
+        <h3>Info Profil</h3>
+        <p id="goalInfo"></p>
+        <p id="activityInfo"></p>
+        <p>Recomandat să te antrenezi de 3-4 ori pe săptămână.</p>
+      </div>
     </div>
 
-    <!-- Dreapta: Container cu grupele musculare (SVG snippet) -->
-    <div class="svg-container">
+    <!-- SVG Box Dedesubt -->
+    <div class="svg-box">
       <h3>Recuperare Mușchi (sub 48h = colorat)</h3>
-
-      <!-- Snippet-ul complet -->
       <div class="muscle-groups">
         <h1>Muscle Group Selector</h1>
         <h2>Arms</h2>
         <input type="checkbox" class="biceps muscles-helper" id="biceps"> 
           <label for="biceps">Biceps</label>
-        <input type="checkbox" class="deltoids muscles-helper" id="deltoids"> 
-          <label for="deltoids">Deltoids</label>
-        <input type="checkbox" class="forearms muscles-helper" id="forearms"> 
-          <label for="forearms">Forearms</label>
         <input type="checkbox" class="triceps muscles-helper" id="triceps"> 
           <label for="triceps">Triceps</label>
+        <input type="checkbox" class="forearms muscles-helper" id="forearms"> 
+          <label for="forearms">Forearms</label>
+        <input type="checkbox" class="deltoids muscles-helper" id="deltoids"> 
+          <label for="deltoids">Deltoids</label>
 
         <h2>Back</h2>
         <input type="checkbox" class="trapezius muscles-helper" id="trapezius"> 
@@ -241,13 +254,12 @@
         <input type="checkbox" class="quads muscles-helper" id="quads"> 
           <label for="quads">Quads</label>
 
-        <!-- SVG-ul complet -->
-        <!-- ... același cod pe care l-ai dat ... -->
-        <svg width="100%" height="100%" viewBox="0 0 176 207" ...>
-          <!-- conținutul complet al svg-ului -->
+        <!-- SVG complet -->
+        <!-- ... (același cod SVG) ... -->
+        <svg width="100%" height="100%" ... >
+          <!-- tot conținutul svg -->
         </svg>
       </div>
-
     </div>
   </div>
 
@@ -283,10 +295,12 @@
     const daysContainer = document.getElementById("daysContainer");
     const resetBtn = document.getElementById("resetBtn");
     const statusMsg = document.getElementById("statusMsg");
+    const goalInfo = document.getElementById("goalInfo");
+    const activityInfo = document.getElementById("activityInfo");
 
     let currentUser = null;
     let programDocRef = null;
-    let programData = null; // { days: [ { title, muscleGroups, done, doneDate, exercises: [...] }, ... ] }
+    let programData = null;
 
     // 2. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
@@ -295,9 +309,23 @@
       } else {
         currentUser = user;
         programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-        await loadProgram();
+        await loadProfileInfo();  // încărcăm info profil
+        await loadProgram();      // încărcăm program
       }
     });
+
+    // 2.1 Citim info profil (goal, activityLevel) și afișăm
+    async function loadProfileInfo() {
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        goalInfo.textContent = "Obiectiv: " + (data.goal || "Necunoscut");
+        activityInfo.textContent = "Nivel activitate: " + (data.activityLevel || "Nespecificat");
+      } else {
+        goalInfo.textContent = "Profil inexistent!";
+      }
+    }
 
     // 3. loadProgram
     async function loadProgram() {
@@ -322,39 +350,42 @@
         const dayDiv = document.createElement("div");
         dayDiv.classList.add("program-day");
 
-        // Checkbox la nivel de zi
-        const label = document.createElement("label");
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = dayObj.done === true;
-        cb.onchange = () => toggleDay(dayIndex, cb.checked);
+        // Buton bifa antrenament
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = dayObj.done === true;
+        checkbox.onchange = () => toggleDay(dayIndex, checkbox.checked);
 
-        label.appendChild(cb);
-        label.appendChild(
-          document.createTextNode(" " + dayObj.title + (dayObj.done ? " (Finalizat)" : ""))
-        );
-        dayDiv.appendChild(label);
+        const dayTitle = document.createElement("h4");
+        dayTitle.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
 
-        // Exerciții (expand/collapse)
+        // Buton "Vezi exercițiile"
+        const showExercisesBtn = document.createElement("button");
+        showExercisesBtn.textContent = "Vezi exercițiile";
+        showExercisesBtn.style.marginLeft = "10px";
+        showExercisesBtn.onclick = () => {
+          exercisesUL.classList.toggle("active");
+        };
+
+        const headerDiv = document.createElement("div");
+        headerDiv.appendChild(checkbox);
+        headerDiv.appendChild(dayTitle);
+        headerDiv.appendChild(showExercisesBtn);
+
+        dayDiv.appendChild(headerDiv);
+
+        // Exerciții
         const exercisesUL = document.createElement("ul");
-        exercisesUL.classList.add("exercises");
+        exercisesUL.classList.add("exercise-list");
         dayObj.exercises.forEach(ex => {
           const li = document.createElement("li");
-          li.textContent =
-            ex.name + " - " + ex.description +
-            (ex.alternatives && ex.alternatives.length > 0
+          li.textContent = ex.name + " - " + ex.description +
+            (ex.alternatives && ex.alternatives.length>0
               ? " [Alternativ: " + ex.alternatives.join(", ") + "]"
               : "");
           exercisesUL.appendChild(li);
         });
         dayDiv.appendChild(exercisesUL);
-
-        // La click pe titlu/label => expand/collapse
-        label.onclick = (e) => {
-          // dacă e fix pe checkbox, nu expand
-          if (e.target === cb) return;
-          exercisesUL.classList.toggle("active");
-        };
 
         daysContainer.appendChild(dayDiv);
       });
@@ -368,7 +399,6 @@
       } else {
         programData.days[dayIndex].doneDate = null;
       }
-      // Salvează
       await updateDoc(programDocRef, { days: programData.days });
       renderDays(programData.days);
       updateMusclesRecovery();
@@ -389,7 +419,7 @@
 
     // 7. updateMusclesRecovery => colorăm mușchii
     function updateMusclesRecovery() {
-      // 7.1 Mai întâi, debifăm toate grupele (=> devin opace)
+      // Debifăm toate grupele
       const muscleIDs = [
         "biceps","triceps","deltoids","forearms","trapezius","lats",
         "abs","obliques","pectorals","adductors","calves","hamstrings",
@@ -401,13 +431,11 @@
       });
 
       if (!programData || !programData.days) return;
-
-      // 7.2 Pentru fiecare zi finalizată sub 48h, bifăm grupele respective
       const now = new Date();
       programData.days.forEach(day => {
         if (day.done && day.doneDate) {
           const d = new Date(day.doneDate);
-          const diffH = (now - d) / 36e5; // ore
+          const diffH = (now - d) / 36e5;
           if (diffH < 48) {
             // Bifăm grupele => apar colorate
             day.muscleGroups.forEach(mg => {
@@ -418,17 +446,15 @@
       });
     }
 
-    // 7.3 Bifăm grupele necesare (ex. "chest" => "pectorals", "legs" => "quads, hamstrings, glutes, calves" etc.)
     function checkMuscleGroup(group) {
-      // Dicționar simplu: muscleGroup => id-urile checkbox-urilor
       const map = {
         "chest": ["pectorals"],
         "triceps": ["triceps"],
         "biceps": ["biceps"],
-        "back": ["lats","trapezius"],  // exemplu simplu
+        "back": ["lats","trapezius"],
         "legs": ["quads","hamstrings","glutes","calves","adductors"],
         "shoulders": ["deltoids"],
-        "abs": ["abs","obliques"] // exemplu, dacă vrei
+        "abs": ["abs","obliques"]
       };
       const ids = map[group];
       if (!ids) return;
@@ -445,10 +471,9 @@
       });
     };
 
-    // ~~~~~~ Codul JS pt. hover/click pe SVG (din snippet) ~~~~~~
+    // 9. JS pt. hover/click pe SVG (din snippet)
     document.querySelectorAll(".muscle-groups svg g g[id]").forEach(function(group) {
       group.addEventListener('mouseover', function(ev) {
-        // la hover => label e evidențiat
         const theID = getGroupID(ev);
         const label = document.querySelector(`label[for=${theID}]`);
         if (label) label.classList.add("hover");
@@ -458,16 +483,13 @@
         const label = document.querySelector(`label[for=${theID}]`);
         if (label) label.classList.remove("hover");
       });
-      // Când dai click direct pe mușchi, togglăm checkbox-ul
       group.addEventListener('click', function(ev) {
         const theID = getGroupID(ev);
         const input = document.getElementById(theID);
         if (input) input.checked = !input.checked;
       });
     });
-
     function getGroupID(ev) {
-      // Evităm path[1].id => cross-browser
       let target = ev.currentTarget;
       if (!target.id && target.parentNode) {
         target = target.parentNode;
