@@ -18,18 +18,15 @@
           <input type="password" id="password" required/>
           <label>Password</label>
         </div>
-        
         <!-- Buton de login clasic -->
-        <input type="button" value="Sign In" class="submit" id="loginBtn">
-        
+        <input type="button" value="Sign In" class="submit" id="loginBtn"> 
         <!-- Buton de login cu Google -->
-        <input type="button" value="Sign in with Google" class="submit" id="googleBtn"
+        <input type="button" value="Sign in with Google" class="submit" id="googleBtn" 
                style="background-color: #dd4b39; border-color: #dd4b39; margin-top: 10px;">
         
         <div class="row">
           <p>Not Yet Registered? <a href="register.html">Sign Up</a></p>
         </div>
-        
         <!-- Mesaj status/erori -->
         <p id="status" style="text-align:center;"></p>
       </form>
@@ -70,13 +67,11 @@
       const passVal = passwordInput.value;
       signInWithEmailAndPassword(auth, emailVal, passVal)
         .then((userCredential) => {
-          // Autentificare reușită
           statusMsg.innerText = "✅ Logged in successfully!";
-          // Redirecționează către index.html (sau altă pagină, ex. profile.html)
+          // Redirecționează către index.html
           window.location.href = "index.html";
         })
         .catch((error) => {
-          // Eroare la autentificare
           statusMsg.innerText = "Eroare la autentificare: " + error.message;
         });
     };
@@ -86,12 +81,11 @@
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then((result) => {
-          // Autentificare Google reușită
           statusMsg.innerText = "✅ Google sign-in reușit!";
+          // Redirecționează către index.html
           window.location.href = "index.html";
         })
         .catch((error) => {
-          // Eroare Google sign-in
           statusMsg.innerText = "Eroare Google sign-in: " + error.message;
         });
     };
