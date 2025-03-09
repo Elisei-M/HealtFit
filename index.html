@@ -14,7 +14,8 @@
   <style>
     /* RESET minimal */
     *, *::before, *::after {
-      margin: 0; padding: 0;
+      margin: 0; 
+      padding: 0;
       box-sizing: border-box;
     }
     html, body {
@@ -36,10 +37,10 @@
       padding: 0.8rem 1rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center; /* container la mijloc */
       transition: transform 0.4s ease;
     }
-    /* La scroll, ascundem navbarul dacă direcția e "down" */
+    /* Ascundem navbar-ul când derulăm în jos */
     [scroll-direction='down'] .Navbar {
       transform: translateY(-120%);
     }
@@ -49,7 +50,6 @@
       align-items: center;
       justify-content: space-between;
       max-width: 1200px;
-      margin: 0 auto;
       width: 100%;
     }
 
@@ -106,7 +106,8 @@
       /* Ascundem .nav-links pe mobil, îl vom transforma în panel lateral */
       .nav-links {
         position: fixed;
-        top: 0; right: 0;
+        top: 0; 
+        right: 0;
         width: 70%;
         height: 100vh;
         background: rgba(0,0,0,0.95);
@@ -140,7 +141,7 @@
     .hero {
       position: relative;
       width: 100%;
-      min-height: 70vh;
+      min-height: 50vh; /* mai scund */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -156,9 +157,9 @@
       overflow: hidden;
     }
     .hero .visual img {
-      max-width: 700px;  /* imaginea e mai mică */
+      width: 800px;    /* imagine mai lată */
       height: auto;
-      filter: blur(3px) brightness(0.8); /* blur + brightness */
+      filter: blur(3px) brightness(0.8);
     }
     .hero .content {
       position: relative;
@@ -269,35 +270,54 @@
       background: rgba(0,255,191,0.1);
     }
 
-    /* ================== SHOWCASE VIDEO SCROLL ================== */
+    /* ================== .showcase VIDEO ================== */
     .showcase {
       position: relative;
-      height: 100vh; /* mai înalt, pentru efect */
+      min-height: 60vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
-      background: #111;
+      padding: 3rem 1rem;
     }
-    .showcase video {
+    .showcase .video-bg {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
+      z-index: 0;
+    }
+    .showcase .video-bg video {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       filter: brightness(0.5);
     }
-    .showcase .overlay-text {
-      position: sticky;
-      top: 20vh; /* se fixează la 20% de sus */
-      margin: 0 auto;
+    .showcase .content {
+      position: relative;
+      z-index: 1;
       max-width: 600px;
-      color: #fff;
+      text-align: center;
       background: rgba(0,0,0,0.4);
       padding: 2rem;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: fadeDown 0.8s ease forwards;
+      transform: translateY(-20px);
+      opacity: 0;
     }
-    /* Afișăm / ascundem textul la scroll cu un mic script, 
-       sau îl lăsăm așa pinned. (exemplu simplu) */
+    .showcase .content h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
+    .showcase .content p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
 
+    /* Refolosim @keyframes fadeDown de mai sus */
+    
     /* ================== #plans .cards ================== */
     .cards {
       background: #151515;
@@ -340,23 +360,23 @@
       line-height: 1.4;
     }
 
-    /* ================== ABOUT + FOOTER ================== */
+    /* ================== #about + FOOTER ================== */
     .about {
       background: #111;
-      min-height: 40vh;
-      padding: 3rem 1rem;
+      min-height: 20vh; /* mai mic */
+      padding: 2rem 1rem;
       text-align: center;
     }
     .about #target-word {
-      font-size: 3rem;
+      font-size: 2rem;
       color: #0df1a7;
       margin-bottom: 1rem;
     }
 
     .site-footer {
-      margin-top: 2rem;
+      margin-top: 1rem;
       border-top: 1px solid #333;
-      padding-top: 1rem;
+      padding-top: 0.5rem;
       font-size: 0.9rem;
       color: #888;
     }
@@ -419,8 +439,10 @@
   <!-- #HOME -->
   <section id="home" class="hero">
     <div class="visual">
-      <img src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp" 
-           alt="fitness" />
+      <img 
+        src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp" 
+        alt="fitness" 
+      />
     </div>
     <div class="content">
       <h1>Good Morning Champ</h1>
@@ -496,22 +518,24 @@
         </div>
       </div>
     </div>
-    <!-- SHOWCASE VIDEO SCROLL -->
-    <div class="showcase">
-      <video autoplay loop muted poster="" role="none">
+  </section>
+
+  <!-- SHOWCASE: video fundal -->
+  <section class="showcase">
+    <div class="video-bg">
+      <video autoplay loop muted>
         <source 
-          src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/demo.mp4"
-          type="video/mp4"
+          src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/demo.mp4" 
+          type="video/mp4" 
         />
       </video>
-      <!-- Text care se fixează la scroll -->
-      <div class="overlay-text">
-        <h2 style="margin-bottom:1rem; color:#0df1a7;">Scrolling Showcase</h2>
-        <p>
-          As you scroll, this text remains pinned for a while, while the video
-          flows behind it. Then it will scroll away, revealing more content.
-        </p>
-      </div>
+    </div>
+    <div class="content">
+      <h2>Futuristic Showcase</h2>
+      <p>
+        We have a cool video background here. 
+        Customize your text or layout as you like!
+      </p>
     </div>
   </section>
 
@@ -556,10 +580,9 @@
     </div>
   </section>
 
-  <!-- #about -->
+  <!-- #about + footer mic -->
   <section id="about" class="about">
     <div id="target-word">love</div>
-    <!-- Footer scurt -->
     <div class="site-footer">
       <p>© 2025 HealthFit. All rights reserved.</p>
       <p>
