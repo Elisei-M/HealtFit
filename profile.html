@@ -9,15 +9,12 @@
   <style>
     /* Reset de bază */
     * {
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
     }
     body {
       font-family: Arial, sans-serif;
       background: #f0f0f0;
     }
-
     /* Navbar */
     .navbar {
       display: flex;
@@ -45,8 +42,7 @@
       position: relative;
       width: 100%;
       height: 300px;
-      background: url("https://images.unsplash.com/photo-1585314062710-8c4d5f1756db?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80")
-                  no-repeat center center;
+      background: url("https://images.unsplash.com/photo-1585314062710-8c4d5f1756db?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80") no-repeat center center;
       background-size: cover;
       display: flex;
       align-items: center;
@@ -56,10 +52,8 @@
     }
     .hero-overlay {
       position: absolute;
-      top: 0; 
-      left: 0;
-      width: 100%; 
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.5);
     }
     .hero-content {
@@ -164,18 +158,14 @@
     <!-- FORMULAR PROFIL -->
     <div class="profile-form">
       <h2>Profilul Tău</h2>
-
-      <!-- Câmpuri de profil -->
       <select id="sex">
         <option value="">Sex</option>
         <option value="barbat">Masculin</option>
         <option value="femeie">Feminin</option>
       </select>
-
       <input type="number" id="age" placeholder="Vârstă" />
       <input type="number" id="weight" placeholder="Greutate (kg)" />
       <input type="number" id="height" placeholder="Înălțime (cm)" />
-
       <select id="activityLevel">
         <option value="">Nivel de activitate</option>
         <option value="sedentar">Sedentar</option>
@@ -183,7 +173,6 @@
         <option value="activ">Activ</option>
         <option value="foarteActiv">Foarte activ</option>
       </select>
-
       <select id="goal">
         <option value="">Obiectiv</option>
         <option value="slabire">Slăbire</option>
@@ -193,31 +182,16 @@
       </select>
 
       <div class="buttons">
-        <!-- Buton "Salvează & Calculează" => doar alert inline -->
-        <button 
-          id="saveProfileBtn" 
-          onclick="alert('Buton Salvează pressed!');"
-        >
-          Salvează & Calculează
-        </button>
-
-        <!-- Buton "Generează Program" => logică în script -->
-        <button id="generateProgramBtn">
-          Generează Program
-        </button>
-
-        <!-- Buton test => alert -->
-        <button id="testBtn" onclick="alert('A mers!')">
-          Test Buton
-        </button>
+        <button id="saveProfileBtn">Salvează & Calculează</button>
+        <button id="generateProgramBtn">Generează Program</button>
       </div>
-
       <p id="statusProfile"></p>
     </div>
 
-    <!-- Secțiune recomandări (opțional) -->
+    <!-- (Opțional) Aici poți adăuga o secțiune cu RECOMANDĂRI (calorii, macros) dacă vrei să le afișezi direct -->
     <div class="profile-recommendation fade-in" id="recommendationSection">
-      <!-- Aici poți afișa date BMR/TDEE dacă vrei -->
+      <!-- de ex: datele BMR, TDEE, etc. -->
+      <!-- umple cu JavaScript dacă vrei să afișezi ceva suplimentar -->
     </div>
 
   </div>
@@ -237,20 +211,20 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // 1. Firebase config
+    // 1. Firebase init
     const firebaseConfig = {
-      apiKey: "AIzaSyD-EXEMPLU",
-      authDomain: "healthfit-EXEMPLU.firebaseapp.com",
-      projectId: "healthfit-EXEMPLU",
-      storageBucket: "healthfit-EXEMPLU.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcd1234"
+      apiKey: "API_KEY_AICI",
+      authDomain: "healthfit-9de3f.firebaseapp.com",
+      projectId: "healthfit-9de3f",
+      storageBucket: "healthfit-9de3f.appspot.com",
+      messagingSenderId: "1071597823999",
+      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
     };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Referințe elemente
+    // Element refs
     const logoutBtn = document.getElementById("logoutBtn");
     const sexInput = document.getElementById("sex");
     const ageInput = document.getElementById("age");
@@ -258,8 +232,10 @@
     const heightInput = document.getElementById("height");
     const activitySelect = document.getElementById("activityLevel");
     const goalSelect = document.getElementById("goal");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
     const generateProgramBtn = document.getElementById("generateProgramBtn");
     const statusProfile = document.getElementById("statusProfile");
+    const recommendationSection = document.getElementById("recommendationSection");
 
     let currentUser = null;
     let userDocRef = null;
@@ -267,14 +243,11 @@
     // 2. onAuthStateChanged
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        statusProfile.textContent = "DEBUG: user e null => redirect la login";
         window.location.href = "login.html";
       } else {
-        statusProfile.textContent = "DEBUG: user este " + user.uid;
         currentUser = user;
         userDocRef = doc(db, "users", currentUser.uid);
-
-        // Încărcăm datele existente din Firestore
+        // (Opțional) încărcăm datele existente
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
           const data = snap.data();
@@ -288,36 +261,44 @@
       }
     });
 
-    // 3. Buton "Generează Program"
-    generateProgramBtn.onclick = async () => {
-      statusProfile.textContent = "DEBUG: Apăsat buton Generează Program!";
+    // 3. Salvare profil
+    saveProfileBtn.onclick = async () => {
+      if (!currentUser) return;
+      const sexVal = sexInput.value;
+      const ageVal = Number(ageInput.value);
+      const weightVal = Number(weightInput.value);
+      const heightVal = Number(heightInput.value);
+      const activityVal = activitySelect.value;
+      const goalVal = goalSelect.value;
 
-      if (!currentUser) {
-        statusProfile.textContent += " | Nu există user logat!";
-        return;
+      try {
+        await updateDoc(userDocRef, {
+          sex: sexVal,
+          age: ageVal,
+          weight: weightVal,
+          height: heightVal,
+          activityLevel: activityVal,
+          goal: goalVal
+        });
+        statusProfile.textContent = "Profil salvat!";
+      } catch (err) {
+        // Dacă doc nu există, folosește setDoc
+        await setDoc(userDocRef, {
+          sex: sexVal,
+          age: ageVal,
+          weight: weightVal,
+          height: heightVal,
+          activityLevel: activityVal,
+          goal: goalVal
+        });
+        statusProfile.textContent = "Profil creat!";
       }
 
-      const snap = await getDoc(userDocRef);
-      if (!snap.exists()) {
-        statusProfile.textContent += " | userDocRef nu există, completează profilul întâi!";
-        return;
-      }
-
-      const data = snap.data();
-      const goalVal = data.goal;
-      if (!goalVal) {
-        statusProfile.textContent += " | Nu există goal în profil!";
-        return;
-      }
-
-      const program = generateProgram(goalVal);
-      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-      await setDoc(programDocRef, { days: program });
-
-      statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+      // (Opțional) poți afișa aici un calcul BMR/TDEE
+      // ex: showRecommendations(...) => face fade-in la recommendationSection
     };
 
-    // 4. Funcție generateProgram
+    // 4. Generăm programul (exerciții) în funcție de goal
     function generateProgram(goal) {
       if (goal === "slabire") {
         return [
@@ -339,27 +320,14 @@
                 alternatives: ["Cable Fly", "Machine Fly"],
                 done: false
               }
+              // etc.
             ]
-          }
-          // Poți adăuga antrenamente 2, 3, 4...
+          },
+          // ... Antrenament 2, 3, 4 ...
         ];
       } else if (goal === "crestere_masa") {
-        return [
-          {
-            title: "Antrenament 1 (Piept & Biceps)",
-            muscleGroups: ["chest", "biceps"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              { 
-                name: "Barbell Bench Press",
-                description: "...",
-                done: false
-              }
-            ]
-          }
-          // ... etc.
-        ];
+        // alt program
+        return [...];
       } else {
         // fallback
         return [
@@ -374,12 +342,40 @@
       }
     }
 
-    // 5. Logout
+    // 5. La click pe "Generează Program"
+    generateProgramBtn.onclick = async () => {
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) {
+        statusProfile.textContent = "Completează întâi profilul, apoi generează programul.";
+        return;
+      }
+      const data = snap.data();
+      const goalVal = data.goal;
+      if (!goalVal) {
+        statusProfile.textContent = "Trebuie să ai un obiectiv (slabire, crestere_masa etc.).";
+        return;
+      }
+
+      const program = generateProgram(goalVal);
+      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+      await setDoc(programDocRef, { days: program });
+
+      statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+    };
+
+    // 6. Logout
     logoutBtn.onclick = () => {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     };
+
+    // (Opțional) funcție de a afișa recomandări BMR/TDEE
+    // function showRecommendations(...) {
+    //   recommendationSection.innerHTML = "...";
+    //   recommendationSection.classList.add("visible"); // fade-in
+    // }
+
   </script>
 </body>
 </html>
