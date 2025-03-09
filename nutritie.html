@@ -154,7 +154,7 @@
 
     // 1. Config
     const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+      apiKey: "CHEIA_TA_API",
       authDomain: "healthfit-9de3f.firebaseapp.com",
       projectId: "healthfit-9de3f",
       storageBucket: "healthfit-9de3f.appspot.com",
@@ -182,6 +182,7 @@
     const totalsDiv = document.getElementById("totals");
 
     let currentUser = null;
+    // Valorile recomandate (default), se vor încărca din profil
     let recommendedCalories = 2000;
     let recommendedProteins = 100;
     let recommendedCarbs = 250;
@@ -193,8 +194,14 @@
         window.location.href = "login.html";
       } else {
         currentUser = user;
-        // Încarcăm valorile recomandate (dacă există) din profil
+        // Încărcăm valorile recomandate (dacă există) din profil
         await loadProfileRecommendations();
+
+        // Setăm data curentă implicit în viewDateInput
+        const todayStr = new Date().toISOString().split("T")[0];
+        viewDateInput.value = todayStr;
+        // Afișăm direct mesele zilei curente
+        await loadMealsForDate(todayStr);
       }
     });
 
@@ -254,7 +261,7 @@
       }
     };
 
-    // 6. Load Mese pt. o zi
+    // 6. Load Mese pt. o zi (manual, când apeși butonul)
     loadMealsBtn.onclick = async () => {
       if (!currentUser) return;
       const viewDateVal = viewDateInput.value;
@@ -263,9 +270,13 @@
         totalsDiv.innerHTML = "";
         return;
       }
-      // Interogăm /users/{uid}/meals cu where('date','==',viewDateVal)
+      await loadMealsForDate(viewDateVal);
+    };
+
+    // Funcție de încărcare a meselor pt. o dată dată
+    async function loadMealsForDate(dateStr) {
       const mealsRef = collection(db, "users", currentUser.uid, "meals");
-      const q = query(mealsRef, where("date", "==", viewDateVal));
+      const q = query(mealsRef, where("date", "==", dateStr));
       const snap = await getDocs(q);
 
       // Curățăm
@@ -278,7 +289,7 @@
       let totalFat = 0;
 
       if (snap.empty) {
-        mealsListDiv.innerHTML = "<p>Nu există mese adăugate în această zi.</p>";
+        mealsListDiv.innerHTML = `<p>Nu există mese adăugate în această zi (${dateStr}).</p>`;
       } else {
         snap.forEach((docSnap) => {
           const d = docSnap.data();
@@ -301,15 +312,13 @@
       }
 
       // Afișăm total
-      // Comparam cu recommended
       let calDiff = recommendedCalories - totalCals;
       let protDiff = recommendedProteins - totalProt;
       let carbDiff = recommendedCarbs - totalCarb;
       let fatDiff = recommendedFats - totalFat;
 
-      // Construi text
       let html = `
-        <p><strong>Total pentru ${viewDateVal}:</strong></p>
+        <p><strong>Total pentru ${dateStr}:</strong></p>
         <p>Calorii consumate: ${totalCals} / ${recommendedCalories} 
            ${ showDiff(calDiff) }</p>
         <p>Proteine: ${totalProt} / ${recommendedProteins} g 
@@ -320,7 +329,7 @@
            ${ showDiff(fatDiff) }</p>
       `;
       totalsDiv.innerHTML = html;
-    };
+    }
 
     function showDiff(diff) {
       if (diff > 0) {
