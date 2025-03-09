@@ -2,28 +2,350 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HealthFit - Home</title>
 
-  <!-- Import Remix Icons pentru iconițe (hamburger, close etc.) -->
+  <!-- Remix Icon (pentru iconițe hamburger, close etc.) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" />
+
+  <!-- open-props & normalize (dark) -->
+  <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14" />
+  <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14/normalize.dark.min.css" />
+
+  <!-- Fonturi Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap"
     rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
   />
 
-  <!-- Stilurile noastre -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ---------- Variabile & reset minimal ---------- */
+    :root {
+      /* Principalele variabile de brand/culori */
+      --brand-1: hsl(349, 100%, 58%);
+      --brand-2: hsl(210, 100%, 50%);
+      --surface-1: #111; /* fundal navbar, etc. */
+      --text-1: #fff;    /* text alb */
+      --radius-3: 8px;   /* border radius */
+
+      /* alte variabile open-props pot fi folosite direct */
+      font-family: 'Oswald', sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #000; /* fundal general */
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    /* ---------- Navbar ---------- */
+    .Navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background-color: var(--surface-1);
+      height: 5rem;
+    }
+    .Navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 1rem;
+      max-width: 1600px; /* container max */
+    }
+    .Logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      color: var(--text-1);
+    }
+    .menu {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      background-color: var(--surface-1);
+    }
+    .menu a {
+      text-decoration: none;
+      color: var(--text-1);
+    }
+    .NavButton {
+      background: none;
+      border: none;
+      color: var(--text-1);
+      font-size: 1.5rem;
+    }
+    /* buton hamburger apare doar pe mobil */
+    @media (min-width: 768px) {
+      #openMenuBtn {
+        display: none; /* ascuns pe desktop */
+      }
+    }
+    /* Meniu mobil (inițial ascuns) */
+    @media (max-width: 767px) {
+      .menu {
+        position: fixed;
+        top: 0; right: 0; bottom: 0;
+        display: none;
+        flex-direction: column;
+        padding: 2rem;
+      }
+      .menu.open {
+        display: flex;
+      }
+      .menu header {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #555;
+      }
+    }
+
+    /* ---------- Link-urile de navigație ---------- */
+    .NavLink {
+      color: var(--text-1);
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 200ms ease;
+    }
+    .NavLink:hover {
+      color: var(--brand-1);
+    }
+
+    /* ---------- HERO / .hero ---------- */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 5rem); /* full view - navbar */
+      display: grid;
+      align-items: center;
+    }
+    .hero > * {
+      grid-area: 1/1; /* stack */
+    }
+    .hero .visual {
+      overflow: hidden;
+    }
+    .hero .visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero .content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .hero h1 {
+      font-size: 7rem;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    @media (max-width: 767px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+    }
+    .LinkButton {
+      display: inline-block;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-3);
+      text-decoration: none;
+      text-transform: uppercase;
+      font-weight: 700;
+      background: var(--brand-1);
+      color: #fff;
+      transition: background 0.2s ease;
+    }
+    .LinkButton:hover {
+      background: #ff5050;
+    }
+
+    /* ---------- .fold (#discover) ---------- */
+    .fold {
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    .fold .subject p {
+      max-width: 700px;
+      text-align: center;
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+
+    /* ---------- .schedule ---------- */
+    .schedule {
+      padding: 2rem;
+    }
+    .schedule h2 {
+      color: var(--brand-1);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .schedule table {
+      width: 100%;
+      border: 2px solid var(--surface-1);
+      border-collapse: collapse;
+    }
+    .schedule table th,
+    .schedule table td {
+      border: 1px solid #444;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    .schedule table tr:hover td {
+      background: #222;
+      color: var(--brand-1);
+    }
+
+    /* ---------- .showcase ---------- */
+    .showcase {
+      position: relative;
+      overflow: hidden;
+    }
+    .showcase > * {
+      grid-area: 1/1;
+    }
+    .showcase video {
+      display: block;
+      width: 100%;
+    }
+    .showcase img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 1;
+      mix-blend-mode: screen; /* efect suprapunere */
+    }
+
+    /* ---------- .cards (#plans) ---------- */
+    .cards {
+      padding: 2rem;
+    }
+    .cards .container {
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .cards .container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .Card {
+      display: block;
+      background: #222;
+      padding: 1rem;
+      border-radius: var(--radius-3);
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .Card:hover {
+      background: #333;
+    }
+    .Card i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .Card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ---------- .about (#about) ---------- */
+    .about {
+      min-height: 100vh;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    #target-word {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Footer gol, la final */
+    footer {
+      margin-top: 2rem;
+      padding: 1rem;
+      color: #666;
+    }
+
+    /* ---------- Animații scroll (opțional) ---------- */
+    /* ex. ascundem navbar la scroll down */
+    .Navbar {
+      transition: transform 0.4s ease;
+    }
+    body[scroll-direction='down'] .Navbar {
+      transform: translateY(-100%);
+    }
+  </style>
 </head>
 <body>
-  <!-- Container în care vom încărca navbar-ul dinamic -->
-  <div id="navbar-container"></div>
 
+  <!-- NAVBAR -->
+  <nav class="Navbar">
+    <div class="container">
+      <div class="Logo">HealtFit.</div>
+
+      <div id="menu" class="menu">
+        <header class="inline">
+          <div class="Logo">HealtFit.</div>
+          <button
+            id="closeMenuBtn"
+            title="Close Menu"
+            aria-label="Close Menu"
+            class="NavButton"
+          >
+            <i class="ri-close-line"></i>
+          </button>
+        </header>
+
+        <a href="index.html" class="NavLink">Home</a>
+        <a href="profile.html" class="NavLink">Profil</a>
+        <a href="nutritie.html" class="NavLink">Nutriție</a>
+        <a href="workouts.html" class="NavLink">Antrenamente</a>
+
+        <!-- Link de login (dacă user e delogat) -->
+        <a href="login.html" id="loginLink" class="NavLink">Login</a>
+        <!-- Link de logout (dacă user e logat) -->
+        <a href="#" id="logoutLink" class="NavLink" style="display:none;">Logout</a>
+      </div>
+
+      <button
+        id="openMenuBtn"
+        title="Open Menu"
+        aria-label="Open Menu"
+        class="NavButton"
+      >
+        <i class="ri-menu-line"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONȚINUT (Hero + secțiuni) -->
   <main>
-    <!-- HERO / LANDING PAGE -->
     <section id="home">
       <div class="hero">
         <div class="visual">
           <picture>
-            <!-- surse avif/webp pentru imagini mari/mici -->
             <source
               srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
               type="image/avif"
@@ -57,7 +379,7 @@
         <div class="subject">
           <p>
             It's a new day,
-            <span style="color: var(--brand-1)">
+            <span style="color: var(--brand-1);">
               a new opportunity to sculpt the best version of yourself.
               Embrace the energy,
             </span>
@@ -68,7 +390,6 @@
       </div>
     </section>
 
-    <!-- SCHEDULES / EXEMPLE DE ANTRENAMENTE -->
     <section id="schedules" class="schedule">
       <div class="subject">
         <div class="container">
@@ -144,7 +465,6 @@
       </div>
     </section>
 
-    <!-- CARDS / PLANURI / CHALLENGES -->
     <section id="plans" class="cards">
       <div class="subject">
         <div class="container">
@@ -185,121 +505,80 @@
       </div>
     </section>
 
-    <!-- ABOUT -->
     <section id="about" class="about">
       <div id="target-word">love</div>
       <footer></footer>
     </section>
   </main>
 
-  <!-- Script de logică meniu, animații, etc. -->
+  <!-- Script meniu hamburger + scroll animations + text replace -->
   <script>
-    // 1) Încărcăm dinamically conținutul din "navbar.html"
-    fetch('navbar.html')
-      .then(resp => resp.text())
-      .then(html => {
-        document.getElementById('navbar-container').innerHTML = html;
+    // ----- Meniu hamburger -----
+    const openMenuBtn = document.querySelector('#openMenuBtn');
+    const closeMenuBtn = document.querySelector('#closeMenuBtn');
+    const menu = document.querySelector('#menu');
 
-        // După ce a sosit navbar-ul, definim logica de meniu:
-        const openMenuBtn = document.querySelector('#openMenuBtn');
-        const closeMenuBtn = document.querySelector('#closeMenuBtn');
-        const menu = document.querySelector('#menu');
+    function openMenu() {
+      menu.classList.add('open');
+      closeMenuBtn.focus();
+      window.addEventListener('keyup', handleCloseWithESC);
+    }
+    function closeMenu() {
+      menu.classList.remove('open');
+      openMenuBtn.focus();
+      window.removeEventListener('keyup', handleCloseWithESC);
+    }
+    function handleCloseWithESC(e) {
+      if (e.key === 'Escape') {
+        closeMenu();
+      }
+    }
+    function handleViewTransition(updateDom) {
+      if (!document.startViewTransition) updateDom();
+      else document.startViewTransition(() => updateDom());
+    }
 
-        function openMenu() {
-          menu.classList.add('open');
-          closeMenuBtn.focus();
-          window.addEventListener('keyup', handleCloseWithESC);
-        }
+    openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
+    closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
 
-        function closeMenu() {
-          menu.classList.remove('open');
-          openMenuBtn.focus();
-          window.removeEventListener('keyup', handleCloseWithESC);
-        }
+    document.querySelectorAll('.NavLink').forEach(link => {
+      link.addEventListener('click', () => handleViewTransition(closeMenu));
+    });
 
-        function handleCloseWithESC(e) {
-          if (e.key === 'Escape') {
-            closeMenu();
-          }
-        }
+    // ----- Simulare user login/out (dacă vrei să conectezi cu Firebase, etc.)
+    const loginLink = document.getElementById('loginLink');
+    const logoutLink = document.getElementById('logoutLink');
+    // De ex., dacă user e "logat", ascundem login, arătăm logout
+    // logoutLink.style.display = 'none';
 
-        function handleViewTransition(updateDom) {
-          if (!document.startViewTransition) updateDom();
-          else document.startViewTransition(() => updateDom());
-        }
-
-        openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
-        closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
-
-        document.querySelectorAll('.NavLink').forEach(link => {
-          link.addEventListener('click', () => handleViewTransition(closeMenu));
-        });
-
-        // 2) Firebase Auth -> arătăm/ascundem link "Login" și "Logout"
-        import('https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js').then(async () => {
-          const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js');
-
-          // Config identic cu restul site-ului
-          const firebaseConfig = {
-            apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-            authDomain: "healthfit-9de3f.firebaseapp.com",
-            projectId: "healthfit-9de3f",
-          };
-          const app = firebase.initializeApp(firebaseConfig); // deja definit? Poți folosi initializeApp
-          const auth = getAuth(app);
-
-          const loginLink = document.getElementById('loginLink');
-          const logoutLink = document.getElementById('logoutLink');
-
-          onAuthStateChanged(auth, (user) => {
-            if (user) {
-              loginLink.style.display = 'none';
-              logoutLink.style.display = 'block';
-            } else {
-              loginLink.style.display = 'block';
-              logoutLink.style.display = 'none';
-            }
-          });
-
-          logoutLink.addEventListener('click', async (ev) => {
-            ev.preventDefault();
-            await signOut(auth);
-          });
-        });
-      })
-      .catch(err => {
-        console.error("Eroare la încărcarea navbar.html:", err);
-      });
-
-
-    // 3) Animații la scroll
+    // ----- Scroll direction -> ascundem navbar la scroll down -----
     let scrollDirection;
     document.addEventListener('scroll', (e) => {
       const st = window.pageYOffset || document.documentElement.scrollTop;
-      const direction = st > e.target.lastScrollTop ? 'down' : 'up';
-      if (Math.abs(st - e.target.lastScrollTop) > 5) {
+      const direction = st > (e.target.lastScrollTop || 0) ? 'down' : 'up';
+      if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
         document.body.setAttribute('scroll-direction', direction);
       }
       scrollDirection = direction;
       e.target.lastScrollTop = st <= 0 ? 0 : st;
     }, { passive: true });
 
-    // 4) Mic text replacer (ex. la #target-word) - opțional
+    // ----- Aplica efect "textReplace" la #target-word -----
     const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
     textReplace(words, 'target-word', 1200);
 
-    function textReplace(words, targetElementId, rate) {
-      let idx = 0;
-      const el = document.getElementById(targetElementId);
+    function textReplace(words, targetId, intervalMs) {
+      const el = document.getElementById(targetId);
       if (!el) return;
+      let idx = 0;
       setInterval(() => {
         el.style.opacity = 0;
         setTimeout(() => {
           idx = (idx + 1) % words.length;
           el.textContent = words[idx];
           el.style.opacity = 1;
-        }, 200);
-      }, rate);
+        }, 300);
+      }, intervalMs);
     }
   </script>
 </body>
