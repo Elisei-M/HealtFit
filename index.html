@@ -5,96 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HealthFit - Home</title>
 
-  <!-- Remix Icon (pentru iconițe hamburger, close etc.) -->
+  <!-- Remix Icons (pt. hamburger etc.) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" />
 
-  <!-- open-props & normalize (dark) -->
+  <!-- open-props & normalize -->
   <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14" />
   <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14/normalize.dark.min.css" />
 
-  <!-- Fonturi Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap"
-    rel="stylesheet"
-  />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap" rel="stylesheet"/>
 
   <style>
-    /* ---------- Variabile & reset minimal ---------- */
+    /* ==================== Variabile / reset minimal ==================== */
     :root {
-      /* Principalele variabile de brand/culori */
+      font-family: 'Oswald', sans-serif;
+      /* Culori de brand */
       --brand-1: hsl(349, 100%, 58%);
       --brand-2: hsl(210, 100%, 50%);
-      --surface-1: #111; /* fundal navbar, etc. */
-      --text-1: #fff;    /* text alb */
-      --radius-3: 8px;   /* border radius */
 
-      /* alte variabile open-props pot fi folosite direct */
-      font-family: 'Oswald', sans-serif;
-    }
-    * {
-      box-sizing: border-box;
+      --surface-1: #111;  /* fundal navbar, etc. */
+      --text-1: #fff;     /* text alb */
+      --radius-3: 8px;
+
+      /* Poți ajusta dimensiuni */
+      --nav-height: 5rem;
     }
     body {
       margin: 0;
-      background: #000; /* fundal general */
+      background: #000;
       color: #fff;
       font-family: 'Oswald', sans-serif;
     }
+    h1, h2, h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-weight: normal;
+      margin: 0.5rem 0;
+    }
 
-    /* ---------- Navbar ---------- */
+    /* ==================== NAVBAR ==================== */
     .Navbar {
       position: sticky;
       top: 0;
       z-index: 999;
       background-color: var(--surface-1);
-      height: 5rem;
+      height: var(--nav-height);
     }
     .Navbar .container {
+      max-inline-size: 1600px;
+      margin: 0 auto;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 100%;
-      margin: 0 auto;
-      padding: 0 1rem;
-      max-width: 1600px; /* container max */
+      padding-inline: 1rem;
     }
     .Logo {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: var(--text-1);
     }
+    /* Meniul principal (desktop) */
     .menu {
       list-style: none;
       display: flex;
       gap: 1.5rem;
-      background-color: var(--surface-1);
+      background: var(--surface-1);
     }
     .menu a {
       text-decoration: none;
       color: var(--text-1);
+      font-size: 1rem;
+      transition: color 0.2s ease;
     }
+    .menu a:hover {
+      color: var(--brand-1);
+    }
+
     .NavButton {
       background: none;
       border: none;
       color: var(--text-1);
       font-size: 1.5rem;
+      cursor: pointer;
     }
-    /* buton hamburger apare doar pe mobil */
-    @media (min-width: 768px) {
+
+    /* Hamburgermenu apare pe mobil, dispare pe desktop */
+    #openMenuBtn {
+      display: none;
+    }
+    @media (max-width: 768px) {
       #openMenuBtn {
-        display: none; /* ascuns pe desktop */
+        display: block;
       }
-    }
-    /* Meniu mobil (inițial ascuns) */
-    @media (max-width: 767px) {
       .menu {
+        /* ascundem pe mobil + devine overlay */
         position: fixed;
-        top: 0; right: 0; bottom: 0;
-        display: none;
+        top: 0; right: 0; bottom: 0; left: 0;
         flex-direction: column;
+        align-items: flex-start;
         padding: 2rem;
+        gap: 1rem;
+        display: none; /* hidden by default */
       }
       .menu.open {
         display: flex;
@@ -107,31 +120,38 @@
         border-bottom: 1px solid #555;
       }
     }
+    /* Desktop: ascundem butonul de close/hamburger, meniu e normal */
+    @media (min-width: 769px) {
+      #closeMenuBtn {
+        display: none;
+      }
+    }
 
-    /* ---------- Link-urile de navigație ---------- */
+    /* Link-urile de navigație */
     .NavLink {
       color: var(--text-1);
-      font-size: 1.1rem;
-      font-weight: 500;
       text-decoration: none;
-      transition: color 200ms ease;
+      font-size: 1rem;
+      font-weight: 500;
     }
     .NavLink:hover {
       color: var(--brand-1);
     }
 
-    /* ---------- HERO / .hero ---------- */
+    /* Ascundem / arătăm link Login/Logout cu JS + Auth */
+    #loginLink, #logoutLink {
+      display: inline-block;
+    }
+
+    /* ==================== HERO ==================== */
     .hero {
       position: relative;
-      min-height: calc(100vh - 5rem); /* full view - navbar */
+      min-height: calc(100vh - var(--nav-height));
       display: grid;
       align-items: center;
     }
     .hero > * {
-      grid-area: 1/1; /* stack */
-    }
-    .hero .visual {
-      overflow: hidden;
+      grid-area: 1/1;
     }
     .hero .visual img {
       width: 100%;
@@ -144,35 +164,34 @@
       display: grid;
       place-items: center;
       text-align: center;
-      padding: 2rem;
+      padding: 1rem;
     }
     .hero h1 {
-      font-size: 7rem;
+      font-size: 5rem;
       text-transform: uppercase;
       margin-bottom: 1rem;
-      font-family: 'Bebas Neue', sans-serif;
     }
-    @media (max-width: 767px) {
+    @media (max-width: 768px) {
       .hero h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
       }
     }
     .LinkButton {
       display: inline-block;
       padding: 0.75rem 1.25rem;
+      background: var(--brand-1);
+      color: #fff;
       border-radius: var(--radius-3);
       text-decoration: none;
       text-transform: uppercase;
       font-weight: 700;
-      background: var(--brand-1);
-      color: #fff;
       transition: background 0.2s ease;
     }
     .LinkButton:hover {
       background: #ff5050;
     }
 
-    /* ---------- .fold (#discover) ---------- */
+    /* ==================== FOLD / #discover ==================== */
     .fold {
       padding: 2rem;
       display: flex;
@@ -181,22 +200,23 @@
     .fold .subject p {
       max-width: 700px;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       line-height: 1.3;
     }
 
-    /* ---------- .schedule ---------- */
+    /* ==================== .schedule (#schedules) ==================== */
     .schedule {
       padding: 2rem;
     }
     .schedule h2 {
       color: var(--brand-1);
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 2rem;
     }
     .schedule table {
       width: 100%;
-      border: 2px solid var(--surface-1);
+      border: 2px solid #333;
       border-collapse: collapse;
     }
     .schedule table th,
@@ -209,14 +229,21 @@
       background: #222;
       color: var(--brand-1);
     }
+    .table-wrapper {
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 769px) {
+      .schedule .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+    }
 
-    /* ---------- .showcase ---------- */
+    /* .showcase sub-secțiune */
     .showcase {
       position: relative;
       overflow: hidden;
-    }
-    .showcase > * {
-      grid-area: 1/1;
     }
     .showcase video {
       display: block;
@@ -227,10 +254,10 @@
       top: 0; left: 0;
       width: 100%;
       z-index: 1;
-      mix-blend-mode: screen; /* efect suprapunere */
+      mix-blend-mode: screen;
     }
 
-    /* ---------- .cards (#plans) ---------- */
+    /* ==================== .cards (#plans) ==================== */
     .cards {
       padding: 2rem;
     }
@@ -246,9 +273,9 @@
     .Card {
       display: block;
       background: #222;
+      color: #fff;
       padding: 1rem;
       border-radius: var(--radius-3);
-      color: #fff;
       text-decoration: none;
       transition: background 0.2s;
     }
@@ -264,9 +291,9 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ---------- .about (#about) ---------- */
+    /* ==================== #about ==================== */
     .about {
-      min-height: 100vh;
+      min-height: 80vh;
       background: #111;
       display: flex;
       flex-direction: column;
@@ -276,20 +303,16 @@
       padding: 2rem;
     }
     #target-word {
-      font-size: 4rem;
+      font-size: 3rem;
       margin-bottom: 2rem;
       transition: opacity 0.3s ease;
     }
-
-    /* Footer gol, la final */
     footer {
-      margin-top: 2rem;
-      padding: 1rem;
+      margin-top: 1rem;
       color: #666;
     }
 
-    /* ---------- Animații scroll (opțional) ---------- */
-    /* ex. ascundem navbar la scroll down */
+    /* ============ Scroll direction -> ascundem navbar la scroll down ============ */
     .Navbar {
       transition: transform 0.4s ease;
     }
@@ -305,7 +328,8 @@
     <div class="container">
       <div class="Logo">HealtFit.</div>
 
-      <div id="menu" class="menu">
+      <!-- Meniu -->
+      <ul id="menu" class="menu">
         <header class="inline">
           <div class="Logo">HealtFit.</div>
           <button
@@ -318,17 +342,18 @@
           </button>
         </header>
 
-        <a href="index.html" class="NavLink">Home</a>
-        <a href="profile.html" class="NavLink">Profil</a>
-        <a href="nutritie.html" class="NavLink">Nutriție</a>
-        <a href="workouts.html" class="NavLink">Antrenamente</a>
+        <li><a href="index.html" class="NavLink">Home</a></li>
+        <li><a href="profile.html" class="NavLink">Profil</a></li>
+        <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+        <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
 
-        <!-- Link de login (dacă user e delogat) -->
-        <a href="login.html" id="loginLink" class="NavLink">Login</a>
-        <!-- Link de logout (dacă user e logat) -->
-        <a href="#" id="logoutLink" class="NavLink" style="display:none;">Logout</a>
-      </div>
+        <!-- Link "Login" (arătăm doar când user e delogat) -->
+        <li><a href="login.html" id="loginLink" class="NavLink">Login</a></li>
+        <!-- Link "Logout" (arătăm doar când user e logat) -->
+        <li><a href="#" id="logoutLink" class="NavLink" style="display:none;">Logout</a></li>
+      </ul>
 
+      <!-- Buton hamburger (mobil) -->
       <button
         id="openMenuBtn"
         title="Open Menu"
@@ -342,6 +367,7 @@
 
   <!-- CONȚINUT (Hero + secțiuni) -->
   <main>
+    <!-- HOME / HERO -->
     <section id="home">
       <div class="hero">
         <div class="visual">
@@ -390,6 +416,7 @@
       </div>
     </section>
 
+    <!-- SCHEDULES -->
     <section id="schedules" class="schedule">
       <div class="subject">
         <div class="container">
@@ -465,6 +492,7 @@
       </div>
     </section>
 
+    <!-- PLANS / CARDS -->
     <section id="plans" class="cards">
       <div class="subject">
         <div class="container">
@@ -505,15 +533,16 @@
       </div>
     </section>
 
+    <!-- ABOUT -->
     <section id="about" class="about">
       <div id="target-word">love</div>
       <footer></footer>
     </section>
   </main>
 
-  <!-- Script meniu hamburger + scroll animations + text replace -->
+  <!-- Script hamburger + scroll direction + textReplace -->
   <script>
-    // ----- Meniu hamburger -----
+    // ---- Meniu hamburger ----
     const openMenuBtn = document.querySelector('#openMenuBtn');
     const closeMenuBtn = document.querySelector('#closeMenuBtn');
     const menu = document.querySelector('#menu');
@@ -545,13 +574,13 @@
       link.addEventListener('click', () => handleViewTransition(closeMenu));
     });
 
-    // ----- Simulare user login/out (dacă vrei să conectezi cu Firebase, etc.)
+    // ---- Simulare login vs. logout (dacă vrei real firebase, integrezi alt script) ----
     const loginLink = document.getElementById('loginLink');
     const logoutLink = document.getElementById('logoutLink');
-    // De ex., dacă user e "logat", ascundem login, arătăm logout
+    // ex: if user is logged, hide login, show logout
     // logoutLink.style.display = 'none';
 
-    // ----- Scroll direction -> ascundem navbar la scroll down -----
+    // ---- Ascundem navbar la scroll down ----
     let scrollDirection;
     document.addEventListener('scroll', (e) => {
       const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -563,7 +592,7 @@
       e.target.lastScrollTop = st <= 0 ? 0 : st;
     }, { passive: true });
 
-    // ----- Aplica efect "textReplace" la #target-word -----
+    // ---- Schimbare text in #target-word ----
     const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
     textReplace(words, 'target-word', 1200);
 
