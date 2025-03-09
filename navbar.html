@@ -1,0 +1,38 @@
+<!-- Conținutul exact al barei de navigație -->
+<nav class="Navbar">
+  <div class="container">
+    <div class="Logo">HealthFit.</div>
+
+    <div id="menu" class="menu">
+      <header class="inline">
+        <div class="Logo">HealthFit.</div>
+        <button
+          id="closeMenuBtn"
+          title="Close Menu"
+          aria-label="Close Menu"
+          class="NavButton"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+      </header>
+
+      <a href="index.html" class="NavLink">Home</a>
+      <a href="profile.html" class="NavLink">Profil</a>
+      <a href="nutritie.html" class="NavLink">Nutriție</a>
+      <a href="workouts.html" class="NavLink">Antrenamente</a>
+
+      <!-- Link de Login/Logout (dinamic) -->
+      <a id="loginLink" href="login.html" class="NavLink">Login</a>
+      <a id="logoutLink" class="NavLink" style="display:none;">Logout</a>
+    </div>
+
+    <button
+      id="openMenuBtn"
+      title="Open Menu"
+      aria-label="Open Menu"
+      class="NavButton"
+    >
+      <i class="ri-menu-line"></i>
+    </button>
+  </div>
+</nav>
