@@ -2,314 +2,365 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HealthFit - Home</title>
-
-  <!-- Remix Icons (pentru hamburger etc.) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" />
-
-  <!-- open-props & normalize -->
-  <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14" />
-  <link rel="stylesheet" href="https://unpkg.com/open-props@1.6.14/normalize.dark.min.css" />
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Remix Icon pentru icoane -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
 
   <style>
-    :root {
-      /* Fonturi */
-      font-family: 'Oswald', sans-serif;
-      --font-title: 'Bebas Neue', sans-serif;
-
-      /* Culori */
-      --surface-1: #111;     /* fundal navbar, etc. */
-      --text-1: #fff;        /* text alb */
-      --brand-1: hsl(349, 100%, 58%);
-
-      /* Dimensiuni */
-      --nav-height: 5rem;
-      --radius: 8px;
+    /* Reset minimal */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
     }
+
     body {
-      margin: 0;
-      background: #000;
-      color: var(--text-1);
-      font-family: var(--font-family, 'Oswald', sans-serif);
-    }
-    h1, h2, h3 {
-      font-family: var(--font-title);
-      margin: 0.5rem 0;
+      font-family: 'Oswald', sans-serif;
+      background: #111; /* fundal general */
+      color: #eee;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
-    /* ===== NAVBAR ===== */
+    /* =============== NAVBAR =============== */
     .Navbar {
       position: sticky;
       top: 0;
       z-index: 999;
-      background-color: var(--surface-1);
-      height: var(--nav-height);
-    }
-    .Navbar .container {
-      max-width: 1600px;
-      margin: 0 auto;
-      height: 100%;
+      background: rgba(0,0,0,0.8);
+      padding: 0.8rem 1rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-inline: 1rem;
+      transition: transform 0.4s ease;
     }
-    .Logo {
-      font-family: var(--font-title);
-      font-size: 2.5rem;
-      color: var(--text-1);
+    /* la scroll */
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
     }
-    /* Meniu principal */
-    .menu {
-      list-style: none;
-      display: flex;
-      gap: 1.5rem;
-      background: var(--surface-1);
+
+    .Navbar .Logo {
+      font-size: 2.8rem; /* font mai mare */
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #0df1a7; /* culoare futuristic */
+      text-transform: uppercase;
     }
-    .menu a {
-      text-decoration: none;
-      color: var(--text-1);
-      font-size: 1rem;
-    }
-    .menu a:hover {
-      color: var(--brand-1);
-    }
-    /* Butoane hamburger */
+
     .NavButton {
       background: none;
       border: none;
-      color: var(--text-1);
-      font-size: 1.5rem;
+      color: #fff;
+      font-size: 1.8rem;
       cursor: pointer;
     }
-    #openMenuBtn {
-      display: none; /* ascuns pe desktop */
-    }
-    @media (max-width: 768px) {
-      #openMenuBtn {
-        display: block;
-      }
-      .menu {
-        /* ascundem pe mobil + devine overlay fullscreen */
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 2rem;
-        gap: 1rem;
-        display: none; /* hidden by default */
-      }
-      .menu.open {
-        display: flex;
-      }
-      .menu header {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #555;
-      }
-      /* Pe mobil, brand repetat e opțional; îl eliminăm complet din meniu
-         => scoatem <header> cu .Logo ca să nu apară a doua oară. */
-      .menu > .Logo {
-        display: none; /* Eliminăm brand-ul duplicat */
-      }
+
+    .menu {
+      display: flex;
+      gap: 1.5rem;
     }
 
-    /* Link-urile de navigație */
     .NavLink {
-      color: var(--text-1);
+      color: #fff;
       text-decoration: none;
-      font-size: 1rem;
-      font-weight: 500;
+      font-size: 1.3rem; /* text mai mare */
+      text-transform: uppercase;
+      transition: color 0.2s;
     }
     .NavLink:hover {
-      color: var(--brand-1);
+      color: #0df1a7;
     }
 
-    /* Ascundem link Logout inițial, îl arătăm cu JS dacă user e logat */
-    #logoutLink { display: none; }
-
-    /* Navbar ascuns la scroll-down */
-    .Navbar {
-      transition: transform 0.4s ease;
+    /* Mobile - ascundem meniu si afisam hamburger */
+    #openMenuBtn {
+      display: none;
     }
-    body[scroll-direction='down'] .Navbar {
-      transform: translateY(-100%);
+    #closeMenuBtn {
+      display: none;
     }
 
-    /* ====== HERO ====== */
+    /* ========== Meniu Mobile ========== */
+    @media screen and (max-width: 768px) {
+      .menu {
+        position: fixed;
+        top: 0; right: 0;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+      }
+      .menu.open {
+        transform: translateX(0%);
+      }
+
+      #openMenuBtn {
+        display: inline-block;
+      }
+      #closeMenuBtn {
+        display: block;
+        position: absolute;
+        top: 1rem; right: 1rem;
+        font-size: 2rem;
+      }
+
+      .NavLink {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* =============== MAIN =============== */
+    main {
+      width: 100%;
+      display: block;
+    }
+
+    /* ====== HERO SECTION ====== */
     .hero {
       position: relative;
       width: 100%;
-      height: calc(100vh - var(--nav-height)); /* full screen minus navbar */
-      display: grid;
+      min-height: 60vh; /* mai mic */
+      display: flex;
       align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 0.5rem;
     }
-    .hero > * {
-      grid-area: 1/1;
-    }
+
     .hero .visual {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
     }
     .hero .visual img {
-      width: 100%;
+      width: auto;
       height: 100%;
       object-fit: cover;
-      display: block;
+      opacity: 0.8;
     }
+
     .hero .content {
       position: relative;
       z-index: 2;
       text-align: center;
-      padding: 1rem;
+      max-width: 600px;
+      padding: 2rem;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      backdrop-filter: blur(5px);
+      animation: fadeDown 0.8s ease forwards;
+      transform: translateY(-20px);
+      opacity: 0;
     }
-    .hero h1 {
-      font-size: 4rem;
-      text-transform: uppercase;
+    .hero .content h1 {
+      font-size: 3rem;
       margin-bottom: 1rem;
-    }
-    .LinkButton {
-      display: inline-block;
-      padding: 0.75rem 1.25rem;
-      background: var(--brand-1);
-      color: #fff;
-      border-radius: var(--radius);
-      text-decoration: none;
+      color: #0df1a7;
       text-transform: uppercase;
-      font-weight: 700;
-      transition: background 0.2s ease;
+      letter-spacing: 1px;
     }
-    .LinkButton:hover {
-      background: #ff5050;
+    .hero .content .LinkButton {
+      text-decoration: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.2rem;
+      color: #fff;
+      border: 2px solid #0df1a7;
+      background: transparent;
+      transition: 0.3s;
+    }
+    .hero .content .LinkButton:hover {
+      background: #0df1a7;
+      color: #111;
     }
 
-    /* ====== FOLD / #discover ====== */
+    @keyframes fadeDown {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ====== FOLD / DISCOVER ====== */
     .fold {
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
+      padding: 3rem 1rem;
+      text-align: center;
     }
     .fold .subject p {
-      max-width: 700px;
-      text-align: center;
-      font-size: 1.3rem;
-      line-height: 1.3;
-    }
-
-    /* ====== #schedules ====== */
-    .schedule {
-      padding: 2rem;
-    }
-    .schedule .container {
-      display: grid;
-      gap: 1rem;
-    }
-    @media (min-width: 768px) {
-      .schedule .container {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .schedule h2 {
-      color: var(--brand-1);
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      font-size: 2rem;
-    }
-    .schedule table {
-      width: 100%;
-      border: 2px solid #333;
-      border-collapse: collapse;
-    }
-    .schedule table th,
-    .schedule table td {
-      border: 1px solid #444;
-      padding: 0.75rem 1rem;
-      text-align: left;
-    }
-    .schedule table tr:hover td {
-      background: #222;
-      color: var(--brand-1);
-    }
-    .table-wrapper {
-      margin-bottom: 1.5rem;
-    }
-
-    .showcase {
-      position: relative;
-      overflow: hidden;
-    }
-    .showcase video {
-      display: block;
-      width: 100%;
-    }
-    .showcase img {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      z-index: 1;
-      mix-blend-mode: screen;
-    }
-
-    /* ====== #plans .cards ====== */
-    .cards {
-      padding: 2rem;
-    }
-    .cards .container {
-      display: grid;
-      gap: 1rem;
-    }
-    @media (min-width: 768px) {
-      .cards .container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    .Card {
-      display: block;
-      background: #222;
-      color: #fff;
-      padding: 1rem;
-      border-radius: var(--radius);
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-    .Card:hover {
-      background: #333;
-    }
-    .Card i {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    .Card h2 {
       font-size: 1.5rem;
-      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #0df1a7;
     }
 
-    /* ====== #about ====== */
-    .about {
-      min-height: 80vh;
-      background: #111;
+    /* ====== SCHEDULE SECTION ====== */
+    .schedule {
+      background: #222;
+      padding: 3rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .schedule .subject {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+    }
+    .schedule .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .schedule .table-wrapper {
+      background: #333;
+      border: 1px solid #555;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .schedule .table-wrapper h2 {
+      color: #0df1a7;
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
       text-align: center;
-      padding: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    #target-word {
+    .schedule table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #eee;
+      text-align: left;
+    }
+    .schedule th, .schedule td {
+      border-bottom: 1px solid #444;
+      padding: 0.5rem;
+    }
+    .schedule tr:hover {
+      background: rgba(0,255,191,0.1);
+    }
+
+    /* ====== SHOWCASE (VIDEO) ====== */
+    .showcase {
+      position: relative;
+      width: 100%;
+      height: 50vh;
+      overflow: hidden;
+    }
+    .showcase video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.5);
+    }
+    .showcase img {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 300px;
+      animation: float 5s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, 0%); }
+      50% { transform: translate(-50%, -10%); }
+    }
+
+    /* ====== CARDS SECTION ====== */
+    .cards {
+      background: #151515;
+      padding: 3rem 1rem;
+    }
+    .cards .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .Card {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: #eee;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .Card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 10px rgba(13,241,167,0.3);
+    }
+    .Card i {
+      font-size: 2rem;
+      color: #0df1a7;
+      margin-bottom: 1rem;
+    }
+    .Card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: #0df1a7;
+    }
+    .Card ul {
+      list-style: disc;
+      padding-left: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    /* ====== ABOUT SECTION ====== */
+    .about {
+      background: #111;
+      min-height: 50vh;
+      padding: 3rem 1rem;
+      text-align: center;
+    }
+    .about #target-word {
       font-size: 3rem;
-      margin-bottom: 2rem;
-      transition: opacity 0.3s ease;
+      color: #0df1a7;
+      margin-bottom: 1rem;
     }
-    footer {
-      margin-top: 1rem;
-      color: #666;
+    .about footer {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #888;
+    }
+
+    /* ====== FOOTER mic ====== */
+    .about footer {
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+    }
+    .about footer p {
+      margin: 0.5rem 0;
+    }
+
+    /* ====== SCROLL REVEAL ANIMATIONS ====== */
+    .subject {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: 0.6s ease;
+    }
+    .subject.reveal-up {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .subject.reveal-down {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -320,38 +371,29 @@
     <div class="container">
       <div class="Logo">HealtFit.</div>
 
-      <ul id="menu" class="menu">
-        <!-- Scoatem brand-ul duplicat de aici 
-             <header class="inline">
-               <div class="Logo">HealtFit.</div>
-               <button id="closeMenuBtn" ...> ... </button>
-             </header> 
-        -->
-        <!-- Punem doar butonul de close sus, dacă vrei: -->
-        <li>
+      <!-- Meniul (desktop+mobile) -->
+      <div id="menu" class="menu">
+        <!-- Header meniu mobile -->
+        <header class="inline">
+          <div class="Logo">HealtFit.</div>
           <button
             id="closeMenuBtn"
             title="Close Menu"
             aria-label="Close Menu"
             class="NavButton"
-            style="display:none;"
           >
             <i class="ri-close-line"></i>
           </button>
-        </li>
+        </header>
 
-        <li><a href="index.html" class="NavLink">Home</a></li>
-        <li><a href="profile.html" class="NavLink">Profil</a></li>
-        <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
-        <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+        <a href="#home" class="NavLink">Home</a>
+        <a href="profile.html" class="NavLink">Profil</a>
+        <a href="nutritie.html" class="NavLink">Nutritie</a>
+        <a href="workouts.html" class="NavLink">Antrenamente</a>
+        <!-- Ex: Login/Logout link; de ex. <a href="login.html" class="NavLink">Login</a> -->
+      </div>
 
-        <!-- Link "Login" (arătăm doar când user e delogat) -->
-        <li><a href="login.html" id="loginLink" class="NavLink">Login</a></li>
-        <!-- Link "Logout" (arătăm doar când user e logat) -->
-        <li><a href="#" id="logoutLink" class="NavLink">Logout</a></li>
-      </ul>
-
-      <!-- Buton hamburger (mobil) -->
+      <!-- Buton hamburger -->
       <button
         id="openMenuBtn"
         title="Open Menu"
@@ -363,57 +405,42 @@
     </div>
   </nav>
 
-  <!-- MAIN -->
   <main>
-    <!-- HOME / HERO -->
-    <section id="home">
-      <div class="hero">
-        <div class="visual">
-          <picture>
-            <source
-              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
-              type="image/avif"
-              media="(width > 1024px)"
-            />
-            <source
-              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.avif"
-              type="image/avif"
-            />
-            <source
-              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
-              media="(width > 1024px)"
-              type="image/webp"
-            />
-            <img
-              src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp"
-              alt="fitness"
-            />
-          </picture>
-        </div>
-        <div class="content">
-          <h1>Good Morning Champ</h1>
-          <div class="wrapper">
-            <a href="#discover" class="LinkButton">Discover More</a>
-          </div>
-        </div>
+    <!-- HERO -->
+    <section id="home" class="hero">
+      <div class="visual">
+        <picture>
+          <!-- Imagine "mare" vs "mică"? Ajustăm min-height la .hero + height auto vs. 60vh -->
+          <img
+            src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp"
+            alt="fitness"
+          />
+        </picture>
       </div>
-
-      <div id="discover" class="fold">
-        <div class="subject">
-          <p>
-            It's a new day,
-            <span style="color: var(--brand-1)">
-              a new opportunity to sculpt the best version of yourself.
-              Embrace the energy,
-            </span>
-            feel the burn, and conquer your fitness goals with unwavering
-            determination.
-          </p>
+      <div class="content">
+        <h1>Good Morning Champ</h1>
+        <div class="wrapper">
+          <a href="#discover" class="LinkButton Primary"> DISCOVER MORE </a>
         </div>
       </div>
     </section>
 
-    <!-- SCHEDULES -->
+    <!-- DISCOVER -->
+    <div id="discover" class="fold">
+      <div class="subject">
+        <p>
+          It's a new day,
+          <span style="color: #0df1a7;">
+            a new opportunity to sculpt the best version of yourself.
+            Embrace the energy,
+          </span>
+          feel the burn, and conquer your fitness goals with unwavering
+          determination.
+        </p>
+      </div>
+    </div>
+
+    <!-- PROGRAM & EXERCIȚII -->
     <section id="schedules" class="schedule">
       <div class="subject">
         <div class="container">
@@ -443,7 +470,7 @@
             </table>
           </div>
           <div class="table-wrapper">
-            <h2>Exemple exercitii</h2>
+            <h2>Exemple exerciții</h2>
             <table>
               <tr>
                 <th>Grupa</th>
@@ -469,6 +496,7 @@
           </div>
         </div>
       </div>
+      <!-- Showcase cu video la scroll -->
       <div class="showcase">
         <video
           autoplay
@@ -489,7 +517,7 @@
       </div>
     </section>
 
-    <!-- PLANS / CARDS -->
+    <!-- CARDS: Personal Best, etc. -->
     <section id="plans" class="cards">
       <div class="subject">
         <div class="container">
@@ -520,9 +548,9 @@
             <div>
               <h2>Friends Activity</h2>
               <ul>
-                <li>Jane just set a new record in cycling: 30 miles!</li>
-                <li>Mike completed the 30-Day Running Streak Challenge!</li>
-                <li>Anna shared a new workout: 'Hill Sprints Interval'.</li>
+                <li>Jane set a new record: 30 miles cycling!</li>
+                <li>Mike completed the 30-Day Running Streak!</li>
+                <li>Anna posted a new workout: 'Hill Sprints'.</li>
               </ul>
             </div>
           </a>
@@ -530,56 +558,48 @@
       </div>
     </section>
 
-    <!-- ABOUT -->
+    <!-- ABOUT + FOOTER MIC -->
     <section id="about" class="about">
       <div id="target-word">love</div>
-      <footer></footer>
+      <footer>
+        <p>© 2025 HealthFit. All rights reserved.</p>
+      </footer>
     </section>
   </main>
 
-  <!-- Script hamburger + scroll direction + mic exemplu textReplace -->
+  <!-- Script: Meniu mobil, scroll direction, reveal, etc. -->
   <script>
-    // ---- Meniu hamburger ----
-    const openMenuBtn = document.getElementById('openMenuBtn');
-    const closeMenuBtn = document.getElementById('closeMenuBtn');
-    const menu = document.getElementById('menu');
+    // 1. Meniu mobil
+    const openMenuBtn = document.querySelector('#openMenuBtn');
+    const closeMenuBtn = document.querySelector('#closeMenuBtn');
+    const menu = document.querySelector('#menu');
 
     function openMenu() {
       menu.classList.add('open');
-      if (closeMenuBtn) {
-        closeMenuBtn.style.display = 'block';
-        closeMenuBtn.focus();
-      }
+      closeMenuBtn.focus();
       window.addEventListener('keyup', handleCloseWithESC);
     }
     function closeMenu() {
       menu.classList.remove('open');
-      if (openMenuBtn) {
-        openMenuBtn.focus();
-      }
-      if (closeMenuBtn) {
-        closeMenuBtn.style.display = 'none';
-      }
+      openMenuBtn.focus();
       window.removeEventListener('keyup', handleCloseWithESC);
     }
     function handleCloseWithESC(e) {
-      if (e.key === 'Escape') {
-        closeMenu();
-      }
+      if (e.key === 'Escape') closeMenu();
     }
     function handleViewTransition(updateDom) {
       if (!document.startViewTransition) updateDom();
       else document.startViewTransition(() => updateDom());
     }
 
-    openMenuBtn?.addEventListener('click', () => handleViewTransition(openMenu));
-    closeMenuBtn?.addEventListener('click', () => handleViewTransition(closeMenu));
+    openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
+    closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
 
-    document.querySelectorAll('.NavLink').forEach(link => {
+    document.querySelectorAll('.NavLink').forEach((link) => {
       link.addEventListener('click', () => handleViewTransition(closeMenu));
     });
 
-    // ---- Ascundem navbar la scroll-down ----
+    // 2. Detect scroll direction
     let scrollDirection;
     document.addEventListener('scroll', (e) => {
       const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -591,22 +611,53 @@
       e.target.lastScrollTop = st <= 0 ? 0 : st;
     }, { passive: true });
 
-    // ---- Schimbare text #target-word (exemplu simplu) ----
-    const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
-    textReplace(words, 'target-word', 1200);
+    // 3. Scroll reveal
+    function addRevealEffect(elements) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          let revealClass;
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
+              entry.target.classList.add(revealClass);
+            } else {
+              entry.target.className = 'subject';
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      elements.forEach((element) => observer.observe(element));
+    }
+    const elementsToReveal = document.querySelectorAll('.subject');
+    addRevealEffect(elementsToReveal);
 
-    function textReplace(words, targetId, intervalMs) {
-      const el = document.getElementById(targetId);
-      if (!el) return;
-      let idx = 0;
-      setInterval(() => {
-        el.style.opacity = 0;
-        setTimeout(() => {
-          idx = (idx + 1) % words.length;
-          el.textContent = words[idx];
-          el.style.opacity = 1;
-        }, 300);
-      }, intervalMs);
+    // 4. Example “text replace” in #target-word
+    const words = [
+      'passion',
+      'success',
+      'goals',
+      'rhythm',
+      'fun',
+      'energy',
+      'opportunity',
+      'victory'
+    ];
+    textReplace(words, 'target-word', 1500);
+
+    function textReplace(words, targetElement, rate) {
+      let wordIndex = 0;
+      const randomWordElement = document.getElementById(targetElement);
+
+      const changeWordWithAnimation = () => {
+        randomWordElement.style.opacity = 0;
+        setTimeout(function () {
+          wordIndex = (wordIndex + 1) % words.length;
+          randomWordElement.textContent = words[wordIndex];
+          randomWordElement.style.opacity = 1;
+        }, 150);
+      };
+      setInterval(changeWordWithAnimation, rate);
     }
   </script>
 </body>
