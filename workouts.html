@@ -192,10 +192,11 @@
       height: 350px;
       z-index: 100;
     }
-    .muscle-groups svg g[id] path {
-      opacity: .2;
-      transition: opacity 0.25s ease-in-out;
-    }
+.muscle-groups svg g[id] path {
+  fill: #666 !important;  /* forțăm un gri mai închis */
+  opacity: 1;            /* nu mai estompezi silueta */
+  transition: fill 0.25s ease-in-out;
+}
     .muscle-groups svg g g[id]:hover path {
       cursor: pointer;
       opacity: .5;
