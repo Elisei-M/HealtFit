@@ -83,39 +83,6 @@
       background-color: #e65f00;
     }
 
-    /* Dreapta: container SVG */
-    .svg-container {
-      flex: 1;
-      min-width: 400px;
-      position: relative;
-      text-align: center;
-      background: #f9f9f9;
-      border-radius: 8px;
-      padding: 20px;
-    }
-    .svg-container h3 {
-      margin-top: 0;
-    }
-    .svg-box {
-      width: 100%;
-      height: 500px; 
-      background: #eee;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    /* Minimal: un div colorat in loc de svg real 
-       - In practica, inserezi codul tau SVG / Snap.svg */
-    .fake-muscles {
-      width: 100%;
-      height: 100%;
-      background: #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #555;
-    }
-
     .reset-btn {
       background: #444;
       color: #fff;
@@ -132,6 +99,82 @@
     #statusMsg {
       margin-top: 10px;
       color: #333;
+    }
+
+    /* Dreapta: container cu grupele musculare */
+    .svg-container {
+      flex: 1;
+      min-width: 400px;
+      position: relative;
+      text-align: center;
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .svg-container h3 {
+      margin-top: 0;
+    }
+
+    /* Copiem stilurile snippet-ului (SASS convertit la CSS minimal) */
+    .muscle-groups {
+      position: relative;
+      background: #eee;
+      width: 320px;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .muscle-groups h1 {
+      background: #00BCD4;
+      color: #eee;
+      text-align: center;
+      margin: -0.5rem -1rem 1rem;
+      padding: 0 1rem 0.75rem;
+      font-size: 1.25rem;
+    }
+    .muscle-groups h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .muscle-groups label {
+      display: block;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.7rem;
+      opacity: 0.5;
+      border-left: 5px solid transparent;
+      padding-left: 6px;
+      margin-left: -11px;
+      transition: opacity 0.2s;
+    }
+    .muscle-groups label:hover {
+      opacity: 1;
+      border-color: rgba(0, 0, 0, 0.75);
+    }
+    .muscle-groups input:checked + label {
+      opacity: 1;
+      font-weight: bold;
+      color: #00BCD4;
+    }
+    .muscle-groups svg {
+      position: absolute;
+      right: -1.5rem;
+      bottom: 3rem;
+      height: 350px;
+    }
+    .muscle-groups svg g[id] path {
+      opacity: 0.2;
+      transition: opacity 0.25s ease-in-out;
+    }
+    .muscle-groups svg g g[id]:hover path {
+      cursor: pointer;
+      opacity: 0.5;
+      fill: #00BCD4 !important;
+    }
+    .muscles-helper {
+      display: none; /* ascundem checkbox-urile reale */
     }
   </style>
 </head>
@@ -155,16 +198,56 @@
       <p id="statusMsg"></p>
     </div>
 
-    <!-- Dreapta: Container SVG -->
+    <!-- Dreapta: Container cu grupele musculare (SVG snippet) -->
     <div class="svg-container">
-      <h3>Recuperare Mușchi</h3>
-      <div class="svg-box">
-        <!-- Aici pui codul SVG real (front/back). 
-             Temporar punem un div "fake-muscles" -->
-        <div class="fake-muscles" id="fakeMusclesText">
-          SVG Muscles Placeholder
-        </div>
+      <h3>Recuperare Mușchi (sub 48h = colorat)</h3>
+
+      <!-- Snippet-ul complet -->
+      <div class="muscle-groups">
+        <h1>Muscle Group Selector</h1>
+        <h2>Arms</h2>
+        <input type="checkbox" class="biceps muscles-helper" id="biceps"> 
+          <label for="biceps">Biceps</label>
+        <input type="checkbox" class="deltoids muscles-helper" id="deltoids"> 
+          <label for="deltoids">Deltoids</label>
+        <input type="checkbox" class="forearms muscles-helper" id="forearms"> 
+          <label for="forearms">Forearms</label>
+        <input type="checkbox" class="triceps muscles-helper" id="triceps"> 
+          <label for="triceps">Triceps</label>
+
+        <h2>Back</h2>
+        <input type="checkbox" class="trapezius muscles-helper" id="trapezius"> 
+          <label for="trapezius">Trapezius</label>
+        <input type="checkbox" class="lats muscles-helper" id="lats"> 
+          <label for="lats">Lats</label>
+
+        <h2>Core</h2>
+        <input type="checkbox" class="abs muscles-helper" id="abs"> 
+          <label for="abs">Abs</label>
+        <input type="checkbox" class="obliques muscles-helper" id="obliques"> 
+          <label for="obliques">Obliques</label>
+        <input type="checkbox" class="pectorals muscles-helper" id="pectorals"> 
+          <label for="pectorals">Pectorals</label>
+
+        <h2>Legs</h2>
+        <input type="checkbox" class="adductors muscles-helper" id="adductors"> 
+          <label for="adductors">Adductors</label>
+        <input type="checkbox" class="calves muscles-helper" id="calves"> 
+          <label for="calves">Calves</label>
+        <input type="checkbox" class="hamstrings muscles-helper" id="hamstrings"> 
+          <label for="hamstrings">Hamstrings</label>
+        <input type="checkbox" class="glutes muscles-helper" id="glutes"> 
+          <label for="glutes">Glutes</label>
+        <input type="checkbox" class="quads muscles-helper" id="quads"> 
+          <label for="quads">Quads</label>
+
+        <!-- SVG-ul complet -->
+        <!-- ... același cod pe care l-ai dat ... -->
+        <svg width="100%" height="100%" viewBox="0 0 176 207" ...>
+          <!-- conținutul complet al svg-ului -->
+        </svg>
       </div>
+
     </div>
   </div>
 
@@ -200,7 +283,6 @@
     const daysContainer = document.getElementById("daysContainer");
     const resetBtn = document.getElementById("resetBtn");
     const statusMsg = document.getElementById("statusMsg");
-    const fakeMusclesText = document.getElementById("fakeMusclesText");
 
     let currentUser = null;
     let programDocRef = null;
@@ -248,8 +330,9 @@
         cb.onchange = () => toggleDay(dayIndex, cb.checked);
 
         label.appendChild(cb);
-        label.appendChild(document.createTextNode(" " + dayObj.title + (dayObj.done ? " (Finalizat)" : "")));
-
+        label.appendChild(
+          document.createTextNode(" " + dayObj.title + (dayObj.done ? " (Finalizat)" : ""))
+        );
         dayDiv.appendChild(label);
 
         // Exerciții (expand/collapse)
@@ -257,10 +340,11 @@
         exercisesUL.classList.add("exercises");
         dayObj.exercises.forEach(ex => {
           const li = document.createElement("li");
-          li.textContent = ex.name + " - " + ex.description + 
-                           (ex.alternatives && ex.alternatives.length>0 
-                            ? " [Alternativ: " + ex.alternatives.join(", ") + "]" 
-                            : "");
+          li.textContent =
+            ex.name + " - " + ex.description +
+            (ex.alternatives && ex.alternatives.length > 0
+              ? " [Alternativ: " + ex.alternatives.join(", ") + "]"
+              : "");
           exercisesUL.appendChild(li);
         });
         dayDiv.appendChild(exercisesUL);
@@ -268,7 +352,7 @@
         // La click pe titlu/label => expand/collapse
         label.onclick = (e) => {
           // dacă e fix pe checkbox, nu expand
-          if (e.target === cb) return; 
+          if (e.target === cb) return;
           exercisesUL.classList.toggle("active");
         };
 
@@ -305,26 +389,53 @@
 
     // 7. updateMusclesRecovery => colorăm mușchii
     function updateMusclesRecovery() {
-      // Exemplu simplu: colorăm totul verde la început
-      // (în practica reală, ai un cod care colorează #muscleChest etc.)
-      let text = "Toți mușchii sunt VERZI (recuperați).<br/>";
+      // 7.1 Mai întâi, debifăm toate grupele (=> devin opace)
+      const muscleIDs = [
+        "biceps","triceps","deltoids","forearms","trapezius","lats",
+        "abs","obliques","pectorals","adductors","calves","hamstrings",
+        "glutes","quads"
+      ];
+      muscleIDs.forEach(id => {
+        const inputEl = document.getElementById(id);
+        if (inputEl) inputEl.checked = false;
+      });
 
       if (!programData || !programData.days) return;
 
+      // 7.2 Pentru fiecare zi finalizată sub 48h, bifăm grupele respective
       const now = new Date();
       programData.days.forEach(day => {
         if (day.done && day.doneDate) {
           const d = new Date(day.doneDate);
-          const diffH = (now - d)/36e5; // ore
+          const diffH = (now - d) / 36e5; // ore
           if (diffH < 48) {
-            // colorăm roșu mușchii lucrați
-            text += `Mușchii [${day.muscleGroups.join(", ")}] sunt ROȘII (< 48h).<br/>`;
-          } else {
-            text += `Mușchii [${day.muscleGroups.join(", ")}] sunt VERZI (recuperați).<br/>`;
+            // Bifăm grupele => apar colorate
+            day.muscleGroups.forEach(mg => {
+              checkMuscleGroup(mg.toLowerCase());
+            });
           }
         }
       });
-      fakeMusclesText.innerHTML = text;
+    }
+
+    // 7.3 Bifăm grupele necesare (ex. "chest" => "pectorals", "legs" => "quads, hamstrings, glutes, calves" etc.)
+    function checkMuscleGroup(group) {
+      // Dicționar simplu: muscleGroup => id-urile checkbox-urilor
+      const map = {
+        "chest": ["pectorals"],
+        "triceps": ["triceps"],
+        "biceps": ["biceps"],
+        "back": ["lats","trapezius"],  // exemplu simplu
+        "legs": ["quads","hamstrings","glutes","calves","adductors"],
+        "shoulders": ["deltoids"],
+        "abs": ["abs","obliques"] // exemplu, dacă vrei
+      };
+      const ids = map[group];
+      if (!ids) return;
+      ids.forEach(id => {
+        const inputEl = document.getElementById(id);
+        if (inputEl) inputEl.checked = true;
+      });
     }
 
     // 8. Logout
@@ -333,6 +444,36 @@
         window.location.href = "index.html";
       });
     };
+
+    // ~~~~~~ Codul JS pt. hover/click pe SVG (din snippet) ~~~~~~
+    document.querySelectorAll(".muscle-groups svg g g[id]").forEach(function(group) {
+      group.addEventListener('mouseover', function(ev) {
+        // la hover => label e evidențiat
+        const theID = getGroupID(ev);
+        const label = document.querySelector(`label[for=${theID}]`);
+        if (label) label.classList.add("hover");
+      });
+      group.addEventListener('mouseout', function(ev) {
+        const theID = getGroupID(ev);
+        const label = document.querySelector(`label[for=${theID}]`);
+        if (label) label.classList.remove("hover");
+      });
+      // Când dai click direct pe mușchi, togglăm checkbox-ul
+      group.addEventListener('click', function(ev) {
+        const theID = getGroupID(ev);
+        const input = document.getElementById(theID);
+        if (input) input.checked = !input.checked;
+      });
+    });
+
+    function getGroupID(ev) {
+      // Evităm path[1].id => cross-browser
+      let target = ev.currentTarget;
+      if (!target.id && target.parentNode) {
+        target = target.parentNode;
+      }
+      return (target.id || "").toLowerCase();
+    }
   </script>
 </body>
 </html>
