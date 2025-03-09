@@ -4,184 +4,183 @@
   <meta charset="UTF-8" />
   <title>HealthFit - Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Remix Icon pentru icoane -->
+
+  <!-- Remix Icon pentru icoane (hamburger etc.) -->
   <link
     href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
     rel="stylesheet"
   />
 
   <style>
-    /* Reset minimal */
+    /* RESET minimal */
     *, *::before, *::after {
-      box-sizing: border-box;
       margin: 0; padding: 0;
+      box-sizing: border-box;
     }
-
-    body {
+    html, body {
       font-family: 'Oswald', sans-serif;
-      background: #111; /* fundal general */
+      background: #111;
       color: #eee;
-      overflow-x: hidden;
       scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
-    /* =============== NAVBAR =============== */
-/* NAVBAR GENERAL */
-.Navbar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  background: rgba(0,0,0,0.8);
-  padding: 0.8rem 1rem;
-  font-size: 1.2rem; /* text mai mare în navbar */
-}
+    /* ====================================
+       NAVBAR
+    ==================================== */
+    .Navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.8);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.4s ease;
+    }
+    /* La scroll, ascundem navbarul dacă direcția e "down" */
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
+    }
 
-/* Constrângem lățimea și organizăm conținutul */
-.Navbar .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px; /* sau cât dorești */
-  margin: 0 auto;
-}
+    .Navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-/* LOGO */
-.Logo {
-  font-size: 2.4rem; /* și mai mare, dacă vrei */
-  font-weight: 700;
-  color: #0df1a7; /* nuanță futuristă */
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
+    .Logo {
+      font-size: 2.4rem; 
+      font-weight: 700;
+      color: #0df1a7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
 
-/* Butoane hamburger */
-.NavButton {
-  display: none; /* ascuns pe desktop, vizibil pe mobil */
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-}
+    /* Meniu desktop */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links li {
+      display: block;
+    }
+    .nav-links a,
+    .nav-links button {
+      color: #fff;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover,
+    .nav-links button:hover {
+      color: #0df1a7;
+    }
 
-/* Meniul + link-uri */
-.menu {
-  display: flex;
-  gap: 1.5rem;
-}
+    /* Butoane hamburger */
+    .NavButton {
+      display: none; /* ascuns pe desktop */
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
-}
+    /* =========== MEDIA QUERY: mobil =========== */
+    @media screen and (max-width: 768px) {
+      /* Afișăm butonul hamburger */
+      .NavButton {
+        display: inline-block;
+      }
 
-/* Stil link-uri */
-.NavLink {
-  color: #fff;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-.NavLink:hover {
-  color: #0df1a7;
-}
+      /* Ascundem .nav-links pe mobil, îl vom transforma în panel lateral */
+      .nav-links {
+        position: fixed;
+        top: 0; right: 0;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+      }
+      .nav-links.open {
+        transform: translateX(0);
+      }
 
-/* ---------- MEDIA QUERY: mobil ---------- */
-@media (max-width: 768px) {
-  /* Afișăm butonul de meniu (hamburger) */
-  .NavButton {
-    display: inline-block;
-  }
+      /* Link-urile mai mari pe mobil */
+      .nav-links a,
+      .nav-links button {
+        font-size: 1.4rem;
+      }
+    }
 
-  /* Meniul devine panel lateral pe mobil */
-  .menu {
-    position: fixed;
-    top: 0; right: 0;
-    width: 70%;
-    height: 100vh;
-    background: rgba(0,0,0,0.95);
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    transform: translateX(100%);
-    transition: transform 0.4s ease;
-  }
-  .menu.open {
-    transform: translateX(0);
-  }
-
-  /* Butonul de închidere (x) apare în meniu */
-  #closeMenuBtn {
-    position: absolute;
-    top: 1rem; 
-    right: 1rem;
-  }
-
-  /* Link-urile pe mobil stivuite pe verticală */
-  .nav-links {
-    flex-direction: column;
-  }
-}
-
-
-    /* =============== MAIN =============== */
+    /* ====================================
+       MAIN
+    ==================================== */
     main {
       width: 100%;
       display: block;
     }
 
-    /* ====== HERO SECTION ====== */
+    /* ================== #HOME .hero ================== */
     .hero {
       position: relative;
       width: 100%;
-      min-height: 60vh; /* mai mic */
+      min-height: 70vh;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      margin-top: 0.5rem;
+      background: #111;
     }
-
     .hero .visual {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
     .hero .visual img {
-      width: auto;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.8;
+      max-width: 700px;  /* imaginea e mai mică */
+      height: auto;
+      filter: blur(3px) brightness(0.8); /* blur + brightness */
     }
-
     .hero .content {
       position: relative;
-      z-index: 2;
-      text-align: center;
-      max-width: 600px;
-      padding: 2rem;
+      z-index: 1;
       background: rgba(0,0,0,0.4);
+      padding: 2rem;
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
-      backdrop-filter: blur(5px);
+      text-align: center;
       animation: fadeDown 0.8s ease forwards;
       transform: translateY(-20px);
       opacity: 0;
+      max-width: 600px;
     }
     .hero .content h1 {
       font-size: 3rem;
       margin-bottom: 1rem;
       color: #0df1a7;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
-    .hero .content .LinkButton {
+    .hero .content a.LinkButton {
+      display: inline-block;
       text-decoration: none;
       padding: 0.8rem 1.5rem;
       font-size: 1.2rem;
@@ -189,12 +188,12 @@
       border: 2px solid #0df1a7;
       background: transparent;
       transition: 0.3s;
+      margin-top: 1rem;
     }
-    .hero .content .LinkButton:hover {
+    .hero .content a.LinkButton:hover {
       background: #0df1a7;
       color: #111;
     }
-
     @keyframes fadeDown {
       to {
         transform: translateY(0);
@@ -202,7 +201,7 @@
       }
     }
 
-    /* ====== FOLD / DISCOVER ====== */
+    /* ================== #discover .fold ================== */
     .fold {
       padding: 3rem 1rem;
       text-align: center;
@@ -215,7 +214,7 @@
       color: #0df1a7;
     }
 
-    /* ====== SCHEDULE SECTION ====== */
+    /* ================== #schedules .schedule ================== */
     .schedule {
       background: #222;
       padding: 3rem 1rem;
@@ -224,10 +223,10 @@
       gap: 2rem;
     }
     .schedule .subject {
-      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
     .schedule .container {
       display: grid;
@@ -257,6 +256,11 @@
       color: #eee;
       text-align: left;
     }
+    .schedule th {
+      background: #444;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
     .schedule th, .schedule td {
       border-bottom: 1px solid #444;
       padding: 0.5rem;
@@ -265,33 +269,36 @@
       background: rgba(0,255,191,0.1);
     }
 
-    /* ====== SHOWCASE (VIDEO) ====== */
+    /* ================== SHOWCASE VIDEO SCROLL ================== */
     .showcase {
       position: relative;
-      width: 100%;
-      height: 50vh;
+      height: 100vh; /* mai înalt, pentru efect */
       overflow: hidden;
+      background: #111;
     }
     .showcase video {
-      width: 100%;
-      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       object-fit: cover;
       filter: brightness(0.5);
     }
-    .showcase img {
-      position: absolute;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      max-width: 300px;
-      animation: float 5s infinite ease-in-out;
+    .showcase .overlay-text {
+      position: sticky;
+      top: 20vh; /* se fixează la 20% de sus */
+      margin: 0 auto;
+      max-width: 600px;
+      color: #fff;
+      background: rgba(0,0,0,0.4);
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
     }
-    @keyframes float {
-      0%, 100% { transform: translate(-50%, 0%); }
-      50% { transform: translate(-50%, -10%); }
-    }
+    /* Afișăm / ascundem textul la scroll cu un mic script, 
+       sau îl lăsăm așa pinned. (exemplu simplu) */
 
-    /* ====== CARDS SECTION ====== */
+    /* ================== #plans .cards ================== */
     .cards {
       background: #151515;
       padding: 3rem 1rem;
@@ -333,10 +340,10 @@
       line-height: 1.4;
     }
 
-    /* ====== ABOUT SECTION ====== */
+    /* ================== ABOUT + FOOTER ================== */
     .about {
       background: #111;
-      min-height: 50vh;
+      min-height: 40vh;
       padding: 3rem 1rem;
       text-align: center;
     }
@@ -345,22 +352,23 @@
       color: #0df1a7;
       margin-bottom: 1rem;
     }
-    .about footer {
-      margin-top: 2rem;
-      font-size: 1rem;
-      color: #888;
-    }
 
-    /* ====== FOOTER mic ====== */
-    .about footer {
+    .site-footer {
+      margin-top: 2rem;
       border-top: 1px solid #333;
       padding-top: 1rem;
+      font-size: 0.9rem;
+      color: #888;
     }
-    .about footer p {
-      margin: 0.5rem 0;
+    .site-footer a {
+      color: #0df1a7;
+      text-decoration: none;
+    }
+    .site-footer a:hover {
+      text-decoration: underline;
     }
 
-    /* ====== SCROLL REVEAL ANIMATIONS ====== */
+    /* SCROLL REVEAL SIMPLU */
     .subject {
       opacity: 0;
       transform: translateY(30px);
@@ -379,311 +387,258 @@
 <body>
 
 <!-- NAVBAR -->
-<!-- NAVBAR -->
 <nav class="Navbar">
   <div class="container">
-    <!-- Logo afișat o singură dată, în stânga -->
+    <!-- LOGO stânga -->
     <div class="Logo">HealthFit.</div>
 
-    <!-- Buton de deschidere meniu (hamburger), vizibil doar pe mobil -->
-    <button 
-      id="openMenuBtn" 
-      class="NavButton" 
-      title="Open Menu" 
-      aria-label="Open Menu"
-    >
+    <!-- Buton meniu mobil (hamburger) -->
+    <button id="openMenuBtn" class="NavButton" title="Open Menu" aria-label="Open Menu">
       <i class="ri-menu-line"></i>
     </button>
 
-    <!-- Meniul propriu-zis (desktop + mobil) -->
-    <div id="menu" class="menu">
-      <!-- Buton de închidere meniu (x), vizibil doar pe mobil -->
-      <button 
-        id="closeMenuBtn" 
-        class="NavButton" 
-        title="Close Menu" 
-        aria-label="Close Menu"
-      >
+    <!-- Meniu desktop/mobil -->
+    <ul class="nav-links" id="menu">
+      <!-- Buton închidere meniu (mobil) -->
+      <button id="closeMenuBtn" class="NavButton" title="Close Menu" aria-label="Close Menu">
         <i class="ri-close-line"></i>
       </button>
 
-      <ul class="nav-links">
-        <li><a href="index.html" class="NavLink">Home</a></li>
-        <li><a href="profile.html" class="NavLink">Profil</a></li>
-        <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
-        <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
-
-        <!-- Link / Buton Login și Logout (afișate/ascunse din JavaScript) -->
-        <li id="nav-login">
-          <a href="login.html" class="NavLink">Login</a>
-        </li>
-        <li id="nav-logout" style="display:none;">
-          <button 
-            class="NavLink" 
-            style="background:none; border:none; cursor:pointer;"
-          >
-            Logout
-          </button>
-        </li>
-      </ul>
-    </div>
+      <li><a href="index.html" class="NavLink">Home</a></li>
+      <li><a href="profile.html" class="NavLink">Profil</a></li>
+      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+      <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+      <!-- Login / Logout (ascunse/afișate din JS) -->
+      <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
+      <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
+    </ul>
   </div>
 </nav>
 
-  <main>
-    <!-- HERO -->
-    <section id="home" class="hero">
-      <div class="visual">
-        <picture>
-          <!-- Imagine "mare" vs "mică"? Ajustăm min-height la .hero + height auto vs. 60vh -->
-          <img
-            src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp"
-            alt="fitness"
-          />
-        </picture>
-      </div>
-      <div class="content">
-        <h1>Good Morning Champ</h1>
-        <div class="wrapper">
-          <a href="#discover" class="LinkButton Primary"> DISCOVER MORE </a>
+<main>
+  <!-- #HOME -->
+  <section id="home" class="hero">
+    <div class="visual">
+      <img src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp" 
+           alt="fitness" />
+    </div>
+    <div class="content">
+      <h1>Good Morning Champ</h1>
+      <a href="#discover" class="LinkButton">Discover More</a>
+    </div>
+  </section>
+
+  <!-- #discover -->
+  <div id="discover" class="fold">
+    <div class="subject">
+      <p>
+        It's a new day,
+        <span style="color: #0df1a7;">a new opportunity to sculpt the best version of yourself.</span>
+        Embrace the energy, feel the burn, and conquer your fitness goals with unwavering determination.
+      </p>
+    </div>
+  </div>
+
+  <!-- #schedules -->
+  <section id="schedules" class="schedule">
+    <div class="subject">
+      <div class="container">
+        <div class="table-wrapper">
+          <h2>Program de antrenamente</h2>
+          <table>
+            <tr>
+              <th>Antrenament</th>
+              <th>Grupe musculare</th>
+            </tr>
+            <tr>
+              <td>Antrenament 1</td>
+              <td>Piept & Triceps</td>
+            </tr>
+            <tr>
+              <td>Antrenament 2</td>
+              <td>Spate & Biceps</td>
+            </tr>
+            <tr>
+              <td>Antrenament 3</td>
+              <td>Picioare & Umeri</td>
+            </tr>
+            <tr>
+              <td>Antrenament 4</td>
+              <td>Cardio / Full Body</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="table-wrapper">
+          <h2>Exemple exerciții</h2>
+          <table>
+            <tr>
+              <th>Grupa</th>
+              <th>Exercițiu</th>
+            </tr>
+            <tr>
+              <td>Piept</td>
+              <td>Bench press</td>
+            </tr>
+            <tr>
+              <td>Triceps</td>
+              <td>Parallel bar dips</td>
+            </tr>
+            <tr>
+              <td>Spate</td>
+              <td>Lat pulldown</td>
+            </tr>
+            <tr>
+              <td>Picioare</td>
+              <td>Squat</td>
+            </tr>
+          </table>
         </div>
       </div>
-    </section>
-
-    <!-- DISCOVER -->
-    <div id="discover" class="fold">
-      <div class="subject">
+    </div>
+    <!-- SHOWCASE VIDEO SCROLL -->
+    <div class="showcase">
+      <video autoplay loop muted poster="" role="none">
+        <source 
+          src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/demo.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <!-- Text care se fixează la scroll -->
+      <div class="overlay-text">
+        <h2 style="margin-bottom:1rem; color:#0df1a7;">Scrolling Showcase</h2>
         <p>
-          It's a new day,
-          <span style="color: #0df1a7;">
-            a new opportunity to sculpt the best version of yourself.
-            Embrace the energy,
-          </span>
-          feel the burn, and conquer your fitness goals with unwavering
-          determination.
+          As you scroll, this text remains pinned for a while, while the video
+          flows behind it. Then it will scroll away, revealing more content.
         </p>
       </div>
     </div>
+  </section>
 
-    <!-- PROGRAM & EXERCIȚII -->
-    <section id="schedules" class="schedule">
-      <div class="subject">
-        <div class="container">
-          <div class="table-wrapper">
-            <h2>Program de antrenamente</h2>
-            <table>
-              <tr>
-                <th>Antrenament</th>
-                <th>Grupe musculare</th>
-              </tr>
-              <tr>
-                <td>Antrenament 1</td>
-                <td>Piept & Triceps</td>
-              </tr>
-              <tr>
-                <td>Antrenament 2</td>
-                <td>Spate & Biceps</td>
-              </tr>
-              <tr>
-                <td>Antrenament 3</td>
-                <td>Picioare & Umeri</td>
-              </tr>
-              <tr>
-                <td>Antrenament 4</td>
-                <td>Cardio / Full Body</td>
-              </tr>
-            </table>
+  <!-- #plans .cards -->
+  <section id="plans" class="cards">
+    <div class="subject">
+      <div class="container">
+        <a href="#" class="Card">
+          <i class="ri-trophy-line"></i>
+          <div>
+            <h2>Personal Bests</h2>
+            <ul>
+              <li>Fastest 5K Run: 22 min</li>
+              <li>Heaviest Deadlift: 250 lbs</li>
+              <li>Longest Plank: 3 min</li>
+            </ul>
           </div>
-          <div class="table-wrapper">
-            <h2>Exemple exerciții</h2>
-            <table>
-              <tr>
-                <th>Grupa</th>
-                <th>Exercitiu</th>
-              </tr>
-              <tr>
-                <td>Piept</td>
-                <td>Bench press</td>
-              </tr>
-              <tr>
-                <td>Triceps</td>
-                <td>Parallel bar dips</td>
-              </tr>
-              <tr>
-                <td>Spate</td>
-                <td>Lat pulldown</td>
-              </tr>
-              <tr>
-                <td>Picioare</td>
-                <td>Squat</td>
-              </tr>
-            </table>
+        </a>
+        <a href="#" class="Card">
+          <i class="ri-flag-2-line"></i>
+          <div>
+            <h2>Challenges</h2>
+            <ul>
+              <li>30-Day Running Streak</li>
+              <li>1000 Pushups in a Month</li>
+              <li>Swim 20km in a Month</li>
+            </ul>
           </div>
-        </div>
+        </a>
+        <a href="#" class="Card">
+          <i class="ri-team-line"></i>
+          <div>
+            <h2>Friends Activity</h2>
+            <ul>
+              <li>Jane set a new record: 30 miles cycling!</li>
+              <li>Mike completed the 30-Day Running Streak!</li>
+              <li>Anna posted a new workout: 'Hill Sprints'.</li>
+            </ul>
+          </div>
+        </a>
       </div>
-      <!-- Showcase cu video la scroll -->
-      <div class="showcase">
-        <video
-          autoplay
-          loop
-          muted
-          poster="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/poster.webp"
-          role="none"
-        >
-          <source
-            src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/demo.mp4"
-            type="video/mp4"
-          />
-        </video>
-        <img
-          src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/rhythm.png"
-          alt="Rhythm"
-        />
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CARDS: Personal Best, etc. -->
-    <section id="plans" class="cards">
-      <div class="subject">
-        <div class="container">
-          <a href="#" class="Card">
-            <i class="ri-trophy-line"></i>
-            <div>
-              <h2>Personal Bests</h2>
-              <ul>
-                <li>Fastest 5K Run: 22 min</li>
-                <li>Heaviest Deadlift: 250 lbs</li>
-                <li>Longest Plank: 3 min</li>
-              </ul>
-            </div>
-          </a>
-          <a href="#" class="Card">
-            <i class="ri-flag-2-line"></i>
-            <div>
-              <h2>Challenges</h2>
-              <ul>
-                <li>30-Day Running Streak</li>
-                <li>1000 Pushups in a Month</li>
-                <li>Swim 20km in a Month</li>
-              </ul>
-            </div>
-          </a>
-          <a href="#" class="Card">
-            <i class="ri-team-line"></i>
-            <div>
-              <h2>Friends Activity</h2>
-              <ul>
-                <li>Jane set a new record: 30 miles cycling!</li>
-                <li>Mike completed the 30-Day Running Streak!</li>
-                <li>Anna posted a new workout: 'Hill Sprints'.</li>
-              </ul>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
+  <!-- #about -->
+  <section id="about" class="about">
+    <div id="target-word">love</div>
+    <!-- Footer scurt -->
+    <div class="site-footer">
+      <p>© 2025 HealthFit. All rights reserved.</p>
+      <p>
+        Created by <strong>Elisei M.</strong> | 
+        <a href="https://github.com/elisei-m" target="_blank" rel="noopener">
+          GitHub Profile
+        </a>
+      </p>
+    </div>
+  </section>
+</main>
 
-    <!-- ABOUT + FOOTER MIC -->
-    <section id="about" class="about">
-      <div id="target-word">love</div>
-      <footer>
-        <p>© 2025 HealthFit. All rights reserved.</p>
-      </footer>
-    </section>
-  </main>
+<script>
+  // ========== Meniu mobil ==========
+  const openMenuBtn = document.querySelector('#openMenuBtn');
+  const closeMenuBtn = document.querySelector('#closeMenuBtn');
+  const menu = document.querySelector('#menu');
 
-  <!-- Script: Meniu mobil, scroll direction, reveal, etc. -->
-  <script>
-    // 1. Meniu mobil
-    const openMenuBtn = document.querySelector('#openMenuBtn');
-    const closeMenuBtn = document.querySelector('#closeMenuBtn');
-    const menu = document.querySelector('#menu');
+  function openMenu() {
+    menu.classList.add('open');
+  }
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+  openMenuBtn.addEventListener('click', openMenu);
+  closeMenuBtn.addEventListener('click', closeMenu);
 
-    function openMenu() {
-      menu.classList.add('open');
-      closeMenuBtn.focus();
-      window.addEventListener('keyup', handleCloseWithESC);
+  // Închidere meniu cu ESC
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // ========== Scroll direction pt. navbar ========== 
+  let scrollDirection;
+  document.addEventListener('scroll', (e) => {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    const direction = st > (e.target.lastScrollTop || 0) ? 'down' : 'up';
+    if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
+      document.body.setAttribute('scroll-direction', direction);
     }
-    function closeMenu() {
-      menu.classList.remove('open');
-      openMenuBtn.focus();
-      window.removeEventListener('keyup', handleCloseWithESC);
-    }
-    function handleCloseWithESC(e) {
-      if (e.key === 'Escape') closeMenu();
-    }
-    function handleViewTransition(updateDom) {
-      if (!document.startViewTransition) updateDom();
-      else document.startViewTransition(() => updateDom());
-    }
+    scrollDirection = direction;
+    e.target.lastScrollTop = st <= 0 ? 0 : st;
+  }, { passive: true });
 
-    openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
-    closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
+  // ========== Scroll reveal simplu ========== 
+  function addRevealEffect(elements) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
+          entry.target.classList.add(revealClass);
+        } else {
+          entry.target.className = 'subject';
+        }
+      });
+    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.NavLink').forEach((link) => {
-      link.addEventListener('click', () => handleViewTransition(closeMenu));
-    });
+    elements.forEach((el) => observer.observe(el));
+  }
+  const subjects = document.querySelectorAll('.subject');
+  addRevealEffect(subjects);
 
-    // 2. Detect scroll direction
-    let scrollDirection;
-    document.addEventListener('scroll', (e) => {
-      const st = window.pageYOffset || document.documentElement.scrollTop;
-      const direction = st > (e.target.lastScrollTop || 0) ? 'down' : 'up';
-      if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
-        document.body.setAttribute('scroll-direction', direction);
-      }
-      scrollDirection = direction;
-      e.target.lastScrollTop = st <= 0 ? 0 : st;
-    }, { passive: true });
+  // ========== Text replace la #target-word (exemplu) ========== 
+  const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
+  textReplace(words, 'target-word', 1500);
 
-    // 3. Scroll reveal
-    function addRevealEffect(elements) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          let revealClass;
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
-              entry.target.classList.add(revealClass);
-            } else {
-              entry.target.className = 'subject';
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      elements.forEach((element) => observer.observe(element));
-    }
-    const elementsToReveal = document.querySelectorAll('.subject');
-    addRevealEffect(elementsToReveal);
+  function textReplace(wordsArr, elementId, interval) {
+    let idx = 0;
+    const el = document.getElementById(elementId);
 
-    // 4. Example “text replace” in #target-word
-    const words = [
-      'passion',
-      'success',
-      'goals',
-      'rhythm',
-      'fun',
-      'energy',
-      'opportunity',
-      'victory'
-    ];
-    textReplace(words, 'target-word', 1500);
-
-    function textReplace(words, targetElement, rate) {
-      let wordIndex = 0;
-      const randomWordElement = document.getElementById(targetElement);
-
-      const changeWordWithAnimation = () => {
-        randomWordElement.style.opacity = 0;
-        setTimeout(function () {
-          wordIndex = (wordIndex + 1) % words.length;
-          randomWordElement.textContent = words[wordIndex];
-          randomWordElement.style.opacity = 1;
-        }, 150);
-      };
-      setInterval(changeWordWithAnimation, rate);
-    }
-  </script>
+    setInterval(() => {
+      el.style.opacity = 0;
+      setTimeout(() => {
+        idx = (idx + 1) % wordsArr.length;
+        el.textContent = wordsArr[idx];
+        el.style.opacity = 1;
+      }, 150);
+    }, interval);
+  }
+</script>
 </body>
 </html>
