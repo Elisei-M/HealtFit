@@ -241,22 +241,29 @@ generateProgramBtn.onclick = async () => {
     statusProfile.textContent += " | User e null, deci nu pot genera.";
     return;
   }
+  // ➜ Adaugă:
+  statusProfile.textContent += " | OK user.";
 
   const snap = await getDoc(userDocRef);
   if (!snap.exists()) {
     statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
     return;
   }
+  // ➜ Adaugă:
+  statusProfile.textContent += " | OK profil doc.";
+
   const data = snap.data();
   const goalVal = data.goal;
   if (!goalVal) {
     statusProfile.textContent += " | N-ai setat goal în profil!";
     return;
   }
+  // ➜ Adaugă:
+  statusProfile.textContent += " | OK goal: " + goalVal;
 
   const program = generateProgram(goalVal);
   const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-  
+
   try {
     await setDoc(programDocRef, { days: program });
     statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
@@ -264,6 +271,7 @@ generateProgramBtn.onclick = async () => {
     statusProfile.textContent = "Eroare la setDoc: " + err.message;
   }
 };
+
 
 
     // 5. Funcție de calcul recomandări
