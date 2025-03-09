@@ -3,90 +3,286 @@
 <head>
   <meta charset="UTF-8" />
   <title>HealthFit - Home</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Import Remix Icons, de ex. pentru icoane hamburger/close -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+  />
+
+  <!-- Import stiluri proprii -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Navbar -->
-  <header>
-    <nav>
-      <ul class="navbar">
-        <!-- Home este întotdeauna vizibil -->
-        <li><a href="index.html">Home</a></li>
+  <!-- Aici vom încărca navbar-ul dinamic -->
+  <div id="navbar-container"></div>
 
-        <!-- Login (doar pt. user neconectat) -->
-        <li id="nav-login"><a href="login.html">Login</a></li>
-
-        <!-- Profile (doar pt. user conectat) -->
-        <li id="nav-profile"><a href="profile.html">Profile</a></li>
-
-        <!-- Logout (doar pt. user conectat) -->
-        <li id="nav-logout"><button>Logout</button></li>
-      </ul>
-    </nav>
-  </header>
-
-  <!-- Conținut principal (exemplu) -->
   <main>
-    <h1>Bine ai venit la HealthFit!</h1>
-    <p>Aceasta este pagina principală a aplicației tale de fitness și nutriție.</p>
-    <p>Pentru a începe, creează-ți un cont sau autentifică-te dacă ai deja unul (vezi <strong>Login</strong> în meniu).</p>
+    <!-- Landing Page (hero + secțiuni) -->
+    <section id="home">
+      <div class="hero">
+        <div class="visual">
+          <picture>
+            <source
+              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
+              type="image/avif"
+              media="(width > 1024px)"
+            />
+            <source
+              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.avif"
+              type="image/avif"
+            />
+            <source
+              srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
+              media="(width > 1024px)"
+              type="image/webp"
+            />
+            <img
+              src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp"
+              alt="fitness"
+            />
+          </picture>
+        </div>
+
+        <div class="content">
+          <h1>Good Morning Champ</h1>
+          <div class="wrapper">
+            <a href="#discover" class="LinkButton Primary"> DISCOVER MORE </a>
+          </div>
+        </div>
+      </div>
+
+      <div id="discover" class="fold">
+        <div class="subject">
+          <p>
+            It's a new day,
+            <span style="color: var(--brand-1)">
+              a new opportunity to sculpt the best version of yourself.
+              Embrace the energy,
+            </span>
+            feel the burn, and conquer your fitness goals with unwavering
+            determination.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="schedules" class="schedule">
+      <div class="subject">
+        <div class="container">
+          <div class="table-wrapper">
+            <h2>Program de antrenamente</h2>
+            <table>
+              <tr>
+                <th>Antrenament</th>
+                <th>Grupe musculare</th>
+              </tr>
+              <tr>
+                <td>Antrenament 1</td>
+                <td>Piept & Triceps</td>
+              </tr>
+              <tr>
+                <td>Antrenament 2</td>
+                <td>Spate & Biceps</td>
+              </tr>
+              <tr>
+                <td>Antrenament 3</td>
+                <td>Picioare & Umeri</td>
+              </tr>
+              <tr>
+                <td>Antrenament 4</td>
+                <td>Cardio / Full Body</td>
+              </tr>
+            </table>
+          </div>
+          <div class="table-wrapper">
+            <h2>Exemple exercitii</h2>
+            <table>
+              <tr>
+                <th>Grupa</th>
+                <th>Exercitiu</th>
+              </tr>
+              <tr>
+                <td>Piept</td>
+                <td>Bench press</td>
+              </tr>
+              <tr>
+                <td>Triceps</td>
+                <td>Parallel bar dips</td>
+              </tr>
+              <tr>
+                <td>Spate</td>
+                <td>Lat pulldown</td>
+              </tr>
+              <tr>
+                <td>Picioare</td>
+                <td>Squat</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="showcase">
+        <video
+          autoplay
+          loop
+          muted
+          poster="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/poster.webp"
+          role="none"
+        >
+          <source
+            src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/demo.mp4"
+            type="video/mp4"
+          />
+        </video>
+        <img
+          src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/rhythm.png"
+          alt="Rhythm"
+        />
+      </div>
+    </section>
+
+    <section id="plans" class="cards">
+      <div class="subject">
+        <div class="container">
+          <a href="#" class="Card">
+            <i class="ri-trophy-line"></i>
+            <div>
+              <h2>Personal Bests</h2>
+              <ul>
+                <li>Fastest 5K Run: 22 min</li>
+                <li>Heaviest Deadlift: 250 lbs</li>
+                <li>Longest Plank: 3 min</li>
+              </ul>
+            </div>
+          </a>
+          <a href="#" class="Card">
+            <i class="ri-flag-2-line"></i>
+            <div>
+              <h2>Challenges</h2>
+              <ul>
+                <li>30-Day Running Streak</li>
+                <li>1000 Pushups in a Month</li>
+                <li>Swim 20km in a Month</li>
+              </ul>
+            </div>
+          </a>
+          <a href="#" class="Card">
+            <i class="ri-team-line"></i>
+            <div>
+              <h2>Friends Activity</h2>
+              <ul>
+                <li>Jane just set a new record in cycling: 30 miles!</li>
+                <li>Mike completed the 30-Day Running Streak Challenge!</li>
+                <li>Anna shared a new workout: 'Hill Sprints Interval'.</li>
+              </ul>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="about">
+      <div id="target-word">love</div>
+      <footer></footer>
+    </section>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  <!-- Script (include TOT ce ține de meniu, animații, plus firebase) -->
+  <script>
+    // 1) Încărcăm navbar-ul dinamic
+    fetch('navbar.html')
+      .then(resp => resp.text())
+      .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+        
+        // După ce s-a încărcat navbar-ul, atașăm logica de meniu hamburger:
+        const openMenuBtn = document.querySelector('#openMenuBtn');
+        const closeMenuBtn = document.querySelector('#closeMenuBtn');
+        const menu = document.querySelector('#menu');
 
-    // Configurația Firebase (înlocuiește cu datele tale)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-      authDomain: "healthfit-9de3f.firebaseapp.com",
-      projectId: "healthfit-9de3f",
-      storageBucket: "healthfit-9de3f.appspot.com",
-      messagingSenderId: "1071597823999",
-      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-    };
+        function openMenu() {
+          menu.classList.add('open');
+          closeMenuBtn.focus();
+          window.addEventListener('keyup', handleCloseWithESC);
+        }
 
-    // Inițializare Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+        function closeMenu() {
+          menu.classList.remove('open');
+          openMenuBtn.focus();
+          window.removeEventListener('keyup', handleCloseWithESC);
+        }
 
-    // Referințe la elementele din navbar
-    const navLogin = document.getElementById("nav-login");
-    const navProfile = document.getElementById("nav-profile");
-    const navLogout = document.getElementById("nav-logout");
+        function handleCloseWithESC(e) {
+          if (e.key === 'Escape') {
+            closeMenu();
+          }
+        }
 
-    // Ascundem butoanele la încărcare
-    navLogin.style.display = "none";
-    navProfile.style.display = "none";
-    navLogout.style.display = "none";
+        function handleViewTransition(updateDom) {
+          if (!document.startViewTransition) updateDom();
+          else document.startViewTransition(() => updateDom());
+        }
 
-    // Detectăm schimbarea stării de autentificare
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Utilizator AUTENTIFICAT → arătăm Profile și Logout
-        navLogin.style.display = "none";
-        navProfile.style.display = "block";
-        navLogout.style.display = "block";
-      } else {
-        // Utilizator NEAUTENTIFICAT → arătăm Login
-        navLogin.style.display = "block";
-        navProfile.style.display = "none";
-        navLogout.style.display = "none";
-      }
-    });
+        openMenuBtn.addEventListener('click', () => handleViewTransition(openMenu));
+        closeMenuBtn.addEventListener('click', () => handleViewTransition(closeMenu));
 
-    // Deconectare
-    navLogout.onclick = function() {
-      signOut(auth).then(() => {
-        // Opțional: Reîncărcăm pagina după logout
-        window.location.reload();
+        document.querySelectorAll('.NavLink').forEach(link => {
+          link.addEventListener('click', () => handleViewTransition(closeMenu));
+        });
+
+        // 2) Integrare Firebase Auth (arătăm / ascundem butoanele Login / Logout)
+        import('https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js').then(async (mod) => {
+          const { initializeApp } = mod;
+          const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js');
+
+          // Config
+          const firebaseConfig = {
+            apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+            authDomain: "healthfit-9de3f.firebaseapp.com",
+            projectId: "healthfit-9de3f",
+            // ...
+          };
+          const app = initializeApp(firebaseConfig);
+          const auth = getAuth(app);
+
+          const loginLink = document.getElementById('loginLink');
+          const logoutLink = document.getElementById('logoutLink');
+
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              // ascundem link-ul "Login"
+              loginLink.style.display = 'none';
+              // arătăm link-ul "Logout"
+              logoutLink.style.display = 'block';
+            } else {
+              loginLink.style.display = 'block';
+              logoutLink.style.display = 'none';
+            }
+          });
+
+          // Logout la click pe logoutLink
+          logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+          });
+        });
       });
-    };
+
+    // 3) Animații scroll, textReplace etc. - exemplu simplu
+    let scrollDirection;
+    document.addEventListener('scroll', (e) => {
+      const st = window.pageYOffset || document.documentElement.scrollTop;
+      const direction = st > e.target.lastScrollTop ? 'down' : 'up';
+      if (Math.abs(st - e.target.lastScrollTop) > 5) {
+        document.body.setAttribute('scroll-direction', direction);
+      }
+      scrollDirection = direction;
+      e.target.lastScrollTop = st <= 0 ? 0 : st;
+    }, { passive: true });
+
+    // ... alte coduri de animație ...
   </script>
 </body>
 </html>
