@@ -234,43 +234,42 @@
     };
 
     // 4. Generăm program
-generateProgramBtn.onclick = async () => {
-  statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
+  generateProgramBtn.onclick = async () => {
+    try {
+      statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
 
-  if (!currentUser) {
-    statusProfile.textContent += " | User e null, deci nu pot genera.";
-    return;
-  }
-  // ➜ Adaugă:
-  statusProfile.textContent += " | OK user.";
+      if (!currentUser) {
+        statusProfile.textContent += " | User e null, deci nu pot genera.";
+        return;
+      }
+      statusProfile.textContent += " | OK user.";
 
-  const snap = await getDoc(userDocRef);
-  if (!snap.exists()) {
-    statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
-    return;
-  }
-  // ➜ Adaugă:
-  statusProfile.textContent += " | OK profil doc.";
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) {
+        statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
+        return;
+      }
+      statusProfile.textContent += " | OK profil doc.";
 
-  const data = snap.data();
-  const goalVal = data.goal;
-  if (!goalVal) {
-    statusProfile.textContent += " | N-ai setat goal în profil!";
-    return;
-  }
-  // ➜ Adaugă:
-  statusProfile.textContent += " | OK goal: " + goalVal;
+      const data = snap.data();
+      const goalVal = data.goal;
+      if (!goalVal) {
+        statusProfile.textContent += " | N-ai setat goal în profil!";
+        return;
+      }
+      statusProfile.textContent += " | OK goal: " + goalVal;
 
-  const program = generateProgram(goalVal);
-  const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+      const program = generateProgram(goalVal);
+      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
 
-  try {
-    await setDoc(programDocRef, { days: program });
-    statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
-  } catch (err) {
-    statusProfile.textContent = "Eroare la setDoc: " + err.message;
-  }
-};
+      await setDoc(programDocRef, { days: program });
+      statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
+
+    } catch (e) {
+      // DACĂ e vreo eroare de runtime, o afișăm aici
+      statusProfile.textContent = "Eroare la generarea programului: " + e.message;
+    }
+  };
 
 
 
