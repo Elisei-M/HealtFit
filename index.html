@@ -4,26 +4,26 @@
   <meta charset="UTF-8" />
   <title>HealthFit - Home</title>
 
-  <!-- Import Remix Icons, de ex. pentru icoane hamburger/close -->
+  <!-- Import Remix Icons pentru iconițe (hamburger, close etc.) -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
   />
 
-  <!-- Import stiluri proprii -->
+  <!-- Stilurile noastre -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Aici vom încărca navbar-ul dinamic -->
+  <!-- Container în care vom încărca navbar-ul dinamic -->
   <div id="navbar-container"></div>
 
   <main>
-    <!-- Landing Page (hero + secțiuni) -->
+    <!-- HERO / LANDING PAGE -->
     <section id="home">
       <div class="hero">
         <div class="visual">
           <picture>
+            <!-- surse avif/webp pentru imagini mari/mici -->
             <source
               srcset="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp"
               type="image/avif"
@@ -68,6 +68,7 @@
       </div>
     </section>
 
+    <!-- SCHEDULES / EXEMPLE DE ANTRENAMENTE -->
     <section id="schedules" class="schedule">
       <div class="subject">
         <div class="container">
@@ -143,6 +144,7 @@
       </div>
     </section>
 
+    <!-- CARDS / PLANURI / CHALLENGES -->
     <section id="plans" class="cards">
       <div class="subject">
         <div class="container">
@@ -183,21 +185,22 @@
       </div>
     </section>
 
+    <!-- ABOUT -->
     <section id="about" class="about">
       <div id="target-word">love</div>
       <footer></footer>
     </section>
   </main>
 
-  <!-- Script (include TOT ce ține de meniu, animații, plus firebase) -->
+  <!-- Script de logică meniu, animații, etc. -->
   <script>
-    // 1) Încărcăm navbar-ul dinamic
+    // 1) Încărcăm dinamically conținutul din "navbar.html"
     fetch('navbar.html')
       .then(resp => resp.text())
       .then(html => {
         document.getElementById('navbar-container').innerHTML = html;
-        
-        // După ce s-a încărcat navbar-ul, atașăm logica de meniu hamburger:
+
+        // După ce a sosit navbar-ul, definim logica de meniu:
         const openMenuBtn = document.querySelector('#openMenuBtn');
         const closeMenuBtn = document.querySelector('#closeMenuBtn');
         const menu = document.querySelector('#menu');
@@ -232,19 +235,17 @@
           link.addEventListener('click', () => handleViewTransition(closeMenu));
         });
 
-        // 2) Integrare Firebase Auth (arătăm / ascundem butoanele Login / Logout)
-        import('https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js').then(async (mod) => {
-          const { initializeApp } = mod;
+        // 2) Firebase Auth -> arătăm/ascundem link "Login" și "Logout"
+        import('https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js').then(async () => {
           const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js');
 
-          // Config
+          // Config identic cu restul site-ului
           const firebaseConfig = {
             apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
             authDomain: "healthfit-9de3f.firebaseapp.com",
             projectId: "healthfit-9de3f",
-            // ...
           };
-          const app = initializeApp(firebaseConfig);
+          const app = firebase.initializeApp(firebaseConfig); // deja definit? Poți folosi initializeApp
           const auth = getAuth(app);
 
           const loginLink = document.getElementById('loginLink');
@@ -252,9 +253,7 @@
 
           onAuthStateChanged(auth, (user) => {
             if (user) {
-              // ascundem link-ul "Login"
               loginLink.style.display = 'none';
-              // arătăm link-ul "Logout"
               logoutLink.style.display = 'block';
             } else {
               loginLink.style.display = 'block';
@@ -262,15 +261,18 @@
             }
           });
 
-          // Logout la click pe logoutLink
-          logoutLink.addEventListener('click', async (e) => {
-            e.preventDefault();
+          logoutLink.addEventListener('click', async (ev) => {
+            ev.preventDefault();
             await signOut(auth);
           });
         });
+      })
+      .catch(err => {
+        console.error("Eroare la încărcarea navbar.html:", err);
       });
 
-    // 3) Animații scroll, textReplace etc. - exemplu simplu
+
+    // 3) Animații la scroll
     let scrollDirection;
     document.addEventListener('scroll', (e) => {
       const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -282,7 +284,23 @@
       e.target.lastScrollTop = st <= 0 ? 0 : st;
     }, { passive: true });
 
-    // ... alte coduri de animație ...
+    // 4) Mic text replacer (ex. la #target-word) - opțional
+    const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
+    textReplace(words, 'target-word', 1200);
+
+    function textReplace(words, targetElementId, rate) {
+      let idx = 0;
+      const el = document.getElementById(targetElementId);
+      if (!el) return;
+      setInterval(() => {
+        el.style.opacity = 0;
+        setTimeout(() => {
+          idx = (idx + 1) % words.length;
+          el.textContent = words[idx];
+          el.style.opacity = 1;
+        }, 200);
+      }, rate);
+    }
   </script>
 </body>
 </html>
