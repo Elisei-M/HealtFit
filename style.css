@@ -1,197 +1,120 @@
-/* Exemplu minimal - copiază tot CSS-ul tău de la CodePen */
+/* style.css */
 
+/* 1) Import open-props (dacă vrei) sau normalize: */
 @import url('https://unpkg.com/open-props@1.6.14');
 @import url('https://unpkg.com/open-props@1.6.14/normalize.min.css');
 
-/* NAVBAR styling */
+/* 2) Fonturi custom, ex. Bebas Neue + Oswald: */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap');
+
+/* 3) Variabile custom, ex. brand-1, brand-2 etc. */
+:root {
+  --brand-1: hsl(349, 100%, 58%);
+  --brand-2: hsl(210, 100%, 50%);
+  --text-1: #fff;
+  --surface-1: #111;
+  /* ... restul */
+}
+
+/* 4) Reset minimal */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  background: #000;
+  color: #fff;
+  /* ... */
+}
+
+/* 5) Navbar styling (similar cu ce era in CodePen) */
 .Navbar {
   position: sticky;
   top: 0;
-  background-color: var(--surface-1);
-  height: 6.2rem;
   z-index: 999;
+  background-color: var(--surface-1);
+  height: 5rem;
+}
+.Navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: 1200px;
+}
+.Logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--text-1);
+}
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+.menu a {
+  text-decoration: none;
+  color: var(--text-1);
+}
+.NavButton {
+  background: none;
+  border: none;
+  color: var(--text-1);
+  font-size: 1.5rem;
 }
 
-@import 'https://unpkg.com/open-props@1.6.14' layer(design-system.tokens);
-@import 'https://unpkg.com/open-props@1.6.14/normalize.dark.min.css' layer(design-system.normalize);
-
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&display=swap');
-
-@layer base.override-normalize {
-  :root {
-        view-transition-name: none;
-    font-family: 'Oswald', sans-serif;
-
-    --font-size-0: 0.875rem;
-    --radius-3: 8px;
-
-    --surface-1: oklch(0 0 0);
-    --surface-2: oklch(0.19 0 0);
-    --surface-3: oklch(0.24 0 0 / 0.1);
-    --surface-4: oklch(0.45 0 0);
-    --text-1: oklch(1 0 0);
-    --text-2: oklch(0.51 0 0);
-    --brand-1: oklch(0.65 0.24 18.89);
-    --brand-2: oklch(0.78 0.11 84.63);
-
-    --container: 1600px;
-    --nav-block-size: 6.2rem;
-
-
-    --gap: var(--size-8);
-  }
-  li {
-    padding: 0;
-  }
-
-  a {
-    margin: 0;
-    max-inline-size: unset;
-  }
-
-  h1,
-  h2,
-  h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-weight: normal;
-  }
+/* ... media queries, meniu open .open, etc. */
+.menu.open {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  /* etc. */
 }
 
-@layer containers {
-  .Navbar {
-    position: sticky;
-    inset-block-start: 0;
-    z-index: var(--layer-3);
-    background-color: var(--surface-1);
-    block-size: var(--nav-block-size);
-
-    .container {
-      display: flex;
-      margin-inline: auto;
-      max-inline-size: var(--container);
-      align-items: center;
-      justify-content: space-between;
-      padding-inline: var(--size-3);
-    }
-
-    @media (width > 768px) {
-      #openMenuBtn {
-        display: none;
-      }
-    }
-
-    .menu {
-      list-style: none;
-      display: flex;
-      background-color: var(--surface-1);
-
-      > header {
-        display: flex;
-        justify-content: space-between;
-        inline-size: 100%;
-        padding-inline: var(--size-3);
-        border-bottom: var(--border-size-2) solid var(--text-1);
-      }
-
-      @media (width < 768px) {
-        flex-direction: column;
-        align-items: start;
-        position: fixed;
-        inset-block: 0;
-        inset-inline-end: 0;
-        inline-size: 100%;
-        gap: var(--size-7);
-
-        display: none;
-        &.open {
-          display: flex;
-        }
-      }
-
-      @media (width >= 768px) {
-        gap: var(--gap);
-        > header {
-          display: none;
-        }
-      }
-    }
-  }
-  main {
-    display: grid;
-    margin-inline: auto;
-  }
-
-  section .container {
-    max-inline-size: 1200px;
-    padding-inline: var(--size-3);
-    padding-block: var(--size-12);
-    display: grid;
-    gap: var(--gap);
-    place-content: center;
-    margin-inline: auto;
-    padding-inline: var(--size-3);
-  }
-
-  .hero {
-    display: grid;
-    align-items: center;
-
-    > * {
-      grid-area: 1/1;
-    }
-
-    & h1 {
-      text-align: center;
-      font-family: 'Bebas Neue', sans-serif;
-      font-weight: normal;
-      font-size: 7rem;
-      text-transform: uppercase;
-    }
-
-    & p {
-      max-inline-size: 25ch;
-      font-size: var(--font-size-4);
-      color: var(--surface-1);
-      text-align: center;
-      display: none;
-    }
-
-    .visual {
-      background: var(--gradient-8);
-
-      block-size: calc(100dvh - var(--nav-block-size));
-      overflow: hidden;
-
-      & img {
-        object-fit: cover;
-        inline-size: 100%;
-        block-size: 100%;
-      }
-    }
-
-    :is(picture, img) {
-      inline-size: 100%;
-      block-size: 100%;
-    }
-
-    .content {
-      display: grid;
-      place-items: center;
-    }
-
-    @media (width < 768px) {
-      .content {
-        gap: var(--size-3);
-      }
-      & h1 {
-        font-size: var(--font-size-8);
-        max-inline-size: var(--size-content-1);
-        line-height: var(--font-lineheight-0);
-      }
-    }
-  }
-
-  .fold {
+/* 6) Landing page sections (hero, schedule, etc.) */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 5rem);
+  /* ... restul designului */
+}
+.hero .visual {
+  overflow: hidden;
+}
+.hero .visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero .content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+.LinkButton {
+  text-decoration: none;
+  color: #fff;
+  background: var(--brand-1);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+}
+.LinkButton:hover {
+  background: #ff4040;
+}
+.fold {
     display: grid;
     justify-content: center;
     padding: var(--size-10);
