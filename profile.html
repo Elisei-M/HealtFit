@@ -1,591 +1,846 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Profil Utilizator | HealthFit</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Remix Icon (pentru buton hamburger etc.) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      margin: 0; padding: 0;
+    /* RESET minimal */
+    *, *::before, *::after {
+      margin: 0; 
+      padding: 0;
+      box-sizing: border-box;
     }
-    /* Navbar */
-    .navbar {
-      list-style: none;
-      display: flex;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 10px;
-      margin: 0;
-    }
-    .navbar li {
-      margin-right: 15px;
-    }
-    .navbar a, .navbar button {
-      color: #fff;
-      text-decoration: none;
-      padding: 5px 10px;
-      border: none;
-      background: none;
-      cursor: pointer;
-    }
-    .navbar a:hover, .navbar button:hover {
-      background: rgba(255,255,255,0.2);
+    html, body {
+      font-family: 'Oswald', sans-serif;
+      background: #111;
+      color: #eee;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
-    .container {
+    /* ====================================
+       NAVBAR (același stil ca în index)
+    ==================================== */
+    .Navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.8);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease;
+    }
+    /* Ascundem navbar-ul când derulăm în jos */
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
+    }
+
+    .Navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .Logo {
+      font-size: 2.4rem; 
+      font-weight: 700;
+      color: #0df1a7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Meniu desktop */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links li {
+      display: block;
+    }
+    .nav-links a,
+    .nav-links button {
+      color: #fff;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover,
+    .nav-links button:hover {
+      color: #0df1a7;
+    }
+
+    /* Butoane hamburger */
+    .NavButton {
+      display: none; /* ascuns pe desktop */
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* =========== MEDIA QUERY: mobil =========== */
+    @media screen and (max-width: 768px) {
+      /* Afișăm butonul hamburger */
+      .NavButton {
+        display: inline-block;
+      }
+
+      /* Ascundem .nav-links pe mobil, îl vom transforma în panel lateral */
+      .nav-links {
+        position: fixed;
+        top: 0; 
+        right: 0;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+      }
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      /* Link-urile mai mari pe mobil */
+      .nav-links a,
+      .nav-links button {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* ====================================
+       HERO SCURT pentru pagina de profil
+    ==================================== */
+    .profile-hero {
+      position: relative;
+      width: 100%;
+      min-height: 35vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #111;
+      margin-bottom: 2rem; /* spațiu sub hero */
+    }
+    .profile-hero .visual {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .profile-hero .visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(3px) brightness(0.8);
+    }
+    .profile-hero .content {
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.4);
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      text-align: center;
+      animation: fadeDown 0.8s ease forwards;
+      transform: translateY(-20px);
+      opacity: 0;
       max-width: 600px;
-      margin: 40px auto;
-      background: #fff;
+    }
+    .profile-hero .content h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
+    .profile-hero .content p {
+      font-size: 1rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+      color: #eee;
+    }
+    @keyframes fadeDown {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ====================================
+       CONTAINER PRINCIPAL PENTRU FORMULAR
+    ==================================== */
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto 40px;
+      background: #222;
       padding: 20px;
       border-radius: 8px;
+      border: 1px solid #333;
     }
-    #statusProfile {
-      margin-top: 10px;
-      color: #333;
+    .profile-container h2 {
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
     }
-    button {
-      background-color: #ff6b00;
-      color: #fff;
+    .profile-container select,
+    .profile-container input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 0.6rem;
+      font-size: 1rem;
+      background: #333;
+      border: 1px solid #444;
+      color: #eee;
+      border-radius: 4px;
+    }
+    .profile-container select:focus,
+    .profile-container input:focus {
+      outline: 2px solid #0df1a7;
+    }
+    .profile-container button {
+      background-color: #0df1a7;
+      color: #111;
       border: none;
       padding: 10px 15px;
       margin: 5px;
       cursor: pointer;
       border-radius: 4px;
+      transition: background 0.2s;
+      text-transform: uppercase;
     }
-    button:hover {
-      background-color: #e65f00;
+    .profile-container button:hover {
+      background-color: #0ae8a0;
+    }
+    #statusProfile {
+      margin-top: 10px;
+      color: #eee;
+      background: #333;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
     }
 
-    /* Recomandări */
+    /* RECOMANDĂRI */
     #recommendationSection {
       margin-top: 20px;
-      background: #f8f8f8;
+      background: #333;
       padding: 15px;
       border-radius: 6px;
-      display: none; /* îl facem vizibil după calcule */
+      display: none; 
+      border: 1px solid #444;
+    }
+    #recommendationSection h3 {
+      margin: 0 0 0.5rem;
+      color: #0df1a7;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+    }
+    #recommendationText p {
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+      line-height: 1.3;
     }
     .action-buttons {
       margin-top: 15px;
       text-align: center;
     }
+    .action-buttons button {
+      background-color: transparent;
+      color: #0df1a7;
+      border: 1px solid #0df1a7;
+      margin: 0 5px;
+      transition: background 0.3s;
+    }
+    .action-buttons button:hover {
+      background: #0df1a7;
+      color: #111;
+    }
+
+    /* FOOTER MIC la final (opțional) */
+    .profile-footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.8rem;
+      color: #888;
+      border-top: 1px solid #333;
+    }
+    .profile-footer a {
+      color: #0df1a7;
+      text-decoration: none;
+    }
+    .profile-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* SCROLL REVEAL pentru .subject */
+    .subject {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: 0.6s ease;
+    }
+    .subject.reveal-up {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .subject.reveal-down {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <ul class="navbar">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="profile.html">Profile</a></li>
-    <li><a href="nutritie.html">Nutriție</a></li>
-    <li><a href="workouts.html">Workouts</a></li>
-    <li><button id="logoutBtn">Logout</button></li>
-  </ul>
-
+<!-- NAVBAR -->
+<nav class="Navbar">
   <div class="container">
-    <h2>Profilul Tău</h2>
-    <select id="sex">
-      <option value="">Sex</option>
-      <option value="barbat">Masculin</option>
-      <option value="femeie">Feminin</option>
-    </select>
-    <input type="number" id="age" placeholder="Vârstă" />
-    <input type="number" id="weight" placeholder="Greutate (kg)" />
-    <input type="number" id="height" placeholder="Înălțime (cm)" />
-    <select id="activityLevel">
-      <option value="">Nivel de activitate</option>
-      <option value="sedentar">Sedentar</option>
-      <option value="moderat">Moderat</option>
-      <option value="activ">Activ</option>
-      <option value="foarteActiv">Foarte activ</option>
-    </select>
-    <select id="goal">
-      <option value="">Obiectiv</option>
-      <option value="slabire">Slăbire</option>
-      <option value="ingrasare">Îngrășare</option>
-      <option value="crestere_masa">Creștere masă</option>
-      <option value="definire">Definire</option>
-    </select>
+    <!-- LOGO stânga -->
+    <div class="Logo">HealthFit.</div>
 
-    <button id="saveProfileBtn">Salvează & Calculează</button>
-    <button id="generateProgramBtn">Generează Program</button>
-    <p id="statusProfile"></p>
+    <!-- Buton meniu mobil (hamburger) -->
+    <button id="openMenuBtn" class="NavButton" title="Open Menu" aria-label="Open Menu">
+      <i class="ri-menu-line"></i>
+    </button>
 
-    <!-- Recomandări afisate dupa calcule -->
-    <div id="recommendationSection">
-      <h3>Recomandări pentru obiectivul tău</h3>
-      <div id="recommendationText"></div>
-      <div class="action-buttons">
-        <button id="goWorkoutsBtn">Mergi la Workouts</button>
-        <button id="goNutritionBtn">Mergi la Nutriție</button>
-      </div>
+    <!-- Meniu desktop/mobil -->
+    <ul class="nav-links" id="menu">
+      <!-- Buton închidere meniu (mobil) -->
+      <button id="closeMenuBtn" class="NavButton" title="Close Menu" aria-label="Close Menu">
+        <i class="ri-close-line"></i>
+      </button>
+
+      <li><a href="index.html" class="NavLink">Home</a></li>
+      <li><a href="profile.html" class="NavLink">Profil</a></li>
+      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+      <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+      <!-- Login / Logout (ascunse/afișate din JS) -->
+      <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
+      <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO SCURT -->
+<section class="profile-hero">
+  <div class="visual">
+    <!-- Poți schimba imaginea cu ceva generic / fitness related -->
+    <img 
+      src="https://images.unsplash.com/photo-1574680276147-74162395a1f8?auto=format&fit=crop&w=1200&q=80"
+      alt="Background" 
+    />
+  </div>
+  <div class="content">
+    <h1>Profilul Tău</h1>
+    <p>Completează datele pentru a primi recomandări personalizate!</p>
+  </div>
+</section>
+
+<!-- CONTAINER PRINCIPAL PENTRU FORMULARUL DE PROFIL -->
+<div class="profile-container subject">
+  <h2>Date Personale</h2>
+
+  <select id="sex">
+    <option value="">Sex</option>
+    <option value="barbat">Masculin</option>
+    <option value="femeie">Feminin</option>
+  </select>
+  <input type="number" id="age" placeholder="Vârstă" />
+  <input type="number" id="weight" placeholder="Greutate (kg)" />
+  <input type="number" id="height" placeholder="Înălțime (cm)" />
+
+  <select id="activityLevel">
+    <option value="">Nivel de activitate</option>
+    <option value="sedentar">Sedentar</option>
+    <option value="moderat">Moderat</option>
+    <option value="activ">Activ</option>
+    <option value="foarteActiv">Foarte activ</option>
+  </select>
+
+  <select id="goal">
+    <option value="">Obiectiv</option>
+    <option value="slabire">Slăbire</option>
+    <option value="ingrasare">Îngrășare</option>
+    <option value="crestere_masa">Creștere masă</option>
+    <option value="definire">Definire</option>
+  </select>
+
+  <button id="saveProfileBtn">Salvează & Calculează</button>
+  <button id="generateProgramBtn">Generează Program</button>
+
+  <p id="statusProfile"></p>
+
+  <!-- RECOMANDĂRI (ascuns inițial) -->
+  <div id="recommendationSection">
+    <h3>Recomandări pentru obiectivul tău</h3>
+    <div id="recommendationText"></div>
+    <div class="action-buttons">
+      <button id="goWorkoutsBtn">Mergi la Workouts</button>
+      <button id="goNutritionBtn">Mergi la Nutriție</button>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      updateDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+<!-- FOOTER (mic) -->
+<div class="profile-footer">
+  <p>© 2025 HealthFit. All rights reserved.</p>
+  <p>
+    Created by <strong>Elisei M.</strong> |
+    <a href="https://github.com/elisei-m" target="_blank" rel="noopener">
+      GitHub Profile
+    </a>
+  </p>
+</div>
 
-    // 1. Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-      authDomain: "healthfit-9de3f.firebaseapp.com",
-      projectId: "healthfit-9de3f",
-      storageBucket: "healthfit-9de3f.appspot.com",
-      messagingSenderId: "1071597823999",
-      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<!-- ========== SCRIPTS ========== -->
+<script type="module">
+  /* ========== Meniu mobil (similar cu index) ========== */
+  const openMenuBtn = document.getElementById("openMenuBtn");
+  const closeMenuBtn = document.getElementById("closeMenuBtn");
+  const menu = document.getElementById("menu");
 
-    // Element refs
-    const logoutBtn = document.getElementById("logoutBtn");
-    const sexInput = document.getElementById("sex");
-    const ageInput = document.getElementById("age");
-    const weightInput = document.getElementById("weight");
-    const heightInput = document.getElementById("height");
-    const activitySelect = document.getElementById("activityLevel");
-    const goalSelect = document.getElementById("goal");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const generateProgramBtn = document.getElementById("generateProgramBtn");
-    const statusProfile = document.getElementById("statusProfile");
+  function openMenu() {
+    menu.classList.add("open");
+  }
+  function closeMenu() {
+    menu.classList.remove("open");
+  }
+  openMenuBtn.addEventListener("click", openMenu);
+  closeMenuBtn.addEventListener("click", closeMenu);
 
-    // Recomandări
-    const recommendationSection = document.getElementById("recommendationSection");
-    const recommendationText = document.getElementById("recommendationText");
-    const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
-    const goNutritionBtn = document.getElementById("goNutritionBtn");
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
 
-    let currentUser = null;
-    let userDocRef = null;
+  /* ========== Detect scroll direction ========== */
+  let scrollDirection;
+  document.addEventListener("scroll", (e) => {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    const direction = st > (e.target.lastScrollTop || 0) ? "down" : "up";
+    if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
+      document.body.setAttribute("scroll-direction", direction);
+    }
+    scrollDirection = direction;
+    e.target.lastScrollTop = st <= 0 ? 0 : st;
+  }, { passive: true });
 
-    // 2. onAuthStateChanged
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        currentUser = user;
-        userDocRef = doc(db, "users", currentUser.uid);
-        // încărcăm datele existente
-        const snap = await getDoc(userDocRef);
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.sex) sexInput.value = data.sex;
-          if (data.age) ageInput.value = data.age;
-          if (data.weight) weightInput.value = data.weight;
-          if (data.height) heightInput.value = data.height;
-          if (data.activityLevel) activitySelect.value = data.activityLevel;
-          if (data.goal) goalSelect.value = data.goal;
+  /* ========== Scroll reveal simplu pt. .subject ========== */
+  function addRevealEffect(elements) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
+          entry.target.classList.add(revealClass);
+        } else {
+          entry.target.className = 'subject';
         }
-      }
-    });
+      });
+    }, { threshold: 0.1 });
 
-    // 3. Salvare profil + calcule
-    saveProfileBtn.onclick = async () => {
+    elements.forEach((el) => observer.observe(el));
+  }
+  const subjects = document.querySelectorAll(".subject");
+  addRevealEffect(subjects);
+
+  /* ========== Firebase & Profile Logic ========== */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { 
+    getAuth, 
+    onAuthStateChanged, 
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    updateDoc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+  // 1. Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+    authDomain: "healthfit-9de3f.firebaseapp.com",
+    projectId: "healthfit-9de3f",
+    storageBucket: "healthfit-9de3f.appspot.com",
+    messagingSenderId: "1071597823999",
+    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Element refs
+  const sexInput = document.getElementById("sex");
+  const ageInput = document.getElementById("age");
+  const weightInput = document.getElementById("weight");
+  const heightInput = document.getElementById("height");
+  const activitySelect = document.getElementById("activityLevel");
+  const goalSelect = document.getElementById("goal");
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+  const generateProgramBtn = document.getElementById("generateProgramBtn");
+  const statusProfile = document.getElementById("statusProfile");
+
+  const recommendationSection = document.getElementById("recommendationSection");
+  const recommendationText = document.getElementById("recommendationText");
+  const goWorkoutsBtn = document.getElementById("goWorkoutsBtn");
+  const goNutritionBtn = document.getElementById("goNutritionBtn");
+
+  let currentUser = null;
+  let userDocRef = null;
+
+  // 2. onAuthStateChanged
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      currentUser = user;
+      userDocRef = doc(db, "users", currentUser.uid);
+
+      // încărcăm datele existente
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.sex) sexInput.value = data.sex;
+        if (data.age) ageInput.value = data.age;
+        if (data.weight) weightInput.value = data.weight;
+        if (data.height) heightInput.value = data.height;
+        if (data.activityLevel) activitySelect.value = data.activityLevel;
+        if (data.goal) goalSelect.value = data.goal;
+      }
+    }
+  });
+
+  // 3. Salvare profil + calcule
+  saveProfileBtn.onclick = async () => {
+    if (!currentUser) {
+      statusProfile.textContent = "Trebuie să fii logat!";
+      return;
+    }
+
+    const sexVal = sexInput.value;
+    const ageVal = Number(ageInput.value);
+    const weightVal = Number(weightInput.value);
+    const heightVal = Number(heightInput.value);
+    const activityVal = activitySelect.value;
+    const goalVal = goalSelect.value;
+
+    // Calculează recomandări (pentru a salva recommended* in Firestore)
+    const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
+
+    // Salvează datele în Firestore
+    try {
+      await updateDoc(userDocRef, {
+        sex: sexVal,
+        age: ageVal,
+        weight: weightVal,
+        height: heightVal,
+        activityLevel: activityVal,
+        goal: goalVal,
+        recommendedCalories: rec.targetCalories,
+        recommendedProteins: rec.protein,
+        recommendedCarbs: rec.carbs,
+        recommendedFats: rec.fat
+      });
+      statusProfile.textContent = "Profil salvat!";
+    } catch (err) {
+      // Dacă doc nu există, îl creăm
+      await setDoc(userDocRef, {
+        sex: sexVal,
+        age: ageVal,
+        weight: weightVal,
+        height: heightVal,
+        activityLevel: activityVal,
+        goal: goalVal,
+        recommendedCalories: rec.targetCalories,
+        recommendedProteins: rec.protein,
+        recommendedCarbs: rec.carbs,
+        recommendedFats: rec.fat
+      });
+      statusProfile.textContent = "Profil creat!";
+    }
+
+    displayRecommendations(rec);
+  };
+
+  // 4. Generăm program (automat)
+  generateProgramBtn.onclick = async () => {
+    try {
+      statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
+
       if (!currentUser) {
-        statusProfile.textContent = "Trebuie să fii logat!";
+        statusProfile.textContent += " | User e null, deci nu pot genera.";
         return;
       }
-
-      const sexVal = sexInput.value;
-      const ageVal = Number(ageInput.value);
-      const weightVal = Number(weightInput.value);
-      const heightVal = Number(heightInput.value);
-      const activityVal = activitySelect.value;
-      const goalVal = goalSelect.value;
-
-      // Salvează datele în Firestore
-      try {
-        await updateDoc(userDocRef, {
-          sex: sexVal,
-          age: ageVal,
-          weight: weightVal,
-          height: heightVal,
-          activityLevel: activityVal,
-          goal: goalVal
-        });
-        statusProfile.textContent = "Profil salvat!";
-      } catch (err) {
-        await setDoc(userDocRef, {
-          sex: sexVal,
-          age: ageVal,
-          weight: weightVal,
-          height: heightVal,
-          activityLevel: activityVal,
-          goal: goalVal,
-          recommendedCalories: rec.targetCalories,
-          recommendedProteins: rec.protein,
-          recommendedCarbs: rec.carbs,
-          recommendedFats: rec.fat
-        });
-        statusProfile.textContent = "Profil creat!";
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) {
+        statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
+        return;
       }
-
-      // Calculează recomandări
-      const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
-      displayRecommendations(rec);
-    };
-
-    // 4. Generăm program (automat dintr-o "bibliotecă" de exerciții)
-    generateProgramBtn.onclick = async () => {
-      try {
-        statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
-
-        if (!currentUser) {
-          statusProfile.textContent += " | User e null, deci nu pot genera.";
-          return;
-        }
-        statusProfile.textContent += " | OK user.";
-
-        const snap = await getDoc(userDocRef);
-        if (!snap.exists()) {
-          statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
-          return;
-        }
-        statusProfile.textContent += " | OK profil doc.";
-
-        const data = snap.data();
-        const goalVal = data.goal;
-        if (!goalVal) {
-          statusProfile.textContent += " | N-ai setat goal în profil!";
-          return;
-        }
-        statusProfile.textContent += " | OK goal: " + goalVal;
-
-        // 4.1 Generăm program dinamic
-        const program = generateProgram(goalVal);
-        const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-
-        // 4.2 Salvăm programul
-        await setDoc(programDocRef, { days: program });
-        statusProfile.textContent = "DEBUG: Program setDoc reușit! Verifică Firestore.";
-
-      } catch (e) {
-        statusProfile.textContent = "Eroare la generarea programului: " + e.message;
+      const data = snap.data();
+      const goalVal = data.goal;
+      if (!goalVal) {
+        statusProfile.textContent += " | N-ai setat goal în profil!";
+        return;
       }
-    };
+      statusProfile.textContent += " | OK goal: " + goalVal;
 
-    // ~~~~~~~~ BIBLIOTECĂ EXERCIȚII ~~~~~~~~
-    // Cheia: muscleGroup => array de exerciții (name, description, alternatives)
-    const exercisesLibrary = {
-      chest: [
-        { 
-          name: "Bench Press", 
-          description: "Exercițiu compus pentru piept...", 
-          alternatives: ["Smith Machine Bench Press", "Push-ups"] 
-        },
-        { 
-          name: "Dumbbell Chest Fly", 
-          description: "Izolare piept...", 
-          alternatives: ["Cable Fly", "Machine Fly"] 
-        },
-        {
-          name: "Incline Dumbbell Press",
-          description: "Piept parte superioară...",
-          alternatives: ["Incline Barbell Press"]
-        }
-      ],
-      triceps: [
-        {
-          name: "Parallel Bar Dips (Triceps focus)",
-          description: "Exercițiu compus pt. triceps...",
-          alternatives: ["Bench Dips"]
-        },
-        {
-          name: "Tracțiuni cu gantera (Triceps)",
-          description: "Triceps overhead extension...",
-          alternatives: []
-        }
-      ],
-      back: [
-        {
-          name: "Lat Pulldown",
-          description: "Pentru dorsal...",
-          alternatives: ["Pull-ups"]
-        },
-        {
-          name: "Seated Cable Row",
-          description: "...",
-          alternatives: []
-        }
-      ],
-      biceps: [
-        {
-          name: "Barbell Biceps Curl",
-          description: "...",
-          alternatives: ["Dumbbell Curl"]
-        },
-        {
-          name: "Hammer Curl",
-          description: "...",
-          alternatives: []
-        }
-      ],
-      legs: [
-        {
-          name: "Squat",
-          description: "Exercițiu compus pentru picioare",
-          alternatives: ["Leg Press"]
-        },
-        {
-          name: "Lunges",
-          description: "...",
-          alternatives: []
-        }
-      ],
-      shoulders: [
-        {
-          name: "Shoulder Press",
-          description: "...",
-          alternatives: ["Arnold Press"]
-        },
-        {
-          name: "Lateral Raises",
-          description: "...",
-          alternatives: []
-        }
-      ]
-    };
+      // generăm program
+      const program = generateProgram(goalVal);
+      const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+      await setDoc(programDocRef, { days: program });
+      statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+    } catch (e) {
+      statusProfile.textContent = "Eroare la generarea programului: " + e.message;
+    }
+  };
 
-    // 4.3 Funcție care generează programul pe baza obiectivului
-    function generateProgram(goal) {
-      // Poți face 4 zile standard, adaptate la goal
-      // Exemplu: pentru "slabire" => 4 zile: chest&triceps, back&biceps, legs&shoulders, cardio
-      if (goal === "slabire") {
-        return [
-          {
-            title: "Antrenament 1 (Piept & Triceps)",
-            muscleGroups: ["chest", "triceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["chest","triceps"])
-          },
-          {
-            title: "Antrenament 2 (Spate & Biceps)",
-            muscleGroups: ["back", "biceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["back","biceps"])
-          },
-          {
-            title: "Antrenament 3 (Picioare & Umeri)",
-            muscleGroups: ["legs","shoulders"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["legs","shoulders"])
-          },
-          {
-            title: "Antrenament 4 (Cardio / Full Body)",
-            muscleGroups: ["chest","back","legs"],
-            done: false,
-            doneDate: null,
-            exercises: [
-              {
-                name: "Burpees",
-                description: "...",
-                alternatives: []
-              },
-              {
-                name: "Plank",
-                description: "...",
-                alternatives: []
-              }
-            ]
-          }
-        ];
-      } 
-      else if (goal === "crestere_masa") {
-        // alt exemplu: chest&biceps, back&triceps, legs&shoulders, etc.
-        return [
-          {
-            title: "Antrenament 1 (Piept & Biceps)",
-            muscleGroups: ["chest","biceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["chest","biceps"])
-          },
-          {
-            title: "Antrenament 2 (Spate & Triceps)",
-            muscleGroups: ["back","triceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["back","triceps"])
-          },
-          {
-            title: "Antrenament 3 (Picioare & Umeri)",
-            muscleGroups: ["legs","shoulders"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["legs","shoulders"])
-          },
-          {
-            title: "Antrenament 4 (Piept & Biceps - variantă 2)",
-            muscleGroups: ["chest","biceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["chest","biceps"])
-          }
-        ];
-      }
-      else if (goal === "definire") {
-        // e similar cu "slabire" dar putem schimba
-        return [
-          {
-            title: "Antrenament 1 (Piept & Triceps)",
-            muscleGroups: ["chest", "triceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["chest","triceps"])
-          },
-          {
-            title: "Antrenament 2 (Spate & Biceps)",
-            muscleGroups: ["back","biceps"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["back","biceps"])
-          },
-          {
-            title: "Antrenament 3 (Picioare & Umeri)",
-            muscleGroups: ["legs","shoulders"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["legs","shoulders"])
-          },
-          {
-            title: "Antrenament 4 (Cardio / HIIT)",
-            muscleGroups: ["legs"], 
-            done: false,
-            doneDate: null,
-            exercises: [
-              { name: "Sprinting", description: "Intervale HIIT", alternatives: [] }
-            ]
-          }
-        ];
-      }
-      else {
-        // fallback (goal=ingrasare sau necunoscut)
-        return [
-          {
-            title: "Antrenament 1 (Full Body)",
-            muscleGroups: ["chest","back","legs"],
-            done: false,
-            doneDate: null,
-            exercises: gatherExercises(["chest","back","legs"])
-          }
-        ];
-      }
+  // ========== FUNCTII HELPER ==========
+
+  function calculateRecommendations(sex, age, weight, height, activity, goal) {
+    let BMR;
+    if (sex === "barbat") {
+      BMR = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+      BMR = 10 * weight + 6.25 * height - 5 * age - 161;
     }
 
-    // 4.4 Funcție care ia exerciții din exercisesLibrary pentru grupele date
-    function gatherExercises(muscleGroups) {
-      let result = [];
-      // Exemplu simplu: luăm 2 exerciții pentru fiecare grupă
-      muscleGroups.forEach(mg => {
-        const lib = exercisesLibrary[mg] || [];
-        // Dacă vrei random, extragi random 2. De exemplu:
-        // result.push( ... pickRandom(lib, 2) );
-        // Dar aici punem TOT ce e în library pentru mg:
-        result = result.concat(lib);
-      });
-      return result;
+    let activityFactor = 1.2;
+    if (activity === "moderat") activityFactor = 1.375;
+    if (activity === "activ") activityFactor = 1.55;
+    if (activity === "foarteActiv") activityFactor = 1.725;
+
+    const TDEE = BMR * activityFactor;
+    let targetCalories = TDEE;
+    let messageGoal = "";
+
+    if (goal === "slabire") {
+      targetCalories = TDEE - 300;
+      messageGoal = "trebuie să intri în deficit caloric moderat (~300 kcal)";
+    } else if (goal === "ingrasare") {
+      targetCalories = TDEE + 300;
+      messageGoal = "trebuie să intri în surplus caloric moderat (~300 kcal)";
+    } else if (goal === "crestere_masa") {
+      targetCalories = TDEE + 200;
+      messageGoal = "trebuie să menții un surplus caloric pentru creștere masă (~200 kcal)";
+    } else if (goal === "definire") {
+      targetCalories = TDEE - 200;
+      messageGoal = "trebuie să ai un deficit caloric mic (~200 kcal) pentru definire";
+    } else {
+      messageGoal = "nu ai selectat un obiectiv clar";
     }
 
-    // ~~~~~~~~ Calcule Recomandări + Afișare ~~~~~~~~
-    function calculateRecommendations(sex, age, weight, height, activity, goal) {
-      let BMR;
-      if (sex === "barbat") {
-        BMR = 10 * weight + 6.25 * height - 5 * age + 5;
-      } else {
-        BMR = 10 * weight + 6.25 * height - 5 * age - 161;
-      }
+    const proteinCals = 0.3 * targetCalories;
+    const carbCals = 0.4 * targetCalories;
+    const fatCals = 0.3 * targetCalories;
 
-      let activityFactor = 1.2;
-      if (activity === "moderat") activityFactor = 1.375;
-      if (activity === "activ") activityFactor = 1.55;
-      if (activity === "foarteActiv") activityFactor = 1.725;
+    const proteinGrams = Math.round(proteinCals / 4);
+    const carbGrams = Math.round(carbCals / 4);
+    const fatGrams = Math.round(fatCals / 9);
 
-      const TDEE = BMR * activityFactor;
-      let targetCalories = TDEE;
-      let messageGoal = "";
+    const waterLiters = ((weight || 70) * 35) / 1000;
 
-      if (goal === "slabire") {
-        targetCalories = TDEE - 300;
-        messageGoal = "trebuie să intri în deficit caloric moderat (~300 kcal)";
-      } else if (goal === "ingrasare") {
-        targetCalories = TDEE + 300;
-        messageGoal = "trebuie să intri în surplus caloric moderat (~300 kcal)";
-      } else if (goal === "crestere_masa") {
-        targetCalories = TDEE + 200;
-        messageGoal = "trebuie să menții un surplus caloric pentru creștere masă (~200 kcal)";
-      } else if (goal === "definire") {
-        targetCalories = TDEE - 200;
-        messageGoal = "trebuie să ai un deficit caloric mic (~200 kcal) pentru definire";
-      } else {
-        messageGoal = "nu ai selectat un obiectiv clar";
-      }
+    return {
+      BMR: Math.round(BMR),
+      TDEE: Math.round(TDEE),
+      targetCalories: Math.round(targetCalories),
+      protein: proteinGrams,
+      carbs: carbGrams,
+      fat: fatGrams,
+      water: waterLiters.toFixed(2),
+      messageGoal
+    };
+  }
 
-      const proteinCals = 0.3 * targetCalories;
-      const carbCals = 0.4 * targetCalories;
-      const fatCals = 0.3 * targetCalories;
+  function displayRecommendations(rec) {
+    recommendationText.innerHTML = `
+      <p><strong>Calorii menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
+      <p><strong>Calorii recomandate pt. obiectiv:</strong> ${rec.targetCalories} kcal/zi</p>
+      <p><strong>Proteine:</strong> ${rec.protein} g/zi, 
+         <strong>Carbohidrați:</strong> ${rec.carbs} g/zi, 
+         <strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
+      <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
+      <p>Pentru obiectivul ales, <strong>${rec.messageGoal}</strong>.</p>
+      <p>Recomandat să te antrenezi de 3-4 ori pe săptămână.</p>
+    `;
+    recommendationSection.style.display = "block";
+  }
 
-      const proteinGrams = Math.round(proteinCals / 4);
-      const carbGrams = Math.round(carbCals / 4);
-      const fatGrams = Math.round(fatCals / 9);
-
-      const waterLiters = ((weight || 70) * 35) / 1000;
-
-      return {
-        BMR: Math.round(BMR),
-        TDEE: Math.round(TDEE),
-        targetCalories: Math.round(targetCalories),
-        protein: proteinGrams,
-        carbs: carbGrams,
-        fat: fatGrams,
-        water: waterLiters.toFixed(2),
-        messageGoal
-      };
+  // Program generator
+  function gatherExercises(muscleGroups) {
+    let result = [];
+    muscleGroups.forEach(mg => {
+      const lib = exercisesLibrary[mg] || [];
+      result = result.concat(lib);
+    });
+    return result;
+  }
+  function generateProgram(goal) {
+    if (goal === "slabire") {
+      return [
+        {
+          title: "Antrenament 1 (Piept & Triceps)",
+          muscleGroups: ["chest", "triceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["chest","triceps"])
+        },
+        {
+          title: "Antrenament 2 (Spate & Biceps)",
+          muscleGroups: ["back", "biceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["back","biceps"])
+        },
+        {
+          title: "Antrenament 3 (Picioare & Umeri)",
+          muscleGroups: ["legs","shoulders"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["legs","shoulders"])
+        },
+        {
+          title: "Antrenament 4 (Cardio / Full Body)",
+          muscleGroups: ["chest","back","legs"],
+          done: false,
+          doneDate: null,
+          exercises: [
+            { name: "Burpees", description: "...", alternatives: [] },
+            { name: "Plank", description: "...", alternatives: [] }
+          ]
+        }
+      ];
     }
-
-    function displayRecommendations(rec) {
-      recommendationText.innerHTML = `
-        <p><strong>Calorii menținere (TDEE):</strong> ${rec.TDEE} kcal/zi</p>
-        <p><strong>Calorii recomandate pt. obiectiv:</strong> ${rec.targetCalories} kcal/zi</p>
-        <p><strong>Proteine:</strong> ${rec.protein} g/zi, 
-           <strong>Carbohidrați:</strong> ${rec.carbs} g/zi, 
-           <strong>Grăsimi:</strong> ${rec.fat} g/zi</p>
-        <p><strong>Apă recomandată:</strong> ~${rec.water} L/zi</p>
-        <p>Pentru obiectivul ales, <strong>${rec.messageGoal}</strong>.</p>
-        <p>Recomandat să te antrenezi de 3-4 ori pe săptămână.</p>
-      `;
-      recommendationSection.style.display = "block";
+    else if (goal === "crestere_masa") {
+      return [
+        {
+          title: "Antrenament 1 (Piept & Biceps)",
+          muscleGroups: ["chest","biceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["chest","biceps"])
+        },
+        {
+          title: "Antrenament 2 (Spate & Triceps)",
+          muscleGroups: ["back","triceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["back","triceps"])
+        },
+        {
+          title: "Antrenament 3 (Picioare & Umeri)",
+          muscleGroups: ["legs","shoulders"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["legs","shoulders"])
+        },
+        {
+          title: "Antrenament 4 (Piept & Biceps - variantă 2)",
+          muscleGroups: ["chest","biceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["chest","biceps"])
+        }
+      ];
     }
+    else if (goal === "definire") {
+      return [
+        {
+          title: "Antrenament 1 (Piept & Triceps)",
+          muscleGroups: ["chest", "triceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["chest","triceps"])
+        },
+        {
+          title: "Antrenament 2 (Spate & Biceps)",
+          muscleGroups: ["back","biceps"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["back","biceps"])
+        },
+        {
+          title: "Antrenament 3 (Picioare & Umeri)",
+          muscleGroups: ["legs","shoulders"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["legs","shoulders"])
+        },
+        {
+          title: "Antrenament 4 (Cardio / HIIT)",
+          muscleGroups: ["legs"],
+          done: false,
+          doneDate: null,
+          exercises: [
+            { name: "Sprinting", description: "Intervale HIIT", alternatives: [] }
+          ]
+        }
+      ];
+    }
+    else {
+      // fallback
+      return [
+        {
+          title: "Antrenament 1 (Full Body)",
+          muscleGroups: ["chest","back","legs"],
+          done: false,
+          doneDate: null,
+          exercises: gatherExercises(["chest","back","legs"])
+        }
+      ];
+    }
+  }
 
-    // 7. Butoane navigare
-    goWorkoutsBtn.onclick = () => {
-      window.location.href = "workouts.html";
-    };
-    goNutritionBtn.onclick = () => {
-      window.location.href = "nutritie.html";
-    };
+  // exercisesLibrary
+  const exercisesLibrary = {
+    chest: [
+      { name: "Bench Press", description: "Exercițiu compus pt. piept...", alternatives: ["Smith Machine", "Push-ups"] },
+      { name: "Dumbbell Chest Fly", description: "Izolare piept...", alternatives: ["Cable Fly", "Machine Fly"] },
+      { name: "Incline Dumbbell Press", description: "Piept superior...", alternatives: ["Incline Barbell Press"] }
+    ],
+    triceps: [
+      { name: "Parallel Bar Dips", description: "Triceps focus...", alternatives: ["Bench Dips"] },
+      { name: "Tracțiuni gantera (Triceps)", description: "Overhead ext...", alternatives: [] }
+    ],
+    back: [
+      { name: "Lat Pulldown", description: "Pentru dorsal...", alternatives: ["Pull-ups"] },
+      { name: "Seated Cable Row", description: "...", alternatives: [] }
+    ],
+    biceps: [
+      { name: "Barbell Biceps Curl", description: "Exercițiu clasic...", alternatives: ["Dumbbell Curl"] },
+      { name: "Hammer Curl", description: "Variație...", alternatives: [] }
+    ],
+    legs: [
+      { name: "Squat", description: "Exercițiu compus picioare", alternatives: ["Leg Press"] },
+      { name: "Lunges", description: "Exercițiu unilateral...", alternatives: [] }
+    ],
+    shoulders: [
+      { name: "Shoulder Press", description: "Exercițiu pt. deltoizi", alternatives: ["Arnold Press"] },
+      { name: "Lateral Raises", description: "Izolare umeri laterali", alternatives: [] }
+    ]
+  };
 
-    // 8. Logout
-    logoutBtn.onclick = () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
-    };
-  </script>
+</script>
 </body>
 </html>
