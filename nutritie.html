@@ -27,7 +27,7 @@
     }
 
     /* ====================================
-       NAVBAR (același stil ca index/profile)
+       NAVBAR (stil identic cu index/profile)
     ==================================== */
     .Navbar {
       position: sticky;
@@ -331,8 +331,9 @@
 
       <li><a href="index.html" class="NavLink">Home</a></li>
       <li><a href="profile.html" class="NavLink">Profil</a></li>
+      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
       <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
-      <!-- (Nu neapărat) Putem adăuga un link la nutrție dacă dorim, dar deja suntem în nutrie.html -->
+      <!-- Login / Logout (ascunse/afișate din JS) -->
       <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
       <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
     </ul>
@@ -404,7 +405,7 @@
 
 <!-- ========== SCRIPTS ========== -->
 <script type="module">
-  /* ========== Meniu mobil ========== */
+  /* ========== Meniu mobil (similar cu index/profile) ========== */
   const openMenuBtn = document.getElementById("openMenuBtn");
   const closeMenuBtn = document.getElementById("closeMenuBtn");
   const menu = document.getElementById("menu");
@@ -418,11 +419,12 @@
   openMenuBtn.addEventListener("click", openMenu);
   closeMenuBtn.addEventListener("click", closeMenu);
 
+  // Închidere meniu cu ESC
   window.addEventListener("keyup", (e) => {
     if (e.key === "Escape") closeMenu();
   });
 
-  /* ========== Detect scroll direction ========== */
+  /* ========== Detect scroll direction (navbar hide on scroll) ========== */
   let scrollDirection;
   document.addEventListener("scroll", (e) => {
     const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -476,8 +478,8 @@
     authDomain: "healthfit-9de3f.firebaseapp.com",
     projectId: "healthfit-9de3f",
     storageBucket: "healthfit-9de3f.appspot.com",
-    messagingSenderId: "1071597823999",
-    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+    messagingSenderId: "...",
+    appId: "1:...:web:..."
   };
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -512,6 +514,10 @@
       window.location.href = "login.html";
     } else {
       currentUser = user;
+      // Afișăm/ascundem link-urile login/logout
+      document.getElementById('nav-login').style.display = 'none';
+      document.getElementById('nav-logout').style.display = 'block';
+
       // Încărcăm valorile recomandate (dacă există) din profil
       await loadProfileRecommendations();
 
