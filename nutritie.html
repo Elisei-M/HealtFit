@@ -20,14 +20,14 @@
     }
     html, body {
       font-family: 'Oswald', sans-serif;
-      background: #111;
+      background: #111; /* fundal general */
       color: #eee;
       scroll-behavior: smooth;
       overflow-x: hidden;
     }
 
     /* ====================================
-       NAVBAR (stil identic cu index/profile)
+       NAVBAR (același stil ca în index/profile)
     ==================================== */
     .Navbar {
       position: sticky;
@@ -130,7 +130,7 @@
     }
 
     /* ====================================
-       HERO SCURT PENTRU PAGINA DE NUTRIȚIE
+       SCURT HERO pentru pagina Nutriție
     ==================================== */
     .nutrition-hero {
       position: relative;
@@ -187,9 +187,9 @@
     }
 
     /* ====================================
-       CONTAINERE (dark style)
+       STILURI PENTRU "BOX"-URI
     ==================================== */
-    .nutri-container {
+    .nutri-box {
       max-width: 600px;
       margin: 0 auto 40px;
       background: #222;
@@ -197,24 +197,25 @@
       border-radius: 8px;
       border: 1px solid #333;
     }
-    .nutri-container h2 {
+    .nutri-box h2 {
       margin-bottom: 1rem;
       color: #0df1a7;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       text-align: center;
     }
-    .nutri-container label {
+    .nutri-box label {
       display: block;
       margin: 8px 0 4px;
-      font-weight: 500;
+      font-size: 1rem;
+      color: #eee;
     }
-    .nutri-container input[type="text"],
-    .nutri-container input[type="number"],
-    .nutri-container input[type="date"] {
+    .nutri-box input[type="text"],
+    .nutri-box input[type="number"],
+    .nutri-box input[type="date"] {
       width: 100%;
-      padding: 8px;
+      padding: 0.6rem;
       margin-bottom: 10px;
       font-size: 1rem;
       background: #333;
@@ -222,78 +223,88 @@
       color: #eee;
       border-radius: 4px;
     }
-    .nutri-container input:focus {
+    .nutri-box input:focus {
       outline: 2px solid #0df1a7;
     }
-    .nutri-container button {
+    .nutri-box button {
       background-color: #0df1a7;
       color: #111;
       border: none;
       padding: 10px 15px;
-      margin-top: 5px;
+      margin: 5px 0;
       cursor: pointer;
       border-radius: 4px;
       transition: background 0.2s;
       text-transform: uppercase;
+      font-size: 1rem;
     }
-    .nutri-container button:hover {
+    .nutri-box button:hover {
       background-color: #0ae8a0;
     }
+
     #statusMeal {
       margin-top: 10px;
-      color: #eee;
       background: #333;
+      color: #eee;
       padding: 0.5rem;
       border-radius: 4px;
       font-size: 0.9rem;
     }
 
-    /* LISTA DE MESE, TOTURILE, ETC. */
-    #mealsList p {
+    /* ================== BOX pt. Vizualizare mese ================== */
+    .nutri-box-2 {
+      max-width: 600px;
+      margin: 0 auto 40px;
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    .nutri-box-2 h2 {
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .nutri-box-2 #mealsList p,
+    .nutri-box-2 #mealsList .mealItem {
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
+      color: #eee;
     }
-    .mealItem {
-      margin-bottom: 8px;
-      line-height: 1.4;
-      font-size: 0.95rem;
-      background: #333;
-      padding: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #444;
-      margin-top: 0.3rem;
-    }
-    #totals {
-      margin-top: 10px;
-      font-size: 0.95rem;
-      line-height: 1.4;
+    .nutri-box-2 #totals p {
+      font-size: 0.9rem;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
     }
     .highlight {
       font-weight: bold;
       color: #0df1a7;
     }
     .highlight-negative {
-      color: red;
+      color: #f05;
       font-weight: bold;
     }
 
     /* FOOTER MIC */
-    .nutri-footer {
+    .nutrition-footer {
       text-align: center;
       padding: 1rem 0;
       font-size: 0.8rem;
       color: #888;
       border-top: 1px solid #333;
     }
-    .nutri-footer a {
+    .nutrition-footer a {
       color: #0df1a7;
       text-decoration: none;
     }
-    .nutri-footer a:hover {
+    .nutrition-footer a:hover {
       text-decoration: underline;
     }
 
-    /* SCROLL REVEAL */
+    /* SCROLL REVEAL: .subject */
     .subject {
       opacity: 0;
       transform: translateY(30px);
@@ -340,40 +351,39 @@
   </div>
 </nav>
 
-<!-- HERO SCURT PT. NUTRIȚIE -->
+<!-- HERO SCURT PENTRU NUTRITIE -->
 <section class="nutrition-hero">
   <div class="visual">
-    <!-- Imagine de fundal nutriție (schimbă cu ce preferi) -->
-    <img
-      src="https://images.unsplash.com/photo-1533089860892-a7e4da6f34bf?auto=format&fit=crop&w=1200&q=80"
-      alt="Nutriție background"
+    <img 
+      src="https://images.unsplash.com/photo-1576402187873-1f80fbf18f79?auto=format&fit=crop&w=1200&q=80"
+      alt="Nutriție background" 
     />
   </div>
   <div class="content">
-    <h1>Nutriție</h1>
-    <p>Monitorizează caloriile, macronutrienții și progresează mai ușor spre obiectivul tău!</p>
+    <h1>Nutriție Inteligentă</h1>
+    <p>Monitorizează mesele, compară cu necesarul tău zilnic și atinge-ți obiectivele!</p>
   </div>
 </section>
 
-<!-- Container pt. adăugare masă -->
-<div class="nutri-container subject">
+<!-- BOX 1: Adaugă Masă -->
+<div class="nutri-box subject">
   <h2>Adaugă Masă</h2>
   
   <label for="mealDate">Data:</label>
   <input type="date" id="mealDate" />
-  
-  <label for="mealName">Nume masă (ex. Mic dejun, Prânz):</label>
+
+  <label for="mealName">Nume masă (Mic dejun, Prânz etc.):</label>
   <input type="text" id="mealName" placeholder="Mic dejun, Prânz etc." />
-  
+
   <label for="calories">Calorii:</label>
   <input type="number" id="calories" placeholder="Ex. 400" />
-  
+
   <label for="proteins">Proteine (g):</label>
   <input type="number" id="proteins" placeholder="Ex. 25" />
-  
+
   <label for="carbs">Carbohidrați (g):</label>
   <input type="number" id="carbs" placeholder="Ex. 50" />
-  
+
   <label for="fats">Grăsimi (g):</label>
   <input type="number" id="fats" placeholder="Ex. 10" />
 
@@ -381,9 +391,10 @@
   <p id="statusMeal"></p>
 </div>
 
-<!-- Container pt. vizualizare mese & total -->
-<div class="nutri-container subject">
+<!-- BOX 2: Vizualizează mesele dintr-o zi -->
+<div class="nutri-box-2 subject">
   <h2>Vizualizează mesele dintr-o zi</h2>
+
   <label for="viewDate">Selectează data:</label>
   <input type="date" id="viewDate" />
   <button id="loadMealsBtn">Încarcă mesele</button>
@@ -393,7 +404,7 @@
 </div>
 
 <!-- FOOTER MIC -->
-<div class="nutri-footer">
+<div class="nutrition-footer">
   <p>© 2025 HealthFit. All rights reserved.</p>
   <p>
     Created by <strong>Elisei M.</strong> |
@@ -405,7 +416,7 @@
 
 <!-- ========== SCRIPTS ========== -->
 <script type="module">
-  /* ========== Meniu mobil (similar cu index/profile) ========== */
+  /* ========== Meniu mobil (similar cu index) ========== */
   const openMenuBtn = document.getElementById("openMenuBtn");
   const closeMenuBtn = document.getElementById("closeMenuBtn");
   const menu = document.getElementById("menu");
@@ -419,12 +430,11 @@
   openMenuBtn.addEventListener("click", openMenu);
   closeMenuBtn.addEventListener("click", closeMenu);
 
-  // Închidere meniu cu ESC
   window.addEventListener("keyup", (e) => {
     if (e.key === "Escape") closeMenu();
   });
 
-  /* ========== Detect scroll direction (navbar hide on scroll) ========== */
+  /* ========== Detect scroll direction ========== */
   let scrollDirection;
   document.addEventListener("scroll", (e) => {
     const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -441,11 +451,11 @@
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          // O singură dată: NU mai resetăm la 'subject' când iese din viewport
           const revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
           entry.target.classList.add(revealClass);
-        } else {
-          entry.target.className = 'subject';
         }
+        // else { ... nu resetăm }
       });
     }, { threshold: 0.1 });
 
@@ -454,7 +464,7 @@
   const subjects = document.querySelectorAll(".subject");
   addRevealEffect(subjects);
 
-  /* ========== Firebase + Logica Nutriție ========== */
+  /* ========== Firebase & Nutriție Logic ========== */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
   import { 
     getAuth, 
@@ -478,8 +488,8 @@
     authDomain: "healthfit-9de3f.firebaseapp.com",
     projectId: "healthfit-9de3f",
     storageBucket: "healthfit-9de3f.appspot.com",
-    messagingSenderId: "...",
-    appId: "1:...:web:..."
+    messagingSenderId: "1071597823999",
+    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
   };
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -514,7 +524,7 @@
       window.location.href = "login.html";
     } else {
       currentUser = user;
-      // Afișăm/ascundem link-urile login/logout
+      // Afișăm/ascundem butoanele Login/Logout
       document.getElementById('nav-login').style.display = 'none';
       document.getElementById('nav-logout').style.display = 'block';
 
@@ -666,8 +676,7 @@
   }
 
   // 7. Logout
-  const logoutBtnEl = document.getElementById("logoutBtn");
-  logoutBtnEl.onclick = () => {
+  logoutBtn.onclick = () => {
     signOut(auth).then(() => {
       window.location.href = "index.html";
     });
