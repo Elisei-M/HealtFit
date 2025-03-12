@@ -210,11 +210,27 @@
     }
     #daysContainer .program-day input[type="checkbox"] {
       margin-right: 8px;
+      accent-color: #0df1a7; /* bifa colorată */
       transform: scale(1.2);
       vertical-align: middle;
     }
+    .exercise-toggle-btn {
+      background: #0df1a7;
+      color: #111;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-left: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+      text-transform: uppercase;
+    }
+    .exercise-toggle-btn:hover {
+      background: #0ae8a0;
+    }
     .exercise-list {
-      margin-left: 20px;
+      margin-left: 1.5rem;
       display: none;
     }
     .exercise-list.active {
@@ -222,9 +238,10 @@
     }
     .exercise-list li {
       list-style: disc;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       margin-left: 1.2rem;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      color: #ccc;
     }
     .reset-btn {
       background: #0df1a7;
@@ -378,6 +395,15 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* Culoare default (recuperată) pentru mușchi în SVG */
+    .muscle-default {
+      fill: #515761 !important; /* un gri */
+    }
+    /* Culoare obosit (roșu) */
+    .muscle-tired {
+      fill: #ff4b4b !important;
+    }
   </style>
 </head>
 <body>
@@ -488,7 +514,7 @@
     const st = window.pageYOffset || document.documentElement.scrollTop;
     const direction = st > (e.target.lastScrollTop || 0) ? "down" : "up";
     if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
-      document.body.setAttribute("scroll-direction", direction);
+      document.body.setAttribute('scroll-direction', direction);
     }
     scrollDirection = direction;
     e.target.lastScrollTop = st <= 0 ? 0 : st;
@@ -546,7 +572,7 @@
 
   let currentUser = null;
   let programDocRef = null;
-  let programData = null;
+  let programData = null; // { days: [ { muscleGroups: [...], doneDate, ...}, ... ] }
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -578,131 +604,4 @@
   async function loadProgram() {
     const snap = await getDoc(programDocRef);
     if (!snap.exists()) {
-      daysContainer.innerHTML = "<p>Nu ai încă un program. Mergi la Profil și generează unul!</p>";
-      return;
-    }
-    programData = snap.data();
-    if (!programData.days) {
-      daysContainer.innerHTML = "<p>Program invalid (lipsesc days).</p>";
-      return;
-    }
-    renderDays(programData.days);
-  }
-
-  function renderDays(daysArray) {
-    daysContainer.innerHTML = "";
-    daysArray.forEach((dayObj, dayIndex) => {
-      const dayDiv = document.createElement("div");
-      dayDiv.classList.add("program-day");
-
-      // Bifa
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!dayObj.done;
-      cb.onchange = () => toggleDay(dayIndex, cb.checked);
-
-      const h4 = document.createElement("h4");
-      h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
-
-      // Buton "Vezi exercițiile"
-      const showBtn = document.createElement("button");
-      showBtn.textContent = "Vezi exercițiile";
-      showBtn.style.marginLeft = "10px";
-      const exercisesUL = document.createElement("ul");
-      exercisesUL.classList.add("exercise-list");
-      showBtn.onclick = () => {
-        exercisesUL.classList.toggle("active");
-      };
-
-      // Listăm exercițiile
-      dayObj.exercises.forEach(ex => {
-        const li = document.createElement("li");
-        li.textContent = ex.name + " - " + ex.description;
-        exercisesUL.appendChild(li);
-      });
-
-      dayDiv.appendChild(cb);
-      dayDiv.appendChild(h4);
-      dayDiv.appendChild(showBtn);
-      dayDiv.appendChild(exercisesUL);
-      daysContainer.appendChild(dayDiv);
-    });
-  }
-
-  async function toggleDay(dayIndex, isDone) {
-    programData.days[dayIndex].done = isDone;
-    programData.days[dayIndex].doneDate = isDone ? new Date().toISOString() : null;
-    await updateDoc(programDocRef, { days: programData.days });
-    renderDays(programData.days);
-  }
-
-  resetBtn.onclick = async () => {
-    if (!programData || !programData.days) return;
-    programData.days.forEach(day => {
-      day.done = false;
-      day.doneDate = null;
-    });
-    await updateDoc(programDocRef, { days: programData.days });
-    statusMsg.textContent = "Program resetat!";
-    renderDays(programData.days);
-  };
-
-  logoutBtn.onclick = () => {
-    signOut(auth).then(() => {
-      window.location.href = "index.html";
-    });
-  };
-
-  // =========== FRONT/BACK LOGIC (Snap.svg) ===========
-  function initFrontBackSVG() {
-    const frontSVG = Snap("#frontSvg");
-    const backSVG = Snap("#backSvg");
-
-    const $labelBox = document.querySelector(".labelBox");
-    const $labelName = $labelBox.querySelector(".name");
-    const $labelDesc = $labelBox.querySelector(".description");
-
-    // LOAD FRONT
-    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", function (data) {
-      frontSVG.append(data);
-      // Aici poți adăuga hoverIntent pe #muscleChest, etc.
-      // ...
-    });
-
-    // LOAD BACK
-    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", function (data) {
-      backSVG.append(data);
-      // ...
-    });
-
-    // Ex. funcții "activateMuscles"/"deactivateMuscles"
-    function activateMuscles(domEl) {
-      // $(domEl).find(".muscle").css({ fill: "#8dc63f" });
-      $labelName.textContent = "Ex. Muschi";
-      $labelDesc.textContent = "Descriere scurtă";
-      setTimeout(() => {
-        $labelBox.classList.add("visible");
-        $labelBox.style.marginTop = "-300px";
-        $labelBox.style.marginLeft= "-450px";
-      }, 200);
-    }
-    function deactivateMuscles(domEl) {
-      // $(domEl).find(".muscle").css({ fill: "#515761" });
-      $labelBox.classList.remove("visible");
-    }
-
-    rotateBtn.addEventListener("click", function(e){
-      e.preventDefault();
-      const cardEl = document.querySelector(".card");
-      if (cardEl.classList.contains("flipped")) {
-        cardEl.classList.remove("flipped");
-        rotateBtn.textContent = "View Back";
-      } else {
-        cardEl.classList.add("flipped");
-        rotateBtn.textContent = "View Front";
-      }
-    });
-  }
-</script>
-</body>
-</html>
+      daysContainer.innerHTML =
