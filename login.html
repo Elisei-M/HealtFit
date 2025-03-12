@@ -1,94 +1,442 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Login | Fitness Champ</title>
-  <link rel="stylesheet" href="style.css"> 
+  <meta charset="UTF-8" />
+  <title>Login | HealthFit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Remix Icon (pentru hamburger, close, etc.) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* RESET minimal */
+    *, *::before, *::after {
+      margin: 0; 
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      font-family: 'Oswald', sans-serif;
+      background: #111;
+      color: #eee;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* ============== NAVBAR ============== */
+    .Navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.8);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease;
+    }
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
+    }
+    .Navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .Logo {
+      font-size: 2.4rem; 
+      font-weight: 700;
+      color: #0df1a7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links li {
+      display: block;
+    }
+    .nav-links a,
+    .nav-links button {
+      color: #fff;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover,
+    .nav-links button:hover {
+      color: #0df1a7;
+    }
+    .NavButton {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+    @media screen and (max-width: 768px) {
+      .NavButton {
+        display: inline-block;
+      }
+      .nav-links {
+        position: fixed;
+        top: 0; 
+        right: 0;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+      }
+      .nav-links.open {
+        transform: translateX(0);
+      }
+      .nav-links a,
+      .nav-links button {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* ========== PAGINA LOGIN ========== */
+    .login-hero {
+      position: relative;
+      width: 100%;
+      min-height: 30vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #111;
+    }
+    .login-hero .visual {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .login-hero .visual img {
+      width: 1200px; 
+      height: auto;
+      filter: blur(3px) brightness(0.8);
+    }
+    .login-hero .content {
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.4);
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      text-align: center;
+      max-width: 600px;
+      margin-top: 2rem;
+      animation: fadeDown 0.8s ease forwards;
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    .login-hero .content h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
+    .login-hero .content p {
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #eee;
+    }
+    @keyframes fadeDown {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* CONTAINER FORM LOGIN */
+    .login-container {
+      max-width: 400px;
+      margin: 2rem auto;
+      background: #222;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    .login-container h2 {
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      font-size: 1.6rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.95rem;
+      color: #aaa;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      background: #333;
+      border: 1px solid #444;
+      color: #eee;
+      border-radius: 4px;
+    }
+    .form-group input:focus {
+      outline: 2px solid #0df1a7;
+    }
+    .submit-btn {
+      background-color: #0df1a7;
+      color: #111;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: background 0.2s;
+      text-transform: uppercase;
+    }
+    .submit-btn:hover {
+      background-color: #0ae8a0;
+    }
+    .google-btn {
+      background-color: #dd4b39;
+      border-color: #dd4b39;
+      margin-top: 10px;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #eee;
+      background: #333;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    .login-footer {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+    .login-footer a {
+      color: #0df1a7;
+      text-decoration: none;
+    }
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+
+<!-- NAVBAR (identic cu index) -->
+<nav class="Navbar">
   <div class="container">
-    <div class="form">
-      <h3 class="title">Login to Fitness Champ</h3>
-      <form>
-        <div class="form-group">
-          <input type="email" id="email" required/>
-          <label>Email</label>
-        </div>
-        <div class="form-group">
-          <input type="password" id="password" required/>
-          <label>Password</label>
-        </div>
-        <!-- Buton de login clasic -->
-        <input type="button" value="Sign In" class="submit" id="loginBtn"> 
-        <!-- Buton de login cu Google -->
-        <input type="button" value="Sign in with Google" class="submit" id="googleBtn" 
-               style="background-color: #dd4b39; border-color: #dd4b39; margin-top: 10px;">
-        
-        <div class="row">
-          <p>Not Yet Registered? <a href="register.html">Sign Up</a></p>
-        </div>
-        <!-- Mesaj status/erori -->
-        <p id="status" style="text-align:center;"></p>
-      </form>
-    </div>
+    <div class="Logo">HealthFit.</div>
+    <button id="openMenuBtn" class="NavButton" title="Open Menu" aria-label="Open Menu">
+      <i class="ri-menu-line"></i>
+    </button>
+    <ul class="nav-links" id="menu">
+      <button id="closeMenuBtn" class="NavButton" title="Close Menu" aria-label="Close Menu">
+        <i class="ri-close-line"></i>
+      </button>
+      <li><a href="index.html" class="NavLink">Home</a></li>
+      <li><a href="profile.html" class="NavLink">Profil</a></li>
+      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+      <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+      <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
+      <li id="nav-logout" style="display:none;">
+        <button class="NavLink" id="logoutBtn">Logout</button>
+      </li>
+    </ul>
   </div>
+</nav>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      GoogleAuthProvider, 
-      signInWithPopup 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    
-    // CONFIGURARE FIREBASE
-    const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-      authDomain: "healthfit-9de3f.firebaseapp.com",
-      projectId: "healthfit-9de3f",
-      storageBucket: "healthfit-9de3f.appspot.com",
-      messagingSenderId: "1071597823999",
-      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+<!-- HERO SCURT PT. LOGIN -->
+<section class="login-hero">
+  <div class="visual">
+    <img 
+      src="https://images.unsplash.com/photo-1594737625785-c74d5b7201e6?auto=format&fit=crop&w=1200&q=80" 
+      alt="Background"
+    />
+  </div>
+  <div class="content">
+    <h1>Loghează-te</h1>
+    <p>Intră în contul tău HealthFit pentru a-ți accesa planurile și recomandările personalizate.</p>
+  </div>
+</section>
 
-    // REFERINȚE ELEMENTE
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
-    const googleBtn = document.getElementById("googleBtn");
-    const statusMsg = document.getElementById("status");
+<!-- FORMULAR LOGIN -->
+<div class="login-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Parolă:</label>
+      <input type="password" id="password" required />
+    </div>
 
-    // LOGIN (EMAIL + PAROLĂ)
-    loginBtn.onclick = function() {
-      const emailVal = emailInput.value;
-      const passVal = passwordInput.value;
-      signInWithEmailAndPassword(auth, emailVal, passVal)
-        .then((userCredential) => {
-          statusMsg.innerText = "✅ Logged in successfully!";
-          // Redirecționează către index.html
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare la autentificare: " + error.message;
-        });
-    };
+    <!-- Buton de login clasic -->
+    <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+    <!-- Buton de login cu Google -->
+    <button type="button" class="submit-btn google-btn" id="googleBtn">
+      Sign in with Google
+    </button>
 
-    // LOGIN CU GOOGLE
-    googleBtn.onclick = function() {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          statusMsg.innerText = "✅ Google sign-in reușit!";
-          // Redirecționează către index.html
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare Google sign-in: " + error.message;
-        });
-    };
-  </script>
+    <p id="status" class="status" style="display:none;"></p>
+
+    <div class="login-footer">
+      <p>Not yet registered? <a href="register.html">Sign Up</a></p>
+    </div>
+  </form>
+</div>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+  /* ========== Meniu mobil ========== */
+  const openMenuBtn = document.getElementById("openMenuBtn");
+  const closeMenuBtn = document.getElementById("closeMenuBtn");
+  const menu = document.getElementById("menu");
+
+  function openMenu() {
+    menu.classList.add("open");
+  }
+  function closeMenu() {
+    menu.classList.remove("open");
+  }
+  openMenuBtn.addEventListener("click", openMenu);
+  closeMenuBtn.addEventListener("click", closeMenu);
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  /* ========== Scroll direction pt. navbar ========== */
+  let scrollDirection;
+  document.addEventListener("scroll", (e) => {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    const direction = st > (e.target.lastScrollTop || 0) ? "down" : "up";
+    if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
+      document.body.setAttribute("scroll-direction", direction);
+    }
+    scrollDirection = direction;
+    e.target.lastScrollTop = st <= 0 ? 0 : st;
+  }, { passive: true });
+</script>
+
+<!-- Script separat pt. Firebase (type="module") -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { 
+    getAuth,
+    onAuthStateChanged,
+    signOut,
+    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+  // 1. Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+    authDomain: "healthfit-9de3f.firebaseapp.com",
+    projectId: "healthfit-9de3f",
+    storageBucket: "healthfit-9de3f.appspot.com",
+    messagingSenderId: "1071597823999",
+    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Elemente pt. Login/Logout in navbar
+  const navLogin = document.getElementById("nav-login");
+  const navLogout = document.getElementById("nav-logout");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // Observăm starea de autentificare
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      navLogin.style.display = "none";
+      navLogout.style.display = "block";
+    } else {
+      navLogin.style.display = "block";
+      navLogout.style.display = "none";
+    }
+  });
+
+  // Logout la click
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    // optional: window.location.reload();
+  });
+
+  // Elemente pt. login form
+  const loginForm = document.getElementById("loginForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const statusMsg = document.getElementById("status");
+  const googleBtn = document.getElementById("googleBtn");
+
+  // 2. Eveniment submit => Enter taste = Sign In
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const emailVal = emailInput.value.trim();
+    const passVal = passwordInput.value.trim();
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, emailVal, passVal);
+      statusMsg.style.display = "block";
+      statusMsg.innerText = "✅ Logged in successfully!";
+      window.location.href = "index.html";
+    } catch (error) {
+      statusMsg.style.display = "block";
+      statusMsg.innerText = "Eroare la autentificare: " + error.message;
+    }
+  });
+
+  // 3. Login cu Google
+  googleBtn.addEventListener("click", async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      statusMsg.style.display = "block";
+      statusMsg.innerText = "✅ Google sign-in reușit!";
+      window.location.href = "index.html";
+    } catch (error) {
+      statusMsg.style.display = "block";
+      statusMsg.innerText = "Eroare Google sign-in: " + error.message;
+    }
+  });
+</script>
 </body>
 </html>
