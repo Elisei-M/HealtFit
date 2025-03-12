@@ -27,7 +27,7 @@
     }
 
     /* ====================================
-       NAVBAR (același stil)
+       NAVBAR (similar cu index/profile)
     ==================================== */
     .Navbar {
       position: sticky;
@@ -40,6 +40,7 @@
       justify-content: center;
       transition: transform 0.4s ease;
     }
+    /* Ascundem navbar-ul când derulăm în jos */
     [scroll-direction='down'] .Navbar {
       transform: translateY(-120%);
     }
@@ -336,7 +337,7 @@
       transform: scale(0);
       transition: all 0.25s ease;
       transform-origin: right center;
-      pointer-events: none; /* ca să nu captureze click */
+      pointer-events: none; /* ca să nu se poată da click pe labelBox */
     }
     .labelBox.visible {
       transform: scale(1);
@@ -381,7 +382,7 @@
       background: #0ae8a0;
     }
 
-    /* SCROLL REVEAL (similar) */
+    /* SCROLL REVEAL */
     .subject {
       opacity: 0;
       transform: translateY(30px);
@@ -425,14 +426,14 @@
       <li><a href="profile.html" class="NavLink">Profil</a></li>
       <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
       <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
-      <!-- Login/Logout (afisate din JS) -->
+      <!-- Login/Logout (afișate din JS) -->
       <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
       <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
     </ul>
   </div>
 </nav>
 
-<!-- HERO SCURT PENTRU WORKOUTS -->
+<!-- HERO SCURT -->
 <section class="workouts-hero">
   <div class="visual">
     <img 
@@ -446,7 +447,7 @@
   </div>
 </section>
 
-<!-- MAIN CONTAINER stânga/dreapta -->
+<!-- CONTAINER stânga/dreapta -->
 <div class="workouts-container subject">
   <!-- Stânga: Program antrenamente -->
   <div class="program-box">
@@ -456,7 +457,7 @@
     <p id="statusMsg"></p>
   </div>
 
-  <!-- Dreapta: Info profil + SVG front/back -->
+  <!-- Dreapta: Info profil + SVG corp front/back -->
   <div class="profile-info-box">
     <div>
       <h3>Informații din Profil</h3>
@@ -572,18 +573,17 @@
 
   let currentUser = null;
   let programDocRef = null;
-  let programData = null; // { days: [ { muscleGroups: [...], doneDate, ...}, ... ] }
+  let programData = null; // { days: [ { muscleGroups, done, doneDate, exercises }, ... ] }
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
     } else {
       currentUser = user;
-      // Arătăm logout, ascundem login
+      // Afișăm logout, ascundem login
       document.getElementById('nav-login').style.display = 'none';
       document.getElementById('nav-logout').style.display = 'block';
 
-      // Referință la programul activ
       programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
       await loadProfileInfo();
       await loadProgram();
@@ -604,4 +604,238 @@
   async function loadProgram() {
     const snap = await getDoc(programDocRef);
     if (!snap.exists()) {
-      daysContainer.innerHTML =
+      daysContainer.innerHTML = "<p>Nu ai încă un program. Mergi la Profile și generează unul!</p>";
+      return;
+    }
+    programData = snap.data();
+    if (!programData.days) {
+      daysContainer.innerHTML = "<p>Program invalid (lipsesc days).</p>";
+      return;
+    }
+    renderDays(programData.days);
+    updateMusclesRecovery(); // colorăm mușchii în funcție de doneDate
+  }
+
+  function renderDays(daysArray) {
+    daysContainer.innerHTML = "";
+    daysArray.forEach((dayObj, dayIndex) => {
+      const dayDiv = document.createElement("div");
+      dayDiv.classList.add("program-day");
+
+      // Bifa
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!dayObj.done;
+      cb.onchange = () => toggleDay(dayIndex, cb.checked);
+
+      const h4 = document.createElement("h4");
+      h4.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
+
+      // Buton "Vezi exercițiile"
+      const showBtn = document.createElement("button");
+      showBtn.textContent = "Vezi exercițiile";
+      showBtn.classList.add("exercise-toggle-btn");
+
+      const exercisesUL = document.createElement("ul");
+      exercisesUL.classList.add("exercise-list");
+      showBtn.onclick = () => {
+        exercisesUL.classList.toggle("active");
+      };
+
+      dayObj.exercises.forEach(ex => {
+        const li = document.createElement("li");
+        li.textContent = ex.name + " - " + ex.description;
+        exercisesUL.appendChild(li);
+      });
+
+      dayDiv.appendChild(cb);
+      dayDiv.appendChild(h4);
+      dayDiv.appendChild(showBtn);
+      dayDiv.appendChild(exercisesUL);
+      daysContainer.appendChild(dayDiv);
+    });
+  }
+
+  async function toggleDay(dayIndex, isDone) {
+    programData.days[dayIndex].done = isDone;
+    programData.days[dayIndex].doneDate = isDone ? new Date().toISOString() : null;
+    await updateDoc(programDocRef, { days: programData.days });
+    renderDays(programData.days);
+    updateMusclesRecovery();
+  }
+
+  resetBtn.onclick = async () => {
+    if (!programData || !programData.days) return;
+    programData.days.forEach(day => {
+      day.done = false;
+      day.doneDate = null;
+    });
+    await updateDoc(programDocRef, { days: programData.days });
+    statusMsg.textContent = "Program resetat!";
+    renderDays(programData.days);
+    updateMusclesRecovery();
+  };
+
+  logoutBtn.onclick = () => {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
+    });
+  };
+
+  // =========== FRONT/BACK LOGIC (Snap.svg) + Colorare mușchi ===========
+  let frontSVG, backSVG; // Snap() objects
+
+  function initFrontBackSVG() {
+    frontSVG = Snap("#frontSvg");
+    backSVG = Snap("#backSvg");
+
+    const $labelBox = document.querySelector(".labelBox");
+    const $labelName = $labelBox.querySelector(".name");
+    const $labelDesc = $labelBox.querySelector(".description");
+
+    // LOAD FRONT
+    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", (data) => {
+      frontSVG.append(data);
+      // Marcam toți mușchii cu .muscle-default
+      frontSVG.selectAll(".muscle").attr({ class: "muscle-default" });
+      // Ex. hover
+      const $groupsFront = ["#muscleChest","#muscleArmsFront","#muscleLegsFront"];
+      $groupsFront.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          $(el).hoverIntent({
+            over: () => activateMuscles(el),
+            out: () => deactivateMuscles(el),
+            interval: 100,
+            timeout: 200
+          });
+        }
+      });
+    });
+
+    // LOAD BACK
+    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", (data) => {
+      backSVG.append(data);
+      backSVG.selectAll(".muscle").attr({ class: "muscle-default" });
+      const $groupsBack = ["#muscleBack","#muscleArmsBack","#muscleLegsBack"];
+      $groupsBack.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) {
+          $(el).hoverIntent({
+            over: () => activateMuscles(el),
+            out: () => deactivateMuscles(el),
+            interval: 100,
+            timeout: 200
+          });
+        }
+      });
+    });
+
+    function activateMuscles(domEl) {
+      // ex. highlight local
+      $(domEl).find(".muscle-default").css({ fill: "#8dc63f" });
+      // label info (dummy)
+      let id = domEl.id; // ex. "muscleChest"
+      let name = "???";
+      let desc = "...";
+      if (id==="muscleChest") { name="Chest"; desc="Pectorals"; }
+      // etc. extinzi logică
+
+      $labelName.textContent = name;
+      $labelDesc.textContent = desc;
+      setTimeout(() => {
+        $labelBox.classList.add("visible");
+        $labelBox.style.marginTop = "-200px";
+        $labelBox.style.marginLeft= "-350px";
+      }, 200);
+    }
+    function deactivateMuscles(domEl) {
+      // revert la colorarea default
+      $(domEl).find(".muscle-default").css({ fill: "" });
+      $labelBox.classList.remove("visible");
+    }
+
+    rotateBtn.addEventListener("click", function(e){
+      e.preventDefault();
+      const cardEl = document.querySelector(".card");
+      if (cardEl.classList.contains("flipped")) {
+        cardEl.classList.remove("flipped");
+        rotateBtn.textContent = "View Back";
+      } else {
+        cardEl.classList.add("flipped");
+        rotateBtn.textContent = "View Front";
+      }
+    });
+  }
+
+  // Colorăm mușchii la <48h => roșu
+  function updateMusclesRecovery() {
+    if (!frontSVG || !backSVG) return;
+    // 1) Reset totul la .muscle-default
+    frontSVG.selectAll(".muscle-default, .muscle-tired").attr({ class: "muscle-default" });
+    backSVG.selectAll(".muscle-default, .muscle-tired").attr({ class: "muscle-default" });
+
+    if (!programData || !programData.days) return;
+    const now = new Date();
+
+    programData.days.forEach(day => {
+      if (day.done && day.doneDate && day.muscleGroups) {
+        const doneTime = new Date(day.doneDate);
+        const diffH = (now - doneTime)/36e5; // ore scurse
+        if (diffH < 48) {
+          // colorăm grupele musculare => roșu
+          day.muscleGroups.forEach(mg => {
+            colorMuscleGroup(mg, "tired");
+          });
+        }
+      }
+    });
+  }
+
+  // Schimbăm clasa .muscle-default -> .muscle-tired
+  function colorMuscleGroup(muscleName, state) {
+    // Ex. muscleName = "chest" => #muscleChest
+    let frontSelector = null, backSelector = null;
+    if (muscleName==="chest") {
+      frontSelector = "#muscleChest";
+      backSelector = "#muscleChest"; // uneori e la fel pe back
+    }
+    else if (muscleName==="triceps") {
+      frontSelector = "#muscleArmsFront";
+      backSelector = "#muscleArmsBack"; 
+      // exemplu simplu; depinde cum e structurat SVG-ul tău
+    }
+    else if (muscleName==="biceps") {
+      frontSelector = "#muscleArmsFront";
+      backSelector = "#muscleArmsBack";
+    }
+    else if (muscleName==="back") {
+      frontSelector = "#muscleBack";
+      backSelector = "#muscleBack";
+    }
+    else if (muscleName==="legs") {
+      frontSelector = "#muscleLegsFront";
+      backSelector = "#muscleLegsBack";
+    }
+    else if (muscleName==="shoulders") {
+      frontSelector = "#muscleArmsFront"; 
+      backSelector = "#muscleArmsBack"; 
+      // sau ai #muscleShoulders separate, etc.
+    }
+
+    if (frontSelector) {
+      const fEl = document.querySelector(frontSelector);
+      if (fEl) {
+        $(fEl).find(".muscle-default").attr({ class: "muscle-" + state });
+      }
+    }
+    if (backSelector) {
+      const bEl = document.querySelector(backSelector);
+      if (bEl) {
+        $(bEl).find(".muscle-default").attr({ class: "muscle-" + state });
+      }
+    }
+  }
+</script>
+</body>
+</html>
