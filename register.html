@@ -1,123 +1,501 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Register | Fitness Champ</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Register | HealthFit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Remix Icon (pentru buton hamburger etc.) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ==================== RESET ==================== */
+    *, *::before, *::after {
+      margin: 0; 
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      font-family: 'Oswald', sans-serif;
+      background: #111;
+      color: #eee;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* ==================== NAVBAR ==================== */
+    .Navbar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.8);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease;
+    }
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
+    }
+    .Navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .Logo {
+      font-size: 2.4rem; 
+      font-weight: 700;
+      color: #0df1a7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links li {
+      display: block;
+    }
+    .nav-links a,
+    .nav-links button {
+      color: #fff;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover,
+    .nav-links button:hover {
+      color: #0df1a7;
+    }
+    .NavButton {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+    @media screen and (max-width: 768px) {
+      .NavButton {
+        display: inline-block;
+      }
+      .nav-links {
+        position: fixed;
+        top: 0; 
+        right: 0;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+      }
+      .nav-links.open {
+        transform: translateX(0);
+      }
+      .nav-links a,
+      .nav-links button {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* ==================== HERO SCURT ==================== */
+    .auth-hero {
+      position: relative;
+      width: 100%;
+      min-height: 30vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #111;
+      margin-bottom: 2rem;
+    }
+    .auth-hero .visual {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .auth-hero .visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(3px) brightness(0.8);
+    }
+    .auth-hero .content {
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.4);
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      text-align: center;
+      animation: fadeDown 0.8s ease forwards;
+      transform: translateY(-20px);
+      opacity: 0;
+      max-width: 600px;
+    }
+    .auth-hero .content h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
+    .auth-hero .content p {
+      font-size: 1rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+      color: #eee;
+    }
+    @keyframes fadeDown {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ==================== FORM CONTAINER ==================== */
+    .register-container {
+      max-width: 450px;
+      margin: 0 auto 40px;
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    .register-container h2 {
+      margin-bottom: 1rem;
+      color: #0df1a7;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .register-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .register-container label {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .register-container input {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      background: #333;
+      border: 1px solid #444;
+      color: #eee;
+      border-radius: 4px;
+    }
+    .register-container input:focus {
+      outline: 2px solid #0df1a7;
+    }
+    .register-container button[type="submit"],
+    .register-container button[type="button"] {
+      background-color: #0df1a7;
+      color: #111;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .register-container button:hover {
+      background-color: #0ae8a0;
+    }
+    .register-container .googleBtn {
+      background-color: #dd4b39;
+      border-color: #dd4b39;
+      color: #fff;
+    }
+    .register-container .googleBtn:hover {
+      background-color: #c23321;
+    }
+    .register-container .row p {
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+    .register-container .row p a {
+      color: #0df1a7;
+      text-decoration: none;
+    }
+    .register-container .row p a:hover {
+      text-decoration: underline;
+    }
+    #status {
+      margin-top: 10px;
+      color: #eee;
+      background: #333;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* FOOTER (mic) */
+    .register-footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.8rem;
+      color: #888;
+      border-top: 1px solid #333;
+    }
+    .register-footer a {
+      color: #0df1a7;
+      text-decoration: none;
+    }
+    .register-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* SCROLL REVEAL (dacă vrei) */
+    .subject {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: 0.6s ease;
+    }
+    .subject.reveal-up {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .subject.reveal-down {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
+
+<!-- NAVBAR -->
+<nav class="Navbar">
   <div class="container">
-    <div class="form">
-      <h3 class="title">Create an Account</h3>
-      <form>
-        <div class="form-group">
-          <input type="text" id="name" required/>
-          <label>Name</label>
-        </div>
-        <div class="form-group">
-          <input type="email" id="email" required/>
-          <label>Email</label>
-        </div>
-        <div class="form-group">
-          <input type="password" id="password" required/>
-          <label>Password</label>
-        </div>
-        <input type="button" value="Sign Up" class="submit" id="registerBtn"> 
-        <!-- Buton de "Register" cu Google (de fapt e tot signInWithPopup) -->
-        <input type="button" value="Sign Up with Google" class="submit" id="googleRegisterBtn" 
-               style="background-color: #dd4b39; border-color: #dd4b39; margin-top: 10px;">
-        
-        <div class="row">
-          <p>Already have an account? <a href="login.html">Sign In</a></p>
-        </div>
-        <p id="status" style="text-align:center;"></p>
-      </form>
-    </div>
+    <!-- LOGO stânga -->
+    <div class="Logo">HealthFit.</div>
+
+    <!-- Buton meniu mobil (hamburger) -->
+    <button id="openMenuBtn" class="NavButton" title="Open Menu" aria-label="Open Menu">
+      <i class="ri-menu-line"></i>
+    </button>
+
+    <!-- Meniu desktop/mobil -->
+    <ul class="nav-links" id="menu">
+      <!-- Buton închidere meniu (mobil) -->
+      <button id="closeMenuBtn" class="NavButton" title="Close Menu" aria-label="Close Menu">
+        <i class="ri-close-line"></i>
+      </button>
+
+      <li><a href="index.html" class="NavLink">Home</a></li>
+      <li><a href="profile.html" class="NavLink">Profil</a></li>
+      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
+      <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
+      <!-- Login / Logout (ascunse/afișate din JS) -->
+      <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
+      <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
+    </ul>
   </div>
+</nav>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      GoogleAuthProvider, 
-      signInWithPopup 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+<!-- HERO SCURT -->
+<section class="auth-hero">
+  <div class="visual">
+    <!-- Poți schimba imaginea cu ceva generic / fitness related -->
+    <img 
+      src="https://images.unsplash.com/photo-1574680276147-74162395a1f8?auto=format&fit=crop&w=1200&q=80"
+      alt="Background" 
+    />
+  </div>
+  <div class="content">
+    <h1>Register</h1>
+    <p>Join us and start your HealthFit journey!</p>
+  </div>
+</section>
 
-    // CONFIGURARE FIREBASE
-    const firebaseConfig = {
-      apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-      authDomain: "healthfit-9de3f.firebaseapp.com",
-      projectId: "healthfit-9de3f",
-      storageBucket: "healthfit-9de3f.appspot.com",
-      messagingSenderId: "1071597823999",
-      appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<!-- FORM CONTAINER -->
+<div class="register-container subject">
+  <h2>Creează cont</h2>
+  
+  <form id="registerForm">
+    <div>
+      <label for="name">Nume</label>
+      <input type="text" id="name" required />
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+    </div>
+    <div>
+      <label for="password">Parolă</label>
+      <input type="password" id="password" required />
+    </div>
 
-    // REFERINȚE
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const registerBtn = document.getElementById("registerBtn");
-    const googleRegisterBtn = document.getElementById("googleRegisterBtn");
-    const statusMsg = document.getElementById("status");
+    <!-- Butoane Sign Up / Google -->
+    <button type="submit" id="registerBtn">Sign Up</button>
+    <button type="button" class="googleBtn" id="googleRegisterBtn">Sign Up with Google</button>
 
-    // ÎNREGISTRARE + SALVARE Firestore
-    registerBtn.onclick = function() {
-      const nameVal = nameInput.value;
-      const emailVal = emailInput.value;
-      const passVal = passwordInput.value;
+    <div class="row">
+      <p>Already have an account? <a href="login.html">Sign In</a></p>
+    </div>
+    <p id="status"></p>
+  </form>
+</div>
 
-      createUserWithEmailAndPassword(auth, emailVal, passVal)
-        .then(async (userCredential) => {
-          const user = userCredential.user;
-          // Salvăm date suplimentare în Firestore
-          await setDoc(doc(db, "users", user.uid), {
-            name: nameVal,
-            email: emailVal,
-            uid: user.uid,
-            createdAt: new Date()
-          });
+<!-- FOOTER (mic) -->
+<div class="register-footer">
+  <p>© 2025 HealthFit. All rights reserved.</p>
+  <p>
+    Created by <strong>Elisei M.</strong> |
+    <a href="https://github.com/elisei-m" target="_blank" rel="noopener">
+      GitHub Profile
+    </a>
+  </p>
+</div>
 
-          statusMsg.innerText = "✅ Cont creat cu succes!";
-          // Redirecționează către index.html
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare la înregistrare: " + error.message;
-        });
-    };
+<script type="module">
+  /* ========== Meniu mobil (similar cu index) ========== */
+  const openMenuBtn = document.getElementById("openMenuBtn");
+  const closeMenuBtn = document.getElementById("closeMenuBtn");
+  const menu = document.getElementById("menu");
 
-    // "REGISTER" CU GOOGLE (de fapt e signInWithPopup)
-    googleRegisterBtn.onclick = function() {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(async (result) => {
-          // Aici user e deja logat cu Google
-          const user = result.user;
-          // Poți salva date minime în Firestore (dacă nu există deja)
-          await setDoc(doc(db, "users", user.uid), {
-            name: user.displayName || "Google User",
-            email: user.email,
-            uid: user.uid,
-            createdAt: new Date()
-          }, { merge: true }); // merge: true nu rescrie datele vechi
+  function openMenu() {
+    menu.classList.add("open");
+  }
+  function closeMenu() {
+    menu.classList.remove("open");
+  }
+  openMenuBtn.addEventListener("click", openMenu);
+  closeMenuBtn.addEventListener("click", closeMenu);
 
-          statusMsg.innerText = "✅ Google sign-in reușit!";
-          window.location.href = "index.html";
-        })
-        .catch((error) => {
-          statusMsg.innerText = "Eroare Google sign-in: " + error.message;
-        });
-    };
-  </script>
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  /* ========== Detect scroll direction (pt. navbar sticky) ========== */
+  let scrollDirection;
+  document.addEventListener("scroll", (e) => {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    const direction = st > (e.target.lastScrollTop || 0) ? "down" : "up";
+    if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
+      document.body.setAttribute("scroll-direction", direction);
+    }
+    scrollDirection = direction;
+    e.target.lastScrollTop = st <= 0 ? 0 : st;
+  }, { passive: true });
+
+  /* ========== Scroll reveal simplu pt. .subject ========== */
+  function addRevealEffect(elements) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
+          entry.target.classList.add(revealClass);
+        } else {
+          entry.target.className = 'subject';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    elements.forEach((el) => observer.observe(el));
+  }
+  const subjects = document.querySelectorAll(".subject");
+  addRevealEffect(subjects);
+
+  /* ========== Firebase Register Logic ========== */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup 
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    setDoc 
+  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+  // 1. Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
+    authDomain: "healthfit-9de3f.firebaseapp.com",
+    projectId: "healthfit-9de3f",
+    storageBucket: "healthfit-9de3f.appspot.com",
+    messagingSenderId: "1071597823999",
+    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Element refs
+  const registerForm = document.getElementById("registerForm");
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const googleRegisterBtn = document.getElementById("googleRegisterBtn");
+  const statusMsg = document.getElementById("status");
+
+  // 2. La SUBMIT => creăm cont
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // prevenim refresh
+    const nameVal = nameInput.value.trim();
+    const emailVal = emailInput.value.trim();
+    const passVal = passwordInput.value;
+
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, emailVal, passVal);
+      const user = userCred.user;
+      // salvăm date în Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name: nameVal || "No Name",
+        email: emailVal,
+        uid: user.uid,
+        createdAt: new Date()
+      });
+      statusMsg.innerText = "✅ Cont creat cu succes!";
+      window.location.href = "index.html";
+    } catch (error) {
+      statusMsg.innerText = "Eroare la înregistrare: " + error.message;
+    }
+  });
+
+  // 3. "Register" cu Google (signInWithPopup)
+  googleRegisterBtn.onclick = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      // Salvezi date minime în Firestore (merge: true => nu suprascrie tot)
+      await setDoc(doc(db, "users", user.uid), {
+        name: user.displayName || "Google User",
+        email: user.email,
+        uid: user.uid,
+        createdAt: new Date()
+      }, { merge: true });
+
+      statusMsg.innerText = "✅ Google sign-in reușit!";
+      window.location.href = "index.html";
+    } catch (error) {
+      statusMsg.innerText = "Eroare Google sign-in: " + error.message;
+    }
+  };
+</script>
 </body>
 </html>
