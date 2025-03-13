@@ -5,7 +5,7 @@
   <title>HealthFit - Nutriție</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Remix Icon (pentru buton hamburger etc.) -->
+  <!-- Remix Icon (pentru iconițe) -->
   <link
     href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
     rel="stylesheet"
@@ -14,20 +14,20 @@
   <style>
     /* RESET minimal */
     *, *::before, *::after {
-      margin: 0; 
+      margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
     html, body {
       font-family: 'Oswald', sans-serif;
-      background: #111; /* fundal general */
+      background: #111;
       color: #eee;
       scroll-behavior: smooth;
       overflow-x: hidden;
     }
 
     /* ====================================
-       NAVBAR (același stil ca în index/profile)
+       NAVBAR (similar cu index)
     ==================================== */
     .Navbar {
       position: sticky;
@@ -40,11 +40,9 @@
       justify-content: center;
       transition: transform 0.4s ease;
     }
-    /* Ascundem navbar-ul când derulăm în jos */
     [scroll-direction='down'] .Navbar {
       transform: translateY(-120%);
     }
-
     .Navbar .container {
       display: flex;
       align-items: center;
@@ -52,16 +50,13 @@
       max-width: 1200px;
       width: 100%;
     }
-
     .Logo {
-      font-size: 2.4rem; 
+      font-size: 2rem;
       font-weight: 700;
       color: #0df1a7;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
-
-    /* Meniu desktop */
     .nav-links {
       list-style: none;
       display: flex;
@@ -70,10 +65,9 @@
     .nav-links li {
       display: block;
     }
-    .nav-links a,
-    .nav-links button {
+    .nav-links a, .nav-links button {
       color: #fff;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-transform: uppercase;
       text-decoration: none;
       transition: color 0.2s;
@@ -81,29 +75,21 @@
       border: none;
       cursor: pointer;
     }
-    .nav-links a:hover,
-    .nav-links button:hover {
+    .nav-links a:hover, .nav-links button:hover {
       color: #0df1a7;
     }
-
-    /* Butoane hamburger */
     .NavButton {
-      display: none; /* ascuns pe desktop */
+      display: none;
       background: none;
       border: none;
       color: #fff;
       font-size: 2rem;
       cursor: pointer;
     }
-
-    /* =========== MEDIA QUERY: mobil =========== */
     @media screen and (max-width: 768px) {
-      /* Afișăm butonul hamburger */
       .NavButton {
         display: inline-block;
       }
-
-      /* Ascundem .nav-links pe mobil, îl vom transforma în panel lateral */
       .nav-links {
         position: fixed;
         top: 0; 
@@ -121,21 +107,15 @@
       .nav-links.open {
         transform: translateX(0);
       }
-
-      /* Link-urile mai mari pe mobil */
-      .nav-links a,
-      .nav-links button {
-        font-size: 1.4rem;
-      }
     }
 
     /* ====================================
-       SCURT HERO pentru pagina Nutriție
+       CONTAINER GENERAL PENTRU PAGINA
     ==================================== */
-    .nutrition-hero {
+    .nutri-hero {
       position: relative;
       width: 100%;
-      min-height: 35vh;
+      min-height: 25vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -143,20 +123,20 @@
       background: #111;
       margin-bottom: 2rem;
     }
-    .nutrition-hero .visual {
+    .nutri-hero .visual {
       position: absolute;
       inset: 0;
       overflow: hidden;
     }
-.nutrition-hero .visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 80%; /* exemplu: 50% pe orizontală, 80% pe verticală */
-  transform: scale(0.8)
-}
-
-    .nutrition-hero .content {
+    .nutri-hero .visual img {
+      width: 120%;
+      height: auto;
+      object-fit: cover;
+      /* Zoom out => transform scale(0.8) (exemplu) */
+      transform: scale(0.8);
+      filter: brightness(0.6);
+    }
+    .nutri-hero .content {
       position: relative;
       z-index: 1;
       background: rgba(0,0,0,0.4);
@@ -169,13 +149,13 @@
       opacity: 0;
       max-width: 600px;
     }
-    .nutrition-hero .content h1 {
+    .nutri-hero .content h1 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
       color: #0df1a7;
       text-transform: uppercase;
     }
-    .nutrition-hero .content p {
+    .nutri-hero .content p {
       font-size: 1rem;
       line-height: 1.4;
       margin-bottom: 1rem;
@@ -188,125 +168,271 @@
       }
     }
 
-    /* ====================================
-       STILURI PENTRU "BOX"-URI
-    ==================================== */
-    .nutri-box {
-      max-width: 600px;
-      margin: 0 auto 40px;
+    /* Container principal */
+    .nutri-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
       background: #222;
-      padding: 20px;
       border-radius: 8px;
       border: 1px solid #333;
     }
-    .nutri-box h2 {
-      margin-bottom: 1rem;
-      color: #0df1a7;
+
+    .nutri-container h2 {
       font-size: 1.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      margin-bottom: 1rem;
       text-align: center;
+      text-transform: uppercase;
+      color: #0df1a7;
     }
-    .nutri-box label {
-      display: block;
-      margin: 8px 0 4px;
-      font-size: 1rem;
-      color: #eee;
+
+    /* FORM: Adaugă masă */
+    .add-meal-form {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 2rem;
     }
-    .nutri-box input[type="text"],
-    .nutri-box input[type="number"],
-    .nutri-box input[type="date"] {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 10px;
-      font-size: 1rem;
+    .add-meal-form .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .add-meal-form label {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      color: #0df1a7;
+    }
+    .add-meal-form input {
+      padding: 0.5rem;
+      font-size: 0.9rem;
       background: #333;
-      border: 1px solid #444;
       color: #eee;
+      border: 1px solid #444;
       border-radius: 4px;
     }
-    .nutri-box input:focus {
+    .add-meal-form input:focus {
       outline: 2px solid #0df1a7;
     }
-    .nutri-box button {
+    .add-meal-form button {
+      grid-column: 1 / -1;
       background-color: #0df1a7;
       color: #111;
       border: none;
       padding: 10px 15px;
-      margin: 5px 0;
       cursor: pointer;
       border-radius: 4px;
       transition: background 0.2s;
       text-transform: uppercase;
-      font-size: 1rem;
     }
-    .nutri-box button:hover {
+    .add-meal-form button:hover {
       background-color: #0ae8a0;
     }
-
     #statusMeal {
-      margin-top: 10px;
+      grid-column: 1 / -1;
       background: #333;
       color: #eee;
       padding: 0.5rem;
       border-radius: 4px;
       font-size: 0.9rem;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
     }
 
-    /* ================== BOX pt. Vizualizare mese ================== */
-    .nutri-box-2 {
-      max-width: 600px;
-      margin: 0 auto 40px;
-      background: #222;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #333;
+    /* Container vizualizare mese */
+    .meals-container {
+      margin-bottom: 2rem;
     }
-    .nutri-box-2 h2 {
+    .meals-header {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       margin-bottom: 1rem;
+    }
+    .meals-header label {
+      font-size: 0.9rem;
       color: #0df1a7;
-      font-size: 1.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-align: center;
     }
-    .nutri-box-2 #mealsList p,
-    .nutri-box-2 #mealsList .mealItem {
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
+    .meals-header input[type="date"] {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      background: #333;
       color: #eee;
+      border: 1px solid #444;
+      border-radius: 4px;
     }
-    .nutri-box-2 #totals p {
+    /* Card layout pentru fiecare masă */
+    .meal-card {
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .meal-card:hover {
+      background: #383838;
+    }
+    .meal-card h4 {
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+    }
+    .meal-card p {
       font-size: 0.9rem;
       line-height: 1.3;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
-    .highlight {
-      font-weight: bold;
+    .meal-card .actions {
+      position: absolute;
+      top: 10px; 
+      right: 10px;
+      display: flex;
+      gap: 8px;
+    }
+    .meal-card .actions button {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color 0.2s;
+    }
+    .meal-card .actions button:hover {
       color: #0df1a7;
     }
-    .highlight-negative {
-      color: #f05;
-      font-weight: bold;
+
+    /* Editare meal inline (opțional) */
+    .edit-form {
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .edit-form input {
+      width: 90%;
+      margin-bottom: 5px;
+      padding: 0.4rem;
+      background: #222;
+      color: #eee;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .edit-form button {
+      background-color: #0df1a7;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-top: 5px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #111;
+    }
+
+    /* TOTALE + PROGRESS BARS */
+    .totals-box {
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    .totals-box p {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .progress-item label {
+      width: 70px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #eee;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: #444;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar span {
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%;
+      background: #0df1a7;
+      transition: width 0.3s;
+    }
+    .macro-diff {
+      font-size: 0.75rem;
+      margin-left: 8px;
+    }
+    .macro-diff.negative {
+      color: #ff6666;
+    }
+    .macro-diff.positive {
+      color: #66ff66;
+    }
+
+    /* BADGES (Gamification) */
+    .badges-container {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #444;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #eee;
+      transition: background 0.2s;
+    }
+    .badge i {
+      color: #0df1a7;
+      font-size: 1rem;
+    }
+    .badge:hover {
+      background: #0df1a7;
+      color: #111;
     }
 
     /* FOOTER MIC */
-    .nutrition-footer {
+    .nutri-footer {
       text-align: center;
       padding: 1rem 0;
       font-size: 0.8rem;
       color: #888;
       border-top: 1px solid #333;
+      margin-top: 2rem;
     }
-    .nutrition-footer a {
+    .nutri-footer a {
       color: #0df1a7;
       text-decoration: none;
     }
-    .nutrition-footer a:hover {
+    .nutri-footer a:hover {
       text-decoration: underline;
     }
 
-    /* SCROLL REVEAL: .subject */
+    /* SCROLL REVEAL */
+    [scroll-direction='down'] .Navbar {
+      transform: translateY(-120%);
+    }
     .subject {
       opacity: 0;
       transform: translateY(30px);
@@ -353,60 +479,73 @@
   </div>
 </nav>
 
-<!-- HERO SCURT PENTRU NUTRITIE -->
-<section class="nutrition-hero">
+<!-- HERO SCURT -->
+<section class="nutri-hero">
   <div class="visual">
     <img 
-      src="https://i.imgur.com/uFRSxlt.jpeg"
-      alt="Nutriție background" 
+      src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1200&q=80"
+      alt="Nutrition background" 
     />
   </div>
   <div class="content">
-    <h1>Nutriție Inteligentă</h1>
-    <p>Monitorizează mesele, compară cu necesarul tău zilnic și atinge-ți obiectivele!</p>
+    <h1>Nutriție & Mese</h1>
+    <p>Monitorizează mesele și menține un echilibru alimentar zilnic!</p>
   </div>
 </section>
 
-<!-- BOX 1: Adaugă Masă -->
-<div class="nutri-box subject">
-  <h2>Adaugă Masă</h2>
-  
-  <label for="mealDate">Data:</label>
-  <input type="date" id="mealDate" />
+<!-- CONȚINUT PRINCIPAL -->
+<div class="nutri-container subject">
+  <h2>Gestionare Mese</h2>
 
-  <label for="mealName">Nume masă (Mic dejun, Prânz etc.):</label>
-  <input type="text" id="mealName" placeholder="Mic dejun, Prânz etc." />
+  <!-- FORM: Adaugă masă -->
+  <div class="add-meal-form">
+    <div class="form-group">
+      <label for="mealDate">Data:</label>
+      <input type="date" id="mealDate" />
+    </div>
+    <div class="form-group">
+      <label for="mealTime">Ora (optional):</label>
+      <input type="time" id="mealTime" />
+    </div>
+    <div class="form-group">
+      <label for="mealName">Nume masă:</label>
+      <input type="text" id="mealName" placeholder="Mic dejun, Prânz etc." />
+    </div>
+    <div class="form-group">
+      <label for="calories">Calorii:</label>
+      <input type="number" id="calories" placeholder="Ex. 400" />
+    </div>
+    <div class="form-group">
+      <label for="proteins">Proteine (g):</label>
+      <input type="number" id="proteins" placeholder="Ex. 25" />
+    </div>
+    <div class="form-group">
+      <label for="carbs">Carbohidrați (g):</label>
+      <input type="number" id="carbs" placeholder="Ex. 50" />
+    </div>
+    <div class="form-group">
+      <label for="fats">Grăsimi (g):</label>
+      <input type="number" id="fats" placeholder="Ex. 10" />
+    </div>
+    <button id="addMealBtn">Adaugă Masă</button>
+    <p id="statusMeal"></p>
+  </div>
 
-  <label for="calories">Calorii:</label>
-  <input type="number" id="calories" placeholder="Ex. 400" />
-
-  <label for="proteins">Proteine (g):</label>
-  <input type="number" id="proteins" placeholder="Ex. 25" />
-
-  <label for="carbs">Carbohidrați (g):</label>
-  <input type="number" id="carbs" placeholder="Ex. 50" />
-
-  <label for="fats">Grăsimi (g):</label>
-  <input type="number" id="fats" placeholder="Ex. 10" />
-
-  <button id="addMealBtn">Adaugă Masă</button>
-  <p id="statusMeal"></p>
-</div>
-
-<!-- BOX 2: Vizualizează mesele dintr-o zi -->
-<div class="nutri-box-2 subject">
-  <h2>Vizualizează mesele dintr-o zi</h2>
-
-  <label for="viewDate">Selectează data:</label>
-  <input type="date" id="viewDate" />
-  <button id="loadMealsBtn">Încarcă mesele</button>
-
-  <div id="mealsList" style="margin-top:20px;"></div>
-  <div id="totals"></div>
+  <!-- Container pt. vizualizare mese & total -->
+  <div class="meals-container">
+    <div class="meals-header">
+      <label for="viewDate">Selectează data:</label>
+      <input type="date" id="viewDate" />
+    </div>
+    <div class="totals-box" id="totalsBox">
+      <!-- Aici vom afișa totaluri + progress bars + badges -->
+    </div>
+    <div id="mealsList"></div>
+  </div>
 </div>
 
 <!-- FOOTER MIC -->
-<div class="nutrition-footer">
+<div class="nutri-footer">
   <p>© 2025 HealthFit. All rights reserved.</p>
   <p>
     Created by <strong>Elisei M.</strong> |
@@ -416,19 +555,14 @@
   </p>
 </div>
 
-<!-- ========== SCRIPTS ========== -->
 <script type="module">
   /* ========== Meniu mobil (similar cu index) ========== */
   const openMenuBtn = document.getElementById("openMenuBtn");
   const closeMenuBtn = document.getElementById("closeMenuBtn");
   const menu = document.getElementById("menu");
 
-  function openMenu() {
-    menu.classList.add("open");
-  }
-  function closeMenu() {
-    menu.classList.remove("open");
-  }
+  function openMenu() { menu.classList.add("open"); }
+  function closeMenu() { menu.classList.remove("open"); }
   openMenuBtn.addEventListener("click", openMenu);
   closeMenuBtn.addEventListener("click", closeMenu);
 
@@ -453,11 +587,11 @@
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // O singură dată: NU mai resetăm la 'subject' când iese din viewport
           const revealClass = scrollDirection === 'up' ? 'reveal-up' : 'reveal-down';
           entry.target.classList.add(revealClass);
+        } else {
+          entry.target.className = 'subject';
         }
-        // else { ... nu resetăm }
       });
     }, { threshold: 0.1 });
 
@@ -466,7 +600,7 @@
   const subjects = document.querySelectorAll(".subject");
   addRevealEffect(subjects);
 
-  /* ========== Firebase & Nutriție Logic ========== */
+  /* ========== Firebase & Nutri Logic ========== */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
   import { 
     getAuth, 
@@ -477,11 +611,13 @@
     getFirestore,
     collection,
     addDoc,
+    getDocs,
     query,
     where,
-    getDocs,
     doc,
-    getDoc
+    getDoc,
+    updateDoc,
+    deleteDoc
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
   // 1. Config
@@ -497,58 +633,61 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // 2. Elemente
-  const logoutBtn = document.getElementById("logoutBtn");
+  // Elemente
+  const statusMeal = document.getElementById("statusMeal");
   const mealDateInput = document.getElementById("mealDate");
+  const mealTimeInput = document.getElementById("mealTime");
   const mealNameInput = document.getElementById("mealName");
   const caloriesInput = document.getElementById("calories");
   const proteinsInput = document.getElementById("proteins");
   const carbsInput = document.getElementById("carbs");
   const fatsInput = document.getElementById("fats");
   const addMealBtn = document.getElementById("addMealBtn");
-  const statusMeal = document.getElementById("statusMeal");
 
   const viewDateInput = document.getElementById("viewDate");
-  const loadMealsBtn = document.getElementById("loadMealsBtn");
   const mealsListDiv = document.getElementById("mealsList");
-  const totalsDiv = document.getElementById("totals");
+  const totalsBox = document.getElementById("totalsBox");
 
   let currentUser = null;
-  // Valorile recomandate (default), se vor încărca din profil
+
+  // Valorile recomandate (default)
   let recommendedCalories = 2000;
   let recommendedProteins = 100;
   let recommendedCarbs = 250;
   let recommendedFats = 70;
 
-  // 3. onAuthStateChanged
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
     } else {
       currentUser = user;
-      // Afișăm/ascundem butoanele Login/Logout
-      document.getElementById('nav-login').style.display = 'none';
-      document.getElementById('nav-logout').style.display = 'block';
-
-      // Încărcăm valorile recomandate (dacă există) din profil
+      // Afișăm/ascundem butoane login/logout
+      document.getElementById("nav-login").style.display = "none";
+      document.getElementById("nav-logout").style.display = "block";
+      // Încărcăm macros recomandate din profil
       await loadProfileRecommendations();
-
-      // Setăm data curentă implicit în viewDateInput
+      // Data curentă
       const todayStr = new Date().toISOString().split("T")[0];
       viewDateInput.value = todayStr;
-      // Afișăm direct mesele zilei curente
+      // Încărcăm direct mesele
       await loadMealsForDate(todayStr);
     }
   });
 
-  // 4. loadProfileRecommendations
+  // logout
+  document.getElementById("nav-logout").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+
+  // 2. loadProfileRecommendations
   async function loadProfileRecommendations() {
     if (!currentUser) return;
     const userDocRef = doc(db, "users", currentUser.uid);
     const snap = await getDoc(userDocRef);
     if (snap.exists()) {
       const data = snap.data();
-      // Dacă există câmpurile recommended..., le folosim
       if (data.recommendedCalories) recommendedCalories = data.recommendedCalories;
       if (data.recommendedProteins) recommendedProteins = data.recommendedProteins;
       if (data.recommendedCarbs) recommendedCarbs = data.recommendedCarbs;
@@ -556,13 +695,14 @@
     }
   }
 
-  // 5. Adăugare masă
+  // 3. Adăugare masă
   addMealBtn.onclick = async () => {
     if (!currentUser) {
       statusMeal.innerText = "Trebuie să fii logat!";
       return;
     }
     const mealDateVal = mealDateInput.value;
+    const mealTimeVal = mealTimeInput.value;
     const mealNameVal = mealNameInput.value.trim();
     const caloriesVal = Number(caloriesInput.value);
     const proteinsVal = Number(proteinsInput.value);
@@ -576,7 +716,8 @@
 
     try {
       await addDoc(collection(db, "users", currentUser.uid, "meals"), {
-        date: mealDateVal, // stocăm data ca string "YYYY-MM-DD"
+        date: mealDateVal,
+        time: mealTimeVal, 
         mealName: mealNameVal,
         calories: caloriesVal,
         proteins: proteinsVal,
@@ -585,104 +726,286 @@
         createdAt: new Date()
       });
       statusMeal.innerText = "Masă adăugată cu succes!";
-      // Resetăm form
+      // Reset
       mealDateInput.value = "";
+      mealTimeInput.value = "";
       mealNameInput.value = "";
       caloriesInput.value = "";
       proteinsInput.value = "";
       carbsInput.value = "";
       fatsInput.value = "";
+
+      // Re-afișăm direct mesele pt. data introdusă
+      viewDateInput.value = mealDateVal;
+      await loadMealsForDate(mealDateVal);
     } catch (error) {
       statusMeal.innerText = "Eroare la adăugare: " + error.message;
     }
   };
 
-  // 6. Load Mese pt. o zi (manual, când apeși butonul)
-  loadMealsBtn.onclick = async () => {
-    if (!currentUser) return;
+  // 4. Auto-load la schimbare datei
+  viewDateInput.onchange = async () => {
     const viewDateVal = viewDateInput.value;
-    if (!viewDateVal) {
-      mealsListDiv.innerHTML = "<p>Selectează o dată mai întâi.</p>";
-      totalsDiv.innerHTML = "";
-      return;
+    if (viewDateVal) {
+      await loadMealsForDate(viewDateVal);
     }
-    await loadMealsForDate(viewDateVal);
   };
 
-  // Funcție de încărcare a meselor pt. o dată dată
+  // 5. Load Mese pt. o dată
   async function loadMealsForDate(dateStr) {
+    if (!currentUser) return;
     const mealsRef = collection(db, "users", currentUser.uid, "meals");
     const q = query(mealsRef, where("date", "==", dateStr));
     const snap = await getDocs(q);
 
-    // Curățăm
     mealsListDiv.innerHTML = "";
-    totalsDiv.innerHTML = "";
+    totalsBox.innerHTML = "";
 
     let totalCals = 0;
     let totalProt = 0;
     let totalCarb = 0;
     let totalFat = 0;
 
-    if (snap.empty) {
+    let mealsArray = [];
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      mealsArray.push({ id: docSnap.id, ...d });
+    });
+
+    // Sortare după timp (dacă userul a introdus time)
+    mealsArray.sort((a,b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
+
+    if (mealsArray.length === 0) {
       mealsListDiv.innerHTML = `<p>Nu există mese adăugate în această zi (${dateStr}).</p>`;
     } else {
-      snap.forEach((docSnap) => {
-        const d = docSnap.data();
-        const div = document.createElement("div");
-        div.classList.add("mealItem");
-        div.innerHTML = `
-          <strong>${d.mealName}</strong> (${d.date}): 
-          ${d.calories} kcal, 
-          P: ${d.proteins} g, 
-          C: ${d.carbs} g, 
-          F: ${d.fats} g
-        `;
-        mealsListDiv.appendChild(div);
+      for (const meal of mealsArray) {
+        totalCals += (meal.calories || 0);
+        totalProt += (meal.proteins || 0);
+        totalCarb += (meal.carbs || 0);
+        totalFat += (meal.fats || 0);
 
-        totalCals += (d.calories || 0);
-        totalProt += (d.proteins || 0);
-        totalCarb += (d.carbs || 0);
-        totalFat += (d.fats || 0);
-      });
+        mealsListDiv.appendChild( createMealCard(meal, dateStr) );
+      }
     }
 
-    // Afișăm total
-    let calDiff = recommendedCalories - totalCals;
-    let protDiff = recommendedProteins - totalProt;
-    let carbDiff = recommendedCarbs - totalCarb;
-    let fatDiff = recommendedFats - totalFat;
+    // Afișăm total + macros + progress
+    renderTotalsAndBadges(totalCals, totalProt, totalCarb, totalFat);
+  }
 
-    let html = `
-      <p><strong>Total pentru ${dateStr}:</strong></p>
-      <p>Calorii consumate: ${totalCals} / ${recommendedCalories} 
-         ${ showDiff(calDiff) }</p>
-      <p>Proteine: ${totalProt} / ${recommendedProteins} g 
-         ${ showDiff(protDiff) }</p>
-      <p>Carbohidrați: ${totalCarb} / ${recommendedCarbs} g 
-         ${ showDiff(carbDiff) }</p>
-      <p>Grăsimi: ${totalFat} / ${recommendedFats} g 
-         ${ showDiff(fatDiff) }</p>
+  // 6. Creăm card pentru fiecare masă (include Edit, Delete, Copy)
+  function createMealCard(mealObj, dateStr) {
+    const card = document.createElement("div");
+    card.classList.add("meal-card");
+
+    const h4 = document.createElement("h4");
+    h4.textContent = mealObj.mealName + (mealObj.time ? ` (${mealObj.time})` : "");
+
+    const pDetails = document.createElement("p");
+    pDetails.innerHTML = `
+      <strong>${mealObj.calories} kcal</strong> | 
+      P: ${mealObj.proteins}g | 
+      C: ${mealObj.carbs}g | 
+      F: ${mealObj.fats}g
     `;
-    totalsDiv.innerHTML = html;
+
+    // Butoane (edit, delete, copy)
+    const actionsDiv = document.createElement("div");
+    actionsDiv.classList.add("actions");
+
+    const btnEdit = document.createElement("button");
+    btnEdit.innerHTML = `<i class="ri-edit-line"></i>`;
+    btnEdit.title = "Editează masă";
+    btnEdit.onclick = () => toggleEditForm();
+
+    const btnDelete = document.createElement("button");
+    btnDelete.innerHTML = `<i class="ri-delete-bin-line"></i>`;
+    btnDelete.title = "Șterge masă";
+    btnDelete.onclick = async () => {
+      if (confirm("Ești sigur că vrei să ștergi această masă?")) {
+        await deleteMeal(mealObj.id, dateStr);
+      }
+    };
+
+    const btnCopy = document.createElement("button");
+    btnCopy.innerHTML = `<i class="ri-file-copy-line"></i>`;
+    btnCopy.title = "Copiază masă (pt. aceeași zi)";
+    btnCopy.onclick = async () => {
+      await copyMeal(mealObj, dateStr);
+    };
+
+    actionsDiv.appendChild(btnEdit);
+    actionsDiv.appendChild(btnDelete);
+    actionsDiv.appendChild(btnCopy);
+
+    card.appendChild(h4);
+    card.appendChild(pDetails);
+    card.appendChild(actionsDiv);
+
+    // Form de editare (inline)
+    const editForm = document.createElement("div");
+    editForm.classList.add("edit-form");
+    editForm.innerHTML = `
+      <input type="time" value="${mealObj.time || ""}" id="editTime">
+      <input type="text" value="${mealObj.mealName}" id="editName">
+      <input type="number" value="${mealObj.calories}" id="editCals">
+      <input type="number" value="${mealObj.proteins}" id="editProt">
+      <input type="number" value="${mealObj.carbs}" id="editCarbs">
+      <input type="number" value="${mealObj.fats}" id="editFats">
+      <button id="saveEditBtn">Salvează</button>
+    `;
+    card.appendChild(editForm);
+
+    function toggleEditForm() {
+      editForm.style.display = (editForm.style.display === "block") ? "none" : "block";
+    }
+
+    const saveEditBtn = editForm.querySelector("#saveEditBtn");
+    saveEditBtn.onclick = async () => {
+      const newTime = editForm.querySelector("#editTime").value;
+      const newName = editForm.querySelector("#editName").value;
+      const newCals = Number(editForm.querySelector("#editCals").value);
+      const newProt = Number(editForm.querySelector("#editProt").value);
+      const newCarbs = Number(editForm.querySelector("#editCarbs").value);
+      const newFats = Number(editForm.querySelector("#editFats").value);
+
+      await updateMeal(mealObj.id, {
+        time: newTime,
+        mealName: newName,
+        calories: newCals,
+        proteins: newProt,
+        carbs: newCarbs,
+        fats: newFats
+      }, dateStr);
+      toggleEditForm();
+    };
+
+    return card;
   }
 
-  function showDiff(diff) {
-    if (diff > 0) {
-      return `<span class="highlight">(Mai ai nevoie de +${diff})</span>`;
-    } else if (diff < 0) {
-      return `<span class="highlight-negative">(Ai depășit cu ${Math.abs(diff)})</span>`;
-    } else {
-      return `<span class="highlight">(Perfect!)</span>`;
+  // 7. Operații CRUD
+  async function deleteMeal(mealId, dateStr) {
+    if (!currentUser) return;
+    const docRef = doc(db, "users", currentUser.uid, "meals", mealId);
+    await deleteDoc(docRef);
+    await loadMealsForDate(dateStr);
+  }
+  async function copyMeal(mealObj, dateStr) {
+    if (!currentUser) return;
+    // Creăm un nou doc cu datele mesei, dar alt "createdAt"
+    const mealsRef = collection(db, "users", currentUser.uid, "meals");
+    await addDoc(mealsRef, {
+      date: dateStr,
+      time: mealObj.time,
+      mealName: mealObj.mealName + " (copied)",
+      calories: mealObj.calories,
+      proteins: mealObj.proteins,
+      carbs: mealObj.carbs,
+      fats: mealObj.fats,
+      createdAt: new Date()
+    });
+    await loadMealsForDate(dateStr);
+  }
+  async function updateMeal(mealId, newData, dateStr) {
+    if (!currentUser) return;
+    const docRef = doc(db, "users", currentUser.uid, "meals", mealId);
+    await updateDoc(docRef, newData);
+    await loadMealsForDate(dateStr);
+  }
+
+  // 8. Afișare total & macros + badges
+  function renderTotalsAndBadges(totalCals, totalProt, totalCarb, totalFat) {
+    // Diferențe
+    const calDiff = recommendedCalories - totalCals;
+    const protDiff = recommendedProteins - totalProt;
+    const carbDiff = recommendedCarbs - totalCarb;
+    const fatDiff = recommendedFats - totalFat;
+
+    // Calcul pentru progress bars (0-100% => raport față de recommended)
+    const calPercent = Math.min(100, (totalCals / recommendedCalories) * 100);
+    const protPercent = Math.min(100, (totalProt / recommendedProteins) * 100);
+    const carbPercent = Math.min(100, (totalCarb / recommendedCarbs) * 100);
+    const fatPercent = Math.min(100, (totalFat / recommendedFats) * 100);
+
+    // HTML
+    totalsBox.innerHTML = `
+      <p><strong>Total consumat azi:</strong></p>
+      <p>Calorii: ${totalCals} / ${recommendedCalories}</p>
+      <p>Proteine: ${totalProt} / ${recommendedProteins} g</p>
+      <p>Carbohidrați: ${totalCarb} / ${recommendedCarbs} g</p>
+      <p>Grăsimi: ${totalFat} / ${recommendedFats} g</p>
+
+      <div class="progress-container">
+        <div class="progress-item">
+          <label>Calorii</label>
+          <div class="progress-bar"><span style="width:${calPercent}%"></span></div>
+          <span class="macro-diff ${calDiff < 0 ? 'negative' : 'positive'}">
+            ${calDiff>0 ? '(+'+calDiff+')' : '('+calDiff+')'}
+          </span>
+        </div>
+        <div class="progress-item">
+          <label>Proteine</label>
+          <div class="progress-bar"><span style="width:${protPercent}%"></span></div>
+          <span class="macro-diff ${protDiff < 0 ? 'negative' : 'positive'}">
+            ${protDiff>0 ? '(+'+protDiff+')' : '('+protDiff+')'}
+          </span>
+        </div>
+        <div class="progress-item">
+          <label>Carb</label>
+          <div class="progress-bar"><span style="width:${carbPercent}%"></span></div>
+          <span class="macro-diff ${carbDiff < 0 ? 'negative' : 'positive'}">
+            ${carbDiff>0 ? '(+'+carbDiff+')' : '('+carbDiff+')'}
+          </span>
+        </div>
+        <div class="progress-item">
+          <label>Grăsimi</label>
+          <div class="progress-bar"><span style="width:${fatPercent}%"></span></div>
+          <span class="macro-diff ${fatDiff < 0 ? 'negative' : 'positive'}">
+            ${fatDiff>0 ? '(+'+fatDiff+')' : '('+fatDiff+')'}
+          </span>
+        </div>
+      </div>
+      <div class="badges-container" id="badgesBox"></div>
+    `;
+
+    // Render badges
+    renderBadges(calDiff, protDiff, carbDiff, fatDiff);
+  }
+
+  // 9. Gamification: badges
+  function renderBadges(calDiff, protDiff, carbDiff, fatDiff) {
+    const badgesBox = document.getElementById("badgesBox");
+    badgesBox.innerHTML = ""; // reset
+
+    // Ex. 1: "Daily Macro Master" - dacă userul e în +/- 5% la toate macros
+    const calsWithin5pct = Math.abs(calDiff) <= (0.05 * recommendedCalories);
+    const protWithin5pct = Math.abs(protDiff) <= (0.05 * recommendedProteins);
+    const carbWithin5pct = Math.abs(carbDiff) <= (0.05 * recommendedCarbs);
+    const fatWithin5pct = Math.abs(fatDiff) <= (0.05 * recommendedFats);
+
+    if (calsWithin5pct && protWithin5pct && carbWithin5pct && fatWithin5pct) {
+      const badge = document.createElement("div");
+      badge.classList.add("badge");
+      badge.innerHTML = `<i class="ri-medal-line"></i> Daily Macro Master`;
+      badgesBox.appendChild(badge);
+    }
+
+    // Ex. 2: "Calorie King" - dacă userul e la +/- 50 calorii
+    if (Math.abs(calDiff) <= 50) {
+      const badge = document.createElement("div");
+      badge.classList.add("badge");
+      badge.innerHTML = `<i class="ri-fire-line"></i> Calorie King`;
+      badgesBox.appendChild(badge);
+    }
+
+    // Ex. 3: "Protein Achiever" - dacă proteinele sunt atinse 100% +/- 10
+    if (Math.abs(protDiff) <= 10) {
+      const badge = document.createElement("div");
+      badge.classList.add("badge");
+      badge.innerHTML = `<i class="ri-checkbox-circle-line"></i> Protein Achiever`;
+      badgesBox.appendChild(badge);
     }
   }
 
-  // 7. Logout
-  logoutBtn.onclick = () => {
-    signOut(auth).then(() => {
-      window.location.href = "index.html";
-    });
-  };
 </script>
 </body>
 </html>
