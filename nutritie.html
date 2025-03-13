@@ -148,12 +148,14 @@
       inset: 0;
       overflow: hidden;
     }
-    .nutrition-hero .visual img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: blur(3px) brightness(0.8);
-    }
+.nutrition-hero .visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 80%; /* exemplu: 50% pe orizontală, 80% pe verticală */
+  filter: blur(3px) brightness(0.8);
+}
+
     .nutrition-hero .content {
       position: relative;
       z-index: 1;
