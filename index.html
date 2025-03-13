@@ -24,6 +24,7 @@
       color: #eee;
       scroll-behavior: smooth;
       overflow-x: hidden;
+      /* Ev. a small performance tip: image-rendering: auto; */
     }
 
     /* ====================================
@@ -40,7 +41,6 @@
       justify-content: center; /* container la mijloc */
       transition: transform 0.4s ease;
     }
-    /* Ascundem navbar-ul când derulăm în jos */
     [scroll-direction='down'] .Navbar {
       transform: translateY(-120%);
     }
@@ -98,12 +98,10 @@
 
     /* =========== MEDIA QUERY: mobil =========== */
     @media screen and (max-width: 768px) {
-      /* Afișăm butonul hamburger */
       .NavButton {
         display: inline-block;
       }
 
-      /* Ascundem .nav-links pe mobil, îl vom transforma în panel lateral */
       .nav-links {
         position: fixed;
         top: 0; 
@@ -122,7 +120,6 @@
         transform: translateX(0);
       }
 
-      /* Link-urile mai mari pe mobil */
       .nav-links a,
       .nav-links button {
         font-size: 1.4rem;
@@ -130,37 +127,38 @@
     }
 
     /* ====================================
-       MAIN
+       HERO + PARALLAX
     ==================================== */
-    main {
-      width: 100%;
-      display: block;
-    }
-
-    /* ================== #HOME .hero ================== */
     .hero {
       position: relative;
       width: 100%;
-      min-height: 50vh; /* mai scund */
+      min-height: 60vh; 
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       background: #111;
     }
+
+    /* Parallax container */
     .hero .visual {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      background: url('https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero.webp') no-repeat center center;
+      background-size: cover;
+      will-change: transform;
+      transform: translateY(0); /* inițial */
     }
-    .hero .visual img {
-      width: 1200px;    /* imagine mai lată */
-      height: auto;
-      filter: blur(3px) brightness(0.8);
+
+    /* Efect parallax */
+    .hero[data-scrolled="true"] .visual {
+      animation: parallaxMove 5s linear infinite alternate;
     }
+    @keyframes parallaxMove {
+      0% { transform: translateY(0%); }
+      100% { transform: translateY(-5%); }
+    }
+
     .hero .content {
       position: relative;
       z-index: 1;
@@ -180,6 +178,14 @@
       color: #0df1a7;
       text-transform: uppercase;
     }
+    /* Time-of-day greeting (small or integrated) */
+    .hero .content .time-greeting {
+      font-size: 1.2rem;
+      color: #aaa;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
     .hero .content a.LinkButton {
       display: inline-block;
       text-decoration: none;
@@ -195,6 +201,7 @@
       background: #0df1a7;
       color: #111;
     }
+
     @keyframes fadeDown {
       to {
         transform: translateY(0);
@@ -202,16 +209,43 @@
       }
     }
 
-    /* ================== #discover .fold ================== */
+    /* Mica săgeată scroll-hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: #0df1a7;
+      animation: bounce 1.2s infinite;
+      cursor: pointer;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 10px); }
+    }
+
+    /* ================== WAVE / #discover .fold ================== */
     .fold {
-      padding: 3rem 1rem;
+      position: relative;
       text-align: center;
+      background: #111;
+      padding: 3rem 1rem;
+    }
+    /* Wave svg între hero și fold */
+    .wave-divider {
+      position: relative;
+      width: 100%;
+      margin-top: -5px; /* să se suprapună */
+      z-index: 2;
+    }
+    .fold .subject {
+      margin: 0 auto;
+      max-width: 800px;
     }
     .fold .subject p {
       font-size: 1.5rem;
       line-height: 1.4;
-      max-width: 800px;
-      margin: 0 auto;
       color: #0df1a7;
     }
 
@@ -229,6 +263,20 @@
       align-items: center;
       width: 100%;
     }
+    .schedule .subject .icon-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.8rem;
+      color: #0df1a7;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .schedule .subject .icon-title i {
+      font-size: 2rem;
+      color: #0df1a7;
+    }
     .schedule .container {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -242,14 +290,11 @@
       border: 1px solid #555;
       padding: 1rem;
       border-radius: 8px;
+      transition: transform 0.3s;
     }
-    .schedule .table-wrapper h2 {
-      color: #0df1a7;
-      margin-bottom: 0.5rem;
-      font-size: 1.8rem;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .schedule .table-wrapper:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 10px rgba(13,241,167,0.2);
     }
     .schedule table {
       width: 100%;
@@ -286,11 +331,19 @@
       inset: 0;
       z-index: 0;
     }
+    .showcase .video-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        rgba(0,0,0,0.3), 
+        rgba(0,0,0,0.7)
+      );
+    }
     .showcase .video-bg video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(0.5);
     }
     .showcase .content {
       position: relative;
@@ -314,10 +367,22 @@
     .showcase .content p {
       font-size: 1rem;
       line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    .showcase .content a.cta-btn {
+      display: inline-block;
+      background: #0df1a7;
+      color: #111;
+      padding: 0.6rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: background 0.3s;
+    }
+    .showcase .content a.cta-btn:hover {
+      background: #0ae8a0;
     }
 
-    /* Refolosim @keyframes fadeDown de mai sus */
-    
     /* ================== #plans .cards ================== */
     .cards {
       background: #151515;
@@ -338,9 +403,10 @@
       text-decoration: none;
       color: #eee;
       transition: transform 0.3s, box-shadow 0.3s;
+      perspective: 1000px;
     }
     .Card:hover {
-      transform: translateY(-5px);
+      transform: rotateX(1deg) rotateY(1deg);
       box-shadow: 0 0 10px rgba(13,241,167,0.3);
     }
     .Card i {
@@ -352,6 +418,7 @@
       font-size: 1.4rem;
       margin-bottom: 0.5rem;
       color: #0df1a7;
+      text-transform: uppercase;
     }
     .Card ul {
       list-style: disc;
@@ -363,7 +430,7 @@
     /* ================== #about + FOOTER ================== */
     .about {
       background: #111;
-      min-height: 20vh; /* mai mic */
+      min-height: 30vh; 
       padding: 2rem 1rem;
       text-align: center;
     }
@@ -371,6 +438,29 @@
       font-size: 2rem;
       color: #0df1a7;
       margin-bottom: 1rem;
+    }
+
+    .about .extra-info {
+      max-width: 600px;
+      margin: 1rem auto;
+      color: #ccc;
+      line-height: 1.4;
+      font-size: 1rem;
+    }
+
+    .social-icons {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .social-icons a {
+      color: #0df1a7;
+      font-size: 1.8rem;
+      transition: color 0.2s;
+    }
+    .social-icons a:hover {
+      color: #0ae8a0;
     }
 
     .site-footer {
@@ -402,6 +492,7 @@
       opacity: 1;
       transform: translateY(0);
     }
+
   </style>
 </head>
 <body>
@@ -430,30 +521,35 @@
       <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
       <!-- Login / Logout (ascunse/afișate din JS) -->
       <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
-      <li id="nav-logout" style="display:none;">
-        <button class="NavLink" id="logoutBtn">Logout</button>
-      </li>
+      <li id="nav-logout" style="display:none;"><button class="NavLink">Logout</button></li>
     </ul>
   </div>
 </nav>
 
 <main>
-  <!-- #HOME -->
-  <section id="home" class="hero">
-    <div class="visual">
-      <img 
-        src="https://raw.githubusercontent.com/mobalti/open-props-interfaces/main/landing-page-with-scroll-driven/assets/images/hero-mobile.webp" 
-        alt="fitness" 
-      />
-    </div>
+  <!-- HERO cu parallax -->
+  <section id="home" class="hero" data-scrolled="true">
+    <div class="visual"></div>
     <div class="content">
-      <h1>Good Morning Champ</h1>
+      <!-- Time-of-day greeting -->
+      <span class="time-greeting" id="timeGreeting"></span>
+      <h1 id="heroTitle">Good Morning Champ</h1>
       <a href="profile.html" class="LinkButton">Vrei un plan personalizat?</a>
+      <!-- Mic scroll hint arrow -->
+      <div class="scroll-hint" onclick="document.getElementById('discover').scrollIntoView({behavior:'smooth'})">
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
     </div>
   </section>
 
-  <!-- #discover -->
-  <div id="discover" class="fold">
+  <!-- WAVE divider + #discover -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none" style="display:block">
+      <path fill="#111" d="M0,40 C480,120 960,0 1440,70 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
+
+  <div id="discover" class="fold subject">
     <div class="subject">
       <p>
         Creează-ți un cont
@@ -464,11 +560,11 @@
   </div>
 
   <!-- #schedules -->
-  <section id="schedules" class="schedule">
+  <section id="schedules" class="schedule subject">
     <div class="subject">
       <div class="container">
         <div class="table-wrapper">
-          <h2>Program de antrenamente</h2>
+          <div class="icon-title"><i class="ri-dumbbell-line"></i> Program de antrenamente</div>
           <table>
             <tr>
               <th>Antrenament</th>
@@ -494,7 +590,7 @@
         </div>
 
         <div class="table-wrapper">
-          <h2>Exemple exerciții</h2>
+          <div class="icon-title"><i class="ri-fire-line"></i> Exemple exerciții</div>
           <table>
             <tr>
               <th>Grupa</th>
@@ -523,7 +619,7 @@
   </section>
 
   <!-- SHOWCASE: video fundal -->
-  <section class="showcase">
+  <section class="showcase subject">
     <div class="video-bg">
       <video autoplay loop muted>
         <source 
@@ -534,11 +630,16 @@
     </div>
     <div class="content">
       <h2>EAT-WORK-TRAIN-SLEEP-REPEAT</h2>
+      <p>
+        Începe-ți călătoria alături de noi și transformă-ți stilul de viață. 
+        Antrenamente intense, alimentație echilibrată, rezultate reale.
+      </p>
+      <a href="workouts.html" class="cta-btn">Vezi Programul Complet</a>
     </div>
   </section>
 
   <!-- #plans .cards -->
-  <section id="plans" class="cards">
+  <section id="plans" class="cards subject">
     <div class="subject">
       <div class="container">
         <a href="#" class="Card">
@@ -547,7 +648,7 @@
             <h2>Obiective personalizate</h2>
             <ul>
               <li>5 antrenamente pe săptămână</li>
-              <li>Fără skip la ziua de picioare</li>
+              <li>Niciodată skip la ziua de picioare</li>
               <li>Plank: 3 min</li>
             </ul>
           </div>
@@ -557,9 +658,9 @@
           <div>
             <h2>Provocări</h2>
             <ul>
-              <li>Triceps dips cu primele repetări la 100 kg</li>
-              <li>10 antrenamente fără skip</li>
-              <li>Bench press cu 80 kg</li>
+              <li>Triceps dips la 100kg</li>
+              <li>10 antrenamente consecutive</li>
+              <li>Bench press 80kg</li>
             </ul>
           </div>
         </a>
@@ -579,8 +680,20 @@
   </section>
 
   <!-- #about + footer mic -->
-  <section id="about" class="about">
+  <section id="about" class="about subject">
     <div id="target-word">love</div>
+    <div class="extra-info">
+      <p>
+        HealthFit este mai mult decât o simplă aplicație de fitness: 
+        este partenerul tău de încredere în călătoria spre un stil de viață sănătos. 
+        Îți oferim planuri de antrenament, recomandări alimentare și provocări captivante.
+      </p>
+    </div>
+    <div class="social-icons">
+      <a href="#" title="Facebook"><i class="ri-facebook-circle-line"></i></a>
+      <a href="#" title="Instagram"><i class="ri-instagram-line"></i></a>
+      <a href="#" title="GitHub"><i class="ri-github-line"></i></a>
+    </div>
     <div class="site-footer">
       <p>© 2025 HealthFit. All rights reserved.</p>
       <p>
@@ -593,9 +706,8 @@
   </section>
 </main>
 
-<!-- Script principal -->
 <script>
-  // ========== Meniu mobil (open/close) ==========
+  // ========== Meniu mobil ========== 
   const openMenuBtn = document.querySelector('#openMenuBtn');
   const closeMenuBtn = document.querySelector('#closeMenuBtn');
   const menu = document.querySelector('#menu');
@@ -614,7 +726,7 @@
     if (e.key === 'Escape') closeMenu();
   });
 
-  // ========== Scroll direction pt. navbar ==========
+  // ========== Scroll direction pt. navbar ========== 
   let scrollDirection;
   document.addEventListener('scroll', (e) => {
     const st = window.pageYOffset || document.documentElement.scrollTop;
@@ -626,7 +738,7 @@
     e.target.lastScrollTop = st <= 0 ? 0 : st;
   }, { passive: true });
 
-  // ========== Scroll reveal simplu ==========
+  // ========== Scroll reveal simplu ========== 
   function addRevealEffect(elements) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -644,7 +756,7 @@
   const subjects = document.querySelectorAll('.subject');
   addRevealEffect(subjects);
 
-  // ========== Text replace la #target-word (exemplu) ==========
+  // ========== Text replace la #target-word (exemplu) ========== 
   const words = ['passion', 'success', 'goals', 'rhythm', 'fun', 'energy', 'opportunity'];
   textReplace(words, 'target-word', 1500);
 
@@ -661,53 +773,36 @@
       }, 150);
     }, interval);
   }
+
+  // ========== Time-of-day greeting ========== 
+  const timeGreetingEl = document.getElementById('timeGreeting');
+  const heroTitle = document.getElementById('heroTitle');
+  const now = new Date();
+  const hour = now.getHours();
+  let greeting = "Good Morning Champ";
+
+  if (hour >= 12 && hour < 18) {
+    greeting = "Good Afternoon Champ";
+  } else if (hour >= 18 || hour < 5) {
+    greeting = "Good Evening Champ";
+  }
+
+  timeGreetingEl.textContent = greeting;
+  // (opțional) heroTitle.textContent = greeting; // dacă vrei să schimbi complet
+
+  // ========== Simulare login/out: (În practică, folosești onAuthStateChanged + Firebase) ========== 
+  const navLogin = document.getElementById('nav-login');
+  const navLogout = document.getElementById('nav-logout');
+
+  // Ex. “suntem logați?” simulat
+  const isLoggedIn = false; // Schimbă cu true ca să testezi
+  if (isLoggedIn) {
+    navLogin.style.display = 'none';
+    navLogout.style.display = 'block';
+  } else {
+    navLogin.style.display = 'block';
+    navLogout.style.display = 'none';
+  }
 </script>
-
-<!-- Script separat pentru Firebase Auth: (type="module") -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-
-  // 1. Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-    authDomain: "healthfit-9de3f.firebaseapp.com",
-    projectId: "healthfit-9de3f",
-    storageBucket: "healthfit-9de3f.appspot.com",
-    messagingSenderId: "1071597823999",
-    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-  };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // 2. Elemente pt. Login/Logout
-  const navLogin = document.getElementById("nav-login");
-  const navLogout = document.getElementById("nav-logout");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  // 3. Observăm starea de autentificare
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Utilizator logat
-      navLogin.style.display = "none";
-      navLogout.style.display = "block";
-    } else {
-      // Utilizator delogat
-      navLogin.style.display = "block";
-      navLogout.style.display = "none";
-    }
-  });
-
-  // 4. Logout
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    // optional: window.location.reload();
-  });
-</script>
-
 </body>
 </html>
