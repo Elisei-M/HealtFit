@@ -236,6 +236,26 @@
       margin-bottom: 1rem;
     }
 
+    @media screen and (max-width: 600px) {
+  /* Formul de adăugare masă să devină 1 coloană */
+  .add-meal-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ca exemplu, dacă vrei ca .meals-header să fie tot pe un singur rând */
+  .meals-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Dacă vrei să micșorezi fonturile sau marginile */
+  .add-meal-form input,
+  .meals-header input {
+    font-size: 0.85rem;
+  }
+}
+
+
     /* Container vizualizare mese */
     .meals-container {
       margin-bottom: 2rem;
