@@ -289,20 +289,44 @@
     }
 
     /* ================== SVG BOX ================== */
-    .svg-container {
-      position: relative;
-      width: 320px;
-      height: 560px;
-      margin: 0 auto; 
-      perspective: 1000px;
-    }
-    .card {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.6s ease;
-    }
+.svg-container {
+  position: relative;
+  width: 320px;
+  height: 560px;
+  margin: 0 auto; 
+  perspective: 1000px; /* 3D perspective */
+}
+    /* Butonul “View Back” */
+.rotateBtn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999; /* să fie peste card */
+  display: inline-block;
+  background: #0df1a7;
+  color: #111;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+
+.rotateBtn:hover {
+  background: #0ae8a0;
+}
+
+/* Card-ul rămâne la fel */
+.card {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
     .card.flipped {
       transform: rotateY(180deg);
     }
@@ -435,15 +459,15 @@
 
     <!-- SVG front/back corp -->
     <div style="text-align:center;">
-      <div class="svg-container">
-        <div class="card" id="bodyCard">
-          <figure class="front">
-            <svg id="frontSvg"></svg>
-          </figure>
-          <figure class="back">
-            <svg id="backSvg"></svg>
-          </figure>
-        </div>
+<div class="svg-container">
+  <div class="card" id="bodyCard">
+    <figure class="front">
+      <svg id="frontSvg"></svg>
+    </figure>
+    <figure class="back">
+      <svg id="backSvg"></svg>
+    </figure>
+  </div>
         <div class="tooltip" id="tooltip"></div>
         <a href="#" class="rotateBtn" id="rotateBtn">View Back</a>
       </div>
