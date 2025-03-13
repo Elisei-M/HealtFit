@@ -40,7 +40,7 @@
       justify-content: center;
       transition: transform 0.4s ease;
     }
-    /* Hide navbar when scrolling down */
+    /* Ascundem navbar-ul la scroll în jos */
     [scroll-direction='down'] .Navbar {
       transform: translateY(-120%);
     }
@@ -61,7 +61,7 @@
       letter-spacing: 2px;
     }
 
-    /* Desktop menu */
+    /* Meniu desktop */
     .nav-links {
       list-style: none;
       display: flex;
@@ -86,9 +86,9 @@
       color: #0df1a7;
     }
 
-    /* Hamburger buttons */
+    /* Butoane hamburger (mobil) */
     .NavButton {
-      display: none;
+      display: none; /* ascuns pe desktop */
       background: none;
       border: none;
       color: #fff;
@@ -96,14 +96,14 @@
       cursor: pointer;
     }
 
-    /* =========== MEDIA QUERY: mobile =========== */
+    /* =========== MEDIA QUERY: mobil =========== */
     @media screen and (max-width: 768px) {
-      /* Show hamburger button */
+      /* Afișăm butonul hamburger */
       .NavButton {
         display: inline-block;
       }
 
-      /* Hide .nav-links on mobile, become panel */
+      /* .nav-links devine panel lateral */
       .nav-links {
         position: fixed;
         top: 0; 
@@ -122,7 +122,7 @@
         transform: translateX(0);
       }
 
-      /* Larger link fonts on mobile */
+      /* Link-uri mai mari pe mobil */
       .nav-links a,
       .nav-links button {
         font-size: 1.4rem;
@@ -130,7 +130,7 @@
     }
 
     /* ====================================
-       HERO SCURT for profile page
+       HERO SCURT (profil)
     ==================================== */
     .profile-hero {
       position: relative;
@@ -141,7 +141,7 @@
       justify-content: center;
       overflow: hidden;
       background: #111;
-      margin-bottom: 2rem; 
+      margin-bottom: 2rem;
     }
     .profile-hero .visual {
       position: absolute;
@@ -187,7 +187,7 @@
     }
 
     /* ====================================
-       MAIN PROFILE FORM CONTAINER
+       CONTAINER PRINCIPAL PENTRU FORMULAR
     ==================================== */
     .profile-container {
       max-width: 600px;
@@ -295,7 +295,7 @@
       text-decoration: underline;
     }
 
-    /* SCROLL REVEAL for .subject */
+    /* SCROLL REVEAL pentru .subject */
     .subject {
       opacity: 0;
       transform: translateY(30px);
@@ -345,6 +345,7 @@
 <!-- HERO SCURT -->
 <section class="profile-hero">
   <div class="visual">
+    <!-- Poți pune altă imagine dacă vrei -->
     <img 
       src="https://i.imgur.com/pQ7uKlT.jpeg"
       alt="Background" 
@@ -360,6 +361,7 @@
 <div class="profile-container subject">
   <h2>Date Personale</h2>
 
+  <!-- INPUT-uri: Sex, Vârstă, Greutate, etc. -->
   <select id="sex">
     <option value="">Sex</option>
     <option value="barbat">Masculin</option>
@@ -385,6 +387,7 @@
     <option value="definire">Definire</option>
   </select>
 
+  <!-- Butoane: Salvează + Generează Program -->
   <button id="saveProfileBtn">Salvează & Calculează</button>
   <button id="generateProgramBtn">Generează Program</button>
 
@@ -428,6 +431,7 @@
   openMenuBtn.addEventListener("click", openMenu);
   closeMenuBtn.addEventListener("click", closeMenu);
 
+  // Închidere meniu cu ESC
   window.addEventListener("keyup", (e) => {
     if (e.key === "Escape") closeMenu();
   });
@@ -479,6 +483,7 @@
 
   // 1. Config
   const firebaseConfig = {
+    /* ... datele tale ... */
     apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
     authDomain: "healthfit-9de3f.firebaseapp.com",
     projectId: "healthfit-9de3f",
@@ -511,7 +516,7 @@
   let currentUser = null;
   let userDocRef = null;
 
-  // 2. onAuthStateChanged => ascunde/arata login / logout
+  // 2. onAuthStateChanged => ascundem / afișăm login / logout
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       // Arătăm "Login", ascundem "Logout"
@@ -527,7 +532,7 @@
       currentUser = user;
       userDocRef = doc(db, "users", currentUser.uid);
 
-      // încărcăm datele existente
+      // încărcăm datele existente din Firestore
       const snap = await getDoc(userDocRef);
       if (snap.exists()) {
         const data = snap.data();
@@ -544,7 +549,7 @@
   // Logout la click pe buton
   navLogout.addEventListener("click", async () => {
     await signOut(auth);
-    // După signOut, user devine null => onAuthStateChanged se ocupă de rest
+    // user devine null => onAuthStateChanged se ocupă de rest
   });
 
   // 3. Salvare profil + calcule
@@ -561,7 +566,7 @@
     const activityVal = activitySelect.value;
     const goalVal = goalSelect.value;
 
-    // Calculează recomandări (pentru a salva recommended* in Firestore)
+    // Calculează recomandări
     const rec = calculateRecommendations(sexVal, ageVal, weightVal, heightVal, activityVal, goalVal);
 
     // Salvează datele în Firestore
@@ -711,6 +716,7 @@
     });
     return result;
   }
+
   function generateProgram(goal) {
     if (goal === "slabire") {
       return [
