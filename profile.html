@@ -1,5 +1,63 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/profile.html b/profile.html
-index 4d5c5bc41ba1ba8eb274571184c3a5301d15023a..a42251c4f57fee9b3a91e135613fd1eeba3ef6fa 100644
+index 4d5c5bc41ba1ba8eb274571184c3a5301d15023a..0e7d24e02cf3611b9256c6f36225340c1c5222bd 100644
+--- a/profile.html
++++ b/profile.html
+@@ -585,51 +585,51 @@
+       });
+       statusProfile.textContent = "Profil salvat!";
+     } catch (err) {
+       // Dacă doc nu există, îl creăm
+       await setDoc(userDocRef, {
+         sex: sexVal,
+         age: ageVal,
+         weight: weightVal,
+         height: heightVal,
+         activityLevel: activityVal,
+         goal: goalVal,
+         recommendedCalories: rec.targetCalories,
+         recommendedProteins: rec.protein,
+         recommendedCarbs: rec.carbs,
+         recommendedFats: rec.fat
+       });
+       statusProfile.textContent = "Profil creat!";
+     }
+ 
+     displayRecommendations(rec);
+   };
+ 
+   // 4. Generăm program (automat)
+   generateProgramBtn.onclick = async () => {
+     try {
+-      statusProfile.textContent = "DEBUG: Am apăsat „Generează Program”";
++      statusProfile.textContent = "DEBUG: Am apăsat 'Generează Program'";
+ 
+       if (!currentUser) {
+         statusProfile.textContent += " | User e null, deci nu pot genera.";
+         return;
+       }
+       const snap = await getDoc(userDocRef);
+       if (!snap.exists()) {
+         statusProfile.textContent += " | Profilul nu există, completează-l întâi!";
+         return;
+       }
+       const data = snap.data();
+       const goalVal = data.goal;
+       if (!goalVal) {
+         statusProfile.textContent += " | N-ai setat goal în profil!";
+         return;
+       }
+       statusProfile.textContent += " | OK goal: " + goalVal;
+ 
+       // generăm program
+       const program = generateProgram(goalVal);
+       const programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
+       await setDoc(programDocRef, { days: program });
+       statusProfile.textContent = "Program generat cu succes! Mergi la Workouts.";
+     } catch (e) {
+       statusProfile.textContent = "Eroare la generarea programului: " + e.message;
+diff --git a/profile.html b/profile.html
+index 4d5c5bc41ba1ba8eb274571184c3a5301d15023a..0e7d24e02cf3611b9256c6f36225340c1c5222bd 100644
 --- a/profile.html
 +++ b/profile.html
 @@ -696,171 +696,120 @@
@@ -236,3 +294,6 @@ index 4d5c5bc41ba1ba8eb274571184c3a5301d15023a..a42251c4f57fee9b3a91e135613fd1ee
  </script>
  </body>
  </html>
+ 
+EOF
+)
