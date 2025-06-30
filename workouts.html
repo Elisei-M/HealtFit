@@ -1,821 +1,172 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-  <meta charset="UTF-8">
-  <title>HealthFit - Workouts</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- Remix Icon (pentru iconițe) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
-    rel="stylesheet"
-  />
-
-  <style>
-    /* RESET minimal */
-    *, *::before, *::after {
-      margin: 0; 
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Oswald', sans-serif;
-      background: #111;
-      color: #eee;
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-    }
-
-    /* ================= NAVBAR (similar index) ================= */
-    .Navbar {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      background: rgba(0,0,0,0.8);
-      padding: 0.8rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.4s ease;
-    }
-    [scroll-direction='down'] .Navbar {
-      transform: translateY(-120%);
-    }
-    .Navbar .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1200px;
-      width: 100%;
-    }
-    .Logo {
-      font-size: 2.4rem; 
-      font-weight: 700;
-      color: #0df1a7;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 1.5rem;
-    }
-    .nav-links li { display: block; }
-    .nav-links a, .nav-links button {
-      color: #fff;
-      font-size: 1.2rem;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: color 0.2s;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    .nav-links a:hover, .nav-links button:hover {
-      color: #0df1a7;
-    }
-    .NavButton {
-      display: none;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 2rem;
-      cursor: pointer;
-    }
-    @media screen and (max-width: 768px) {
-      .NavButton { display: inline-block; }
-      .nav-links {
-        position: fixed;
-        top: 0; right: 0;
-        width: 70%;
-        height: 100vh;
-        background: rgba(0,0,0,0.95);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        transform: translateX(100%);
-        transition: transform 0.4s ease;
-      }
-      .nav-links.open {
-        transform: translateX(0);
-      }
-      .nav-links a, .nav-links button {
-        font-size: 1.4rem;
-      }
-    }
-
-    /* ================== CONTAINER PRINCIPAL ================== */
-    .workouts-container {
-      max-width: 1200px;
-      margin: 80px auto 40px; /* un top margin pt. sub navbar */
-      padding: 0 1rem;
-      display: flex;
-      gap: 2rem;
-    }
-    /* layout 2 coloane */
-    .program-column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .svg-column {
-      flex: 1.2;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    @media screen and (max-width: 768px) {
-      .workouts-container {
-        flex-direction: column;
-      }
-    }
-
-    /* ================== PROGRAM BOX (cards) ================== */
-    .program-header {
-      background: #222;
-      border: 1px solid #333;
-      padding: 1rem;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .program-header h2 {
-      color: #0df1a7;
-      margin-bottom: 0.5rem;
-      font-size: 1.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .progress-container {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 0.5rem;
-    }
-    .progress-bar {
-      flex: 1;
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .progress-bar-inner {
-      height: 100%;
-      background: #0df1a7;
-      width: 0%; /* se updatează din JS */
-      transition: width 0.4s;
-    }
-    .program-badges {
-      margin-top: 1rem;
-      background: #222;
-      border: 1px solid #333;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    .program-badges h4 {
-      font-size: 1.2rem;
-      color: #0df1a7;
-      margin-bottom: 0.5rem;
-    }
-    .badge-list {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .badge {
-      background: #444;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      color: #eee;
-    }
-
-    /* antrenamente -> card */
-    .day-card {
-      background: #222;
-      border: 1px solid #333;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      transition: transform 0.2s;
-    }
-    .day-card:hover {
-      transform: translateY(-3px);
-    }
-    .day-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-    }
-    .day-card-title {
-      font-size: 1.2rem;
-      color: #0df1a7;
-    }
-    .day-card-checkbox {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .day-card-checkbox input[type="checkbox"] {
-      width: 1.2rem; 
-      height: 1.2rem;
-      cursor: pointer;
-    }
-    .day-card-description {
-      font-size: 0.9rem;
-      color: #ccc;
-      margin-bottom: 0.5rem;
-    }
-    .day-card-buttons {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .btn-exercises {
-      background: #444;
-      border: 1px solid #555;
-      color: #eee;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s;
-    }
-    .btn-exercises:hover {
-      background: #555;
-    }
-    .exercise-list {
-      display: none;
-      margin-top: 0.5rem;
-      margin-left: 1.5rem;
-    }
-    .exercise-list.active {
-      display: block;
-    }
-    .exercise-list li {
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
-    }
-
-    .reset-btn {
-      margin-top: 0.5rem;
-      background: #ff3b3b;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-    }
-    .reset-btn:hover {
-      background: #e63838;
-    }
-
-    /* animatie checkmark */
-    .check-anim {
-      color: lime;
-      margin-left: 0.5rem;
-      font-size: 1.2rem;
-      animation: popCheck 0.4s forwards;
-    }
-    @keyframes popCheck {
-      0% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); }
-    }
-
-    /* ================== SVG BOX ================== */
-.svg-container {
-  position: relative;
-  width: 320px;
-  height: 560px;
-  margin: 0 auto; 
-  perspective: 1000px; /* 3D perspective */
-}
-    /* Butonul “View Back” */
-.rotateBtn {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999; /* să fie peste card */
-  display: inline-block;
-  background: #0df1a7;
-  color: #111;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: background 0.2s;
-}
-
-.rotateBtn:hover {
-  background: #0ae8a0;
-}
-
-/* Card-ul rămâne la fel */
-.card {
-  position: absolute;
-  top: 0; 
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease;
-}
-    .card.flipped {
-      transform: rotateY(180deg);
-    }
-    .card figure {
-      margin: 0;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-    }
-    .card .back {
-      transform: rotateY(180deg);
-    }
-    #frontSvg, #backSvg {
-      width: 100%;
-      height: 100%;
-    }
-    .rotateBtn {
-      display: inline-block;
-      background: #0df1a7;
-      color: #111;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      text-decoration: none;
-      text-transform: uppercase;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-    .rotateBtn:hover {
-      background: #0ae8a0;
-    }
-
-    /* tooltip & colorare muschi */
-    .tooltip {
-      position: absolute;
-      background: #222;
-      padding: 0.4rem 0.8rem;
-      border: 1px solid #333;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      color: #eee;
-      display: none;
-      pointer-events: none;
-      transform: translate(-50%, -120%);
-    }
-    .tooltip::after {
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: #222;
-    }
-
-    /* ========== MOBILE ========== */
-    @media screen and (max-width: 768px) {
-      .workouts-container { flex-direction: column; }
-      .program-column, .svg-column { width: 100%; }
-      .svg-container { margin-top: 1rem; }
-    }
-  </style>
-</head>
-<body>
-
-<!-- NAVBAR -->
-<nav class="Navbar">
-  <div class="container">
-    <div class="Logo">HealthFit.</div>
-
-    <!-- Buton meniu mobil -->
-    <button id="openMenuBtn" class="NavButton">
-      <i class="ri-menu-line"></i>
-    </button>
-
-    <ul class="nav-links" id="menu">
-      <button id="closeMenuBtn" class="NavButton">
-        <i class="ri-close-line"></i>
-      </button>
-      <li><a href="index.html" class="NavLink">Home</a></li>
-      <li><a href="profile.html" class="NavLink">Profil</a></li>
-      <li><a href="nutritie.html" class="NavLink">Nutriție</a></li>
-      <li><a href="workouts.html" class="NavLink">Antrenamente</a></li>
-      <!-- Login / Logout toggle -->
-      <li id="nav-login"><a href="login.html" class="NavLink">Login</a></li>
-      <li id="nav-logout" style="display:none;">
-        <button class="NavLink">Logout</button>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<!-- MAIN CONTENT -->
-<div class="workouts-container">
-  <!-- Program (stânga) -->
-  <div class="program-column">
-    <!-- Program Header (Titlu + Progress + Buton reset) -->
-    <div class="program-header">
-      <h2>Program de Antrenamente</h2>
-      <div class="progress-container">
-        <div class="progress-bar">
-          <div class="progress-bar-inner" id="progressBar"></div>
-        </div>
-        <span id="progressText" style="font-size:0.9rem;">0%</span>
-      </div>
-      <button class="reset-btn" id="resetBtn">Reset Program</button>
-    </div>
-
-    <!-- Badge / Gamification -->
-    <div class="program-badges">
-      <h4>Badge-uri / Gamificare</h4>
-      <div class="badge-list" id="badgeList">
-        <!-- exemplu: <span class="badge">5/5</span> -->
-      </div>
-    </div>
-
-    <!-- Cardurile antrenamentelor -->
-    <div id="daysContainer"></div>
-  </div>
-
-  <!-- SVG + Info profil (dreapta) -->
-  <div class="svg-column">
-    <!-- Info profil scurt -->
-    <div class="program-header">
-      <h2>Profil</h2>
-      <p id="goalInfo">Obiectiv: ...</p>
-      <p id="activityInfo">Activitate: ...</p>
-      <p style="font-size:0.9rem; color:#ccc;">Antrenează-te 3-4 ori pe săptămână</p>
-    </div>
-
-    <!-- SVG front/back corp -->
-    <div style="text-align:center;">
-<div class="svg-container">
-  <div class="card" id="bodyCard">
-    <figure class="front">
-      <svg id="frontSvg"></svg>
-    </figure>
-    <figure class="back">
-      <svg id="backSvg"></svg>
-    </figure>
-  </div>
-        <div class="tooltip" id="tooltip"></div>
-        <a href="#" class="rotateBtn" id="rotateBtn">View Back</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SCRIPTS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.10.1/jquery.hoverIntent.min.js"></script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    updateDoc
-  } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
-  // 1. Config
-  const firebaseConfig = {
-    /* ... datele tale ... */
-    apiKey: "AIzaSyDkACBZ_7DJOSuko8hIHoBCGrz3EllW-GY",
-    authDomain: "healthfit-9de3f.firebaseapp.com",
-    projectId: "healthfit-9de3f",
-    storageBucket: "healthfit-9de3f.appspot.com",
-    messagingSenderId: "1071597823999",
-    appId: "1:1071597823999:web:a679009ca5178340f9e9ca"
-  };
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // Element refs
-  const openMenuBtn = document.getElementById("openMenuBtn");
-  const closeMenuBtn = document.getElementById("closeMenuBtn");
-  const menu = document.getElementById("menu");
-  const navLogin = document.getElementById("nav-login");
-  const navLogout = document.getElementById("nav-logout");
-
-  const daysContainer = document.getElementById("daysContainer");
-  const resetBtn = document.getElementById("resetBtn");
-  const progressBar = document.getElementById("progressBar");
-  const progressText = document.getElementById("progressText");
-  const badgeList = document.getElementById("badgeList");
-
-  const goalInfo = document.getElementById("goalInfo");
-  const activityInfo = document.getElementById("activityInfo");
-  const rotateBtn = document.getElementById("rotateBtn");
-  const bodyCard = document.getElementById("bodyCard");
-  const tooltip = document.getElementById("tooltip");
-
-  let currentUser = null;
-  let programDocRef = null;
-  let programData = null;
-
-  // ========== Meniu mobil ==========
-  function openMenu() { menu.classList.add("open"); }
-  function closeMenu() { menu.classList.remove("open"); }
-  openMenuBtn.addEventListener("click", openMenu);
-  closeMenuBtn.addEventListener("click", closeMenu);
-  window.addEventListener("keyup", (e) => {
-    if (e.key === "Escape") closeMenu();
-  });
-
-  // ========== Detect scroll direction (pt. navbar) ==========
-  let scrollDirection;
-  document.addEventListener("scroll", (e) => {
-    const st = window.pageYOffset || document.documentElement.scrollTop;
-    const direction = st > (e.target.lastScrollTop || 0) ? "down" : "up";
-    if (Math.abs(st - (e.target.lastScrollTop || 0)) > 5) {
-      document.body.setAttribute("scroll-direction", direction);
-    }
-    scrollDirection = direction;
-    e.target.lastScrollTop = st <= 0 ? 0 : st;
-  }, { passive: true });
-
-  // ========== onAuthStateChanged ==========
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      // arătăm buton login, ascundem logout
-      navLogin.style.display = "block";
-      navLogout.style.display = "none";
-    } else {
-      // ascundem login, arătăm logout
-      navLogin.style.display = "none";
-      navLogout.style.display = "block";
-
-      currentUser = user;
-      programDocRef = doc(db, "users", currentUser.uid, "program", "activeProgram");
-
-      await loadProfileInfo();
-      await loadProgram();
-      initSVG(); // Snap.svg + hover logic
-    }
-  });
-
-  // logout
-  navLogout.onclick = async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  };
-
-  // ========== loadProfileInfo ==========
-  async function loadProfileInfo() {
-    const userDocRef = doc(db, "users", currentUser.uid);
-    const snap = await getDoc(userDocRef);
-    if (!snap.exists()) return;
-    const data = snap.data();
-    goalInfo.textContent = "Obiectiv: " + (data.goal || "N/A");
-    activityInfo.textContent = "Activitate: " + (data.activityLevel || "N/A");
-  }
-
-  // ========== loadProgram ==========
-  async function loadProgram() {
-    const snap = await getDoc(programDocRef);
-    if (!snap.exists()) {
-      daysContainer.innerHTML = "<p>Nu ai încă un program. Mergi la Profile și generează unul!</p>";
-      return;
-    }
-    programData = snap.data();
-    if (!programData.days) {
-      daysContainer.innerHTML = "<p>Program invalid (lipsesc days).</p>";
-      return;
-    }
-    renderDays(programData.days);
-    updateProgressAndBadges();
-  }
-
-  // ========== renderDays ==========
-  function renderDays(daysArray) {
-    daysContainer.innerHTML = "";
-    daysArray.forEach((dayObj, dayIndex) => {
-      // creez card
-      const card = document.createElement("div");
-      card.classList.add("day-card");
-
-      // header (titlu + checkbox)
-      const headerDiv = document.createElement("div");
-      headerDiv.classList.add("day-card-header");
-
-      const titleSpan = document.createElement("span");
-      titleSpan.classList.add("day-card-title");
-      titleSpan.textContent = dayObj.title + (dayObj.done ? " (Finalizat)" : "");
-
-      const checkDiv = document.createElement("div");
-      checkDiv.classList.add("day-card-checkbox");
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!dayObj.done;
-      cb.onchange = () => toggleDay(dayIndex, cb.checked);
-
-      checkDiv.appendChild(cb);
-
-      // desc
-      const desc = document.createElement("div");
-      desc.classList.add("day-card-description");
-      desc.textContent = "Grupe: " + dayObj.muscleGroups.join(", ");
-
-      // butoane (Vezi exerciții)
-      const btnDiv = document.createElement("div");
-      btnDiv.classList.add("day-card-buttons");
-
-      const seeBtn = document.createElement("button");
-      seeBtn.classList.add("btn-exercises");
-      seeBtn.textContent = "Vezi exercițiile";
-
-      // exerciții list
-      const ul = document.createElement("ul");
-      ul.classList.add("exercise-list");
-      dayObj.exercises.forEach(ex => {
-        const li = document.createElement("li");
-        li.textContent = ex.name + " - " + ex.description;
-        ul.appendChild(li);
-      });
-      seeBtn.onclick = () => {
-        ul.classList.toggle("active");
-      };
-
-      btnDiv.appendChild(seeBtn);
-
-      // asamblare
-      headerDiv.appendChild(titleSpan);
-      headerDiv.appendChild(checkDiv);
-
-      card.appendChild(headerDiv);
-      card.appendChild(desc);
-      card.appendChild(btnDiv);
-      card.appendChild(ul);
-
-      daysContainer.appendChild(card);
-    });
-  }
-
-  // ========== toggleDay (bifare antrenament) ==========
-  async function toggleDay(dayIndex, isDone) {
-    programData.days[dayIndex].done = isDone;
-    programData.days[dayIndex].doneDate = isDone ? new Date().toISOString() : null;
-    await updateDoc(programDocRef, { days: programData.days });
-
-    // efect check anim
-    if (isDone) {
-      const dayCard = daysContainer.children[dayIndex];
-      const checkSpan = document.createElement("span");
-      checkSpan.classList.add("check-anim");
-      checkSpan.innerHTML = "<i class='ri-check-line'></i>";
-      dayCard.querySelector(".day-card-header").appendChild(checkSpan);
-      // colorare mușchi
-      colorMuscles(programData.days[dayIndex].muscleGroups, "sore"); 
-    } else {
-      colorMuscles(programData.days[dayIndex].muscleGroups, "fresh");
-    }
-
-    renderDays(programData.days);
-    updateProgressAndBadges();
-  }
-
-  // ========== Reset Program cu confirmare ==========
-  resetBtn.onclick = async () => {
-    const confirmReset = confirm("Ești sigur că vrei să resetezi întreg programul?");
-    if (!confirmReset) return;
-
-    if (!programData || !programData.days) return;
-    programData.days.forEach(day => {
-      day.done = false;
-      day.doneDate = null;
-    });
-    await updateDoc(programDocRef, { days: programData.days });
-    renderDays(programData.days);
-    updateProgressAndBadges();
-    // opțional colorăm tot svg -> fresh
-    // colorMuscles(["chest","back","legs","biceps","triceps","shoulders"], "fresh");
-  };
-
-  // ========== updateProgressAndBadges ==========
-  function updateProgressAndBadges() {
-    if (!programData || !programData.days) return;
-    const days = programData.days;
-    const total = days.length;
-    const doneCount = days.filter(d => d.done).length;
-    // progress
-    const pct = Math.round((doneCount / total) * 100);
-    progressBar.style.width = pct + "%";
-    progressText.textContent = pct + "%";
-
-    // exemplu de logic badges
-    badgeList.innerHTML = "";
-    if (doneCount >= total) {
-      const badge = document.createElement("span");
-      badge.classList.add("badge");
-      badge.textContent = "Program Complet!";
-      badgeList.appendChild(badge);
-    }
-    if (doneCount >= 3) {
-      const badge2 = document.createElement("span");
-      badge2.classList.add("badge");
-      badge2.textContent = "3+ Workouts";
-      badgeList.appendChild(badge2);
-    }
-  }
-
-  // ========== INIT SVG & colorare mușchi la hover/bifa ==========
-  let frontSVG, backSVG;
-  function initSVG() {
-    frontSVG = Snap("#frontSvg");
-    backSVG = Snap("#backSvg");
-
-    // load front
-    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-front.svg", (data) => {
-      frontSVG.append(data);
-      // ex. select anume ID-uri
-      attachHoverLogic("#muscleChest");
-      attachHoverLogic("#muscleArmsFront");
-      attachHoverLogic("#muscleLegsFront");
-    });
-    // load back
-    Snap.load("https://s3-us-west-2.amazonaws.com/s.cdpn.io/252401/body-back.svg", (data) => {
-      backSVG.append(data);
-      attachHoverLogic("#muscleBack");
-      attachHoverLogic("#muscleArmsBack");
-      attachHoverLogic("#muscleLegsBack");
-    });
-
-    // flip
-    rotateBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      bodyCard.classList.toggle("flipped");
-      rotateBtn.textContent = bodyCard.classList.contains("flipped") ? "View Front" : "View Back";
-    });
-  }
-
-  // simplu: la hover -> tooltip
-  function attachHoverLogic(sel) {
-    const el = document.querySelector(sel);
-    if (!el) return;
-    $(el).hoverIntent({
-      over: (e) => showTooltip(e, el),
-      out: () => hideTooltip(),
-      interval: 100,
-      timeout: 200
-    });
-  }
-  function showTooltip(e, domEl) {
-    const id = domEl.id; 
-    let muscleName = "???";
-    if (id === "muscleChest") muscleName = "Pectorals (Piept)";
-    if (id === "muscleArmsFront") muscleName = "Biceps & Antebrațe (Față)";
-    // ... extinzi cum vrei ...
-    tooltip.textContent = muscleName;
-    tooltip.style.display = "block";
-    // coordonatele mouse
-    tooltip.style.top = (e.pageY - 20) + "px";
-    tooltip.style.left = (e.pageX) + "px";
-  }
-  function hideTooltip() {
-    tooltip.style.display = "none";
-  }
-
-  // colorMuscles -> simulăm logică simplă (roșu pt. sore, verde pt. fresh)
-  function colorMuscles(groups, state) {
-    const colorMap = {
-      fresh: "#8dc63f",  // verde
-      sore: "#ff5555"    // roșu
-    };
-    const c = colorMap[state] || "#8dc63f";
-    groups.forEach(mg => {
-      let id;
-      if (mg === "chest") id = "#muscleChest";
-      else if (mg === "back") id = "#muscleBack";
-      else if (mg === "legs") id = "#muscleLegsFront"; // ex. front
-      else if (mg === "biceps") id = "#muscleArmsFront";
-      else if (mg === "triceps") id = "#muscleArmsBack";
-      else if (mg === "shoulders") id = "#muscleArmsFront"; // ex. simplificare
-      if (!id) return;
-      const domEl = document.querySelector(id);
-      if (domEl) {
-        $(domEl).find(".muscle").css({ fill: c });
-      }
-    });
-  }
-</script>
-</body>
-</html>
+diff --git a/workouts.html b/workouts.html
+index 5cfeeb45b221b03f3ca8551fddcd50e6cab039ce..8700a3583709a9b61671bc76f99dd3dbd1df44e6 100644
+--- a/workouts.html
++++ b/workouts.html
+@@ -266,50 +266,59 @@
+       border: none;
+       padding: 0.5rem 1rem;
+       border-radius: 4px;
+       color: #fff;
+       cursor: pointer;
+       font-size: 0.9rem;
+       text-transform: uppercase;
+     }
+     .reset-btn:hover {
+       background: #e63838;
+     }
+ 
+     /* animatie checkmark */
+     .check-anim {
+       color: lime;
+       margin-left: 0.5rem;
+       font-size: 1.2rem;
+       animation: popCheck 0.4s forwards;
+     }
+     @keyframes popCheck {
+       0% { transform: scale(0); opacity: 0; }
+       50% { transform: scale(1.2); opacity: 1; }
+       100% { transform: scale(1); }
+     }
+ 
++    /* rotire corp la bifare */
++    @keyframes spinBody {
++      from { transform: rotateZ(0deg); }
++      to { transform: rotateZ(360deg); }
++    }
++    .spin-animation {
++      animation: spinBody 0.8s linear;
++    }
++
+     /* ================== SVG BOX ================== */
+ .svg-container {
+   position: relative;
+   width: 320px;
+   height: 560px;
+   margin: 0 auto; 
+   perspective: 1000px; /* 3D perspective */
+ }
+     /* Butonul “View Back” */
+ .rotateBtn {
+   position: absolute;
+   bottom: 10px;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 999; /* să fie peste card */
+   display: inline-block;
+   background: #0df1a7;
+   color: #111;
+   padding: 0.5rem 1rem;
+   border-radius: 4px;
+   text-decoration: none;
+   text-transform: uppercase;
+   transition: background 0.2s;
+ }
+ 
+diff --git a/workouts.html b/workouts.html
+index 5cfeeb45b221b03f3ca8551fddcd50e6cab039ce..8700a3583709a9b61671bc76f99dd3dbd1df44e6 100644
+--- a/workouts.html
++++ b/workouts.html
+@@ -662,51 +671,52 @@
+       headerDiv.appendChild(checkDiv);
+ 
+       card.appendChild(headerDiv);
+       card.appendChild(desc);
+       card.appendChild(btnDiv);
+       card.appendChild(ul);
+ 
+       daysContainer.appendChild(card);
+     });
+   }
+ 
+   // ========== toggleDay (bifare antrenament) ==========
+   async function toggleDay(dayIndex, isDone) {
+     programData.days[dayIndex].done = isDone;
+     programData.days[dayIndex].doneDate = isDone ? new Date().toISOString() : null;
+     await updateDoc(programDocRef, { days: programData.days });
+ 
+     // efect check anim
+     if (isDone) {
+       const dayCard = daysContainer.children[dayIndex];
+       const checkSpan = document.createElement("span");
+       checkSpan.classList.add("check-anim");
+       checkSpan.innerHTML = "<i class='ri-check-line'></i>";
+       dayCard.querySelector(".day-card-header").appendChild(checkSpan);
+       // colorare mușchi
+-      colorMuscles(programData.days[dayIndex].muscleGroups, "sore"); 
++      colorMuscles(programData.days[dayIndex].muscleGroups, "sore");
++      spinBody();
+     } else {
+       colorMuscles(programData.days[dayIndex].muscleGroups, "fresh");
+     }
+ 
+     renderDays(programData.days);
+     updateProgressAndBadges();
+   }
+ 
+   // ========== Reset Program cu confirmare ==========
+   resetBtn.onclick = async () => {
+     const confirmReset = confirm("Ești sigur că vrei să resetezi întreg programul?");
+     if (!confirmReset) return;
+ 
+     if (!programData || !programData.days) return;
+     programData.days.forEach(day => {
+       day.done = false;
+       day.doneDate = null;
+     });
+     await updateDoc(programDocRef, { days: programData.days });
+     renderDays(programData.days);
+     updateProgressAndBadges();
+     // opțional colorăm tot svg -> fresh
+     // colorMuscles(["chest","back","legs","biceps","triceps","shoulders"], "fresh");
+   };
+ 
+diff --git a/workouts.html b/workouts.html
+index 5cfeeb45b221b03f3ca8551fddcd50e6cab039ce..8700a3583709a9b61671bc76f99dd3dbd1df44e6 100644
+--- a/workouts.html
++++ b/workouts.html
+@@ -787,35 +797,45 @@
+     tooltip.textContent = muscleName;
+     tooltip.style.display = "block";
+     // coordonatele mouse
+     tooltip.style.top = (e.pageY - 20) + "px";
+     tooltip.style.left = (e.pageX) + "px";
+   }
+   function hideTooltip() {
+     tooltip.style.display = "none";
+   }
+ 
+   // colorMuscles -> simulăm logică simplă (roșu pt. sore, verde pt. fresh)
+   function colorMuscles(groups, state) {
+     const colorMap = {
+       fresh: "#8dc63f",  // verde
+       sore: "#ff5555"    // roșu
+     };
+     const c = colorMap[state] || "#8dc63f";
+     groups.forEach(mg => {
+       let id;
+       if (mg === "chest") id = "#muscleChest";
+       else if (mg === "back") id = "#muscleBack";
+       else if (mg === "legs") id = "#muscleLegsFront"; // ex. front
+       else if (mg === "biceps") id = "#muscleArmsFront";
+       else if (mg === "triceps") id = "#muscleArmsBack";
+       else if (mg === "shoulders") id = "#muscleArmsFront"; // ex. simplificare
++      else if (mg === "traps") id = "#muscleBack";
++      else if (mg === "core") id = "#muscleChest";
++      else if (mg === "cardio") id = "#muscleLegsFront";
+       if (!id) return;
+       const domEl = document.querySelector(id);
+       if (domEl) {
+         $(domEl).find(".muscle").css({ fill: c });
+       }
+     });
+   }
++
++  function spinBody() {
++    bodyCard.classList.add("spin-animation");
++    bodyCard.addEventListener("animationend", () => {
++      bodyCard.classList.remove("spin-animation");
++    }, { once: true });
++  }
+ </script>
+ </body>
+ </html>
