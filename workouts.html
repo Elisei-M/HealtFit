@@ -288,6 +288,15 @@
       100% { transform: scale(1); }
     }
 
+    /* rotire corp la bifare */
+    @keyframes spinBody {
+      from { transform: rotateZ(0deg); }
+      to { transform: rotateZ(360deg); }
+    }
+    .spin-animation {
+      animation: spinBody 0.8s linear;
+    }
+
     /* ================== SVG BOX ================== */
 .svg-container {
   position: relative;
@@ -684,7 +693,8 @@
       checkSpan.innerHTML = "<i class='ri-check-line'></i>";
       dayCard.querySelector(".day-card-header").appendChild(checkSpan);
       // colorare mușchi
-      colorMuscles(programData.days[dayIndex].muscleGroups, "sore"); 
+      colorMuscles(programData.days[dayIndex].muscleGroups, "sore");
+      spinBody();
     } else {
       colorMuscles(programData.days[dayIndex].muscleGroups, "fresh");
     }
@@ -809,12 +819,22 @@
       else if (mg === "biceps") id = "#muscleArmsFront";
       else if (mg === "triceps") id = "#muscleArmsBack";
       else if (mg === "shoulders") id = "#muscleArmsFront"; // ex. simplificare
+      else if (mg === "traps") id = "#muscleBack";
+      else if (mg === "core") id = "#muscleChest";
+      else if (mg === "cardio") id = "#muscleLegsFront";
       if (!id) return;
       const domEl = document.querySelector(id);
       if (domEl) {
         $(domEl).find(".muscle").css({ fill: c });
       }
     });
+  }
+
+  function spinBody() {
+    bodyCard.classList.add("spin-animation");
+    bodyCard.addEventListener("animationend", () => {
+      bodyCard.classList.remove("spin-animation");
+    }, { once: true });
   }
 </script>
 </body>

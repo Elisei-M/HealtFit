@@ -718,119 +718,57 @@
   }
 
   function generateProgram(goal) {
-    if (goal === "slabire") {
-      return [
-        {
-          title: "Antrenament 1 (Piept & Triceps)",
-          muscleGroups: ["chest", "triceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["chest","triceps"])
-        },
-        {
-          title: "Antrenament 2 (Spate & Biceps)",
-          muscleGroups: ["back", "biceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["back","biceps"])
-        },
-        {
-          title: "Antrenament 3 (Picioare & Umeri)",
-          muscleGroups: ["legs","shoulders"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["legs","shoulders"])
-        },
-        {
-          title: "Antrenament 4 (Cardio / Full Body)",
-          muscleGroups: ["chest","back","legs"],
-          done: false,
-          doneDate: null,
-          exercises: [
-            { name: "Burpees", description: "...", alternatives: [] },
-            { name: "Plank", description: "...", alternatives: [] }
-          ]
-        }
-      ];
-    }
-    else if (goal === "crestere_masa") {
-      return [
-        {
-          title: "Antrenament 1 (Piept & Biceps)",
-          muscleGroups: ["chest","biceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["chest","biceps"])
-        },
-        {
-          title: "Antrenament 2 (Spate & Triceps)",
-          muscleGroups: ["back","triceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["back","triceps"])
-        },
-        {
-          title: "Antrenament 3 (Picioare & Umeri)",
-          muscleGroups: ["legs","shoulders"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["legs","shoulders"])
-        },
-        {
-          title: "Antrenament 4 (Piept & Biceps - variantă 2)",
-          muscleGroups: ["chest","biceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["chest","biceps"])
-        }
-      ];
-    }
-    else if (goal === "definire") {
-      return [
-        {
-          title: "Antrenament 1 (Piept & Triceps)",
-          muscleGroups: ["chest", "triceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["chest","triceps"])
-        },
-        {
-          title: "Antrenament 2 (Spate & Biceps)",
-          muscleGroups: ["back","biceps"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["back","biceps"])
-        },
-        {
-          title: "Antrenament 3 (Picioare & Umeri)",
-          muscleGroups: ["legs","shoulders"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["legs","shoulders"])
-        },
-        {
-          title: "Antrenament 4 (Cardio / HIIT)",
-          muscleGroups: ["legs"],
-          done: false,
-          doneDate: null,
-          exercises: [
-            { name: "Sprinting", description: "Intervale HIIT", alternatives: [] }
-          ]
-        }
-      ];
-    }
-    else {
-      // fallback
-      return [
-        {
-          title: "Antrenament 1 (Full Body)",
-          muscleGroups: ["chest","back","legs"],
-          done: false,
-          doneDate: null,
-          exercises: gatherExercises(["chest","back","legs"])
-        }
-      ];
-    }
+    return [
+      {
+        title: "Ziua 1 - Piept și Triceps",
+        muscleGroups: ["chest", "triceps"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["chest", "triceps"])
+      },
+      {
+        title: "Ziua 2 - Spate și Biceps",
+        muscleGroups: ["back", "biceps"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["back", "biceps"])
+      },
+      {
+        title: "Ziua 3 - Picioare",
+        muscleGroups: ["legs"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["legs"])
+      },
+      {
+        title: "Ziua 4 - Umeri și Trapez",
+        muscleGroups: ["shoulders", "traps"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["shoulders", "traps"])
+      },
+      {
+        title: "Ziua 5 - CORE",
+        muscleGroups: ["core"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["core"])
+      },
+      {
+        title: "Ziua 6 - Cardio + Stretching activ",
+        muscleGroups: ["cardio"],
+        done: false,
+        doneDate: null,
+        exercises: gatherExercises(["cardio"])
+      },
+      {
+        title: "Ziua 7 - Pauză / Mobilitate ușoară",
+        muscleGroups: [],
+        done: false,
+        doneDate: null,
+        exercises: []
+      }
+    ];
   }
 
   // exercisesLibrary
@@ -859,6 +797,17 @@
     shoulders: [
       { name: "Shoulder Press", description: "Exercițiu pt. deltoizi", alternatives: ["Arnold Press"] },
       { name: "Lateral Raises", description: "Izolare umeri laterali", alternatives: [] }
+    ],
+    traps: [
+      { name: "Barbell Shrug", description: "Lucrează trapezul", alternatives: [] }
+    ],
+    core: [
+      { name: "Crunches", description: "Lucrează abdomenul", alternatives: [] },
+      { name: "Back Extensions", description: "Zona lombară", alternatives: [] }
+    ],
+    cardio: [
+      { name: "Jogging", description: "30 de minute", alternatives: [] },
+      { name: "Jump Rope", description: "5 minute", alternatives: [] }
     ]
   };
 </script>
